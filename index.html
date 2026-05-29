@@ -58,9 +58,9 @@
                     <span class="font-bold text-xl text-stone-800 tracking-tight">MedEquip PR Analítica</span>
                 </div>
                 <div class="flex space-x-4 lg:space-x-8 mt-4 overflow-x-auto" id="nav-tabs">
-                    <button onclick="switchTab('catalogo')" id="tab-catalogo" class="tab-active px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">Catálogo General</button>
-                    <button onclick="switchTab('analisis')" id="tab-analisis" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
-                    <button onclick="switchTab('suplidores')" id="tab-suplidores" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
+                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="tab-active px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">Catálogo General</button>
+                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
+                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
                 </div>
             </div>
         </div>
@@ -118,7 +118,6 @@
                 <p class="mt-2 text-stone-600">Esta sección aborda el requerimiento especial de la máquina FibroScan vs iLivTouch. Presenta visualizaciones comparativas del costo inicial de inversión, valoración de características, y una herramienta interactiva para proyectar la rentabilidad financiera (ROI) basada en las tarifas nacionales de Medicare actualizadas al 2026.</p>
             </div>
 
-            <!-- Gráficos Existentes -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
                     <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">Comparativa de Costo Estimado (USD)</h3>
@@ -166,12 +165,10 @@
                 </div>
                 
                 <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-stone-800">
-                    
-                    <!-- Controles Izquierda -->
                     <div class="md:col-span-7 space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-stone-300 mb-2">Seleccione el Código CPT a Facturar:</label>
-                            <select id="roi-cpt" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white font-medium focus:ring-2 focus:ring-teal-500" onchange="calculateROI()">
+                            <select id="roi-cpt" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white font-medium focus:ring-2 focus:ring-teal-500" onchange="window.calculateROI()">
                                 <option value="112.56">CPT 76981 - Elastografía por Ultrasonido, Parénquima ($112.56 / paciente)</option>
                                 <option value="33.73">CPT 91200 - Elastografía Transitoria ($33.73 / paciente)</option>
                             </select>
@@ -183,7 +180,7 @@
                                 <label class="block text-sm font-medium text-stone-300">Volumen de Pacientes (Semanal):</label>
                                 <span class="text-2xl font-bold text-teal-400" id="roi-vol-val">15</span>
                             </div>
-                            <input type="range" id="roi-vol" min="1" max="60" value="15" class="w-full h-2 bg-stone-600 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="updateRoiVol(); calculateROI()">
+                            <input type="range" id="roi-vol" min="1" max="60" value="15" class="w-full h-2 bg-stone-600 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="window.updateRoiVol(); window.calculateROI()">
                             <div class="flex justify-between text-xs text-stone-500 mt-1">
                                 <span>1</span>
                                 <span>Pacientes / Sem</span>
@@ -193,14 +190,13 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-stone-300 mb-2">Costo Estimado de la Máquina (CAPEX):</label>
-                            <select id="roi-capex" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white focus:ring-2 focus:ring-teal-500" onchange="calculateROI()">
+                            <select id="roi-capex" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white focus:ring-2 focus:ring-teal-500" onchange="window.calculateROI()">
                                 <option value="65000">Estimado iLivTouch ($65,000)</option>
                                 <option value="105000">Estimado FibroScan ($105,000)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Resultados Derecha -->
                     <div class="md:col-span-5 bg-stone-900 p-6 rounded-xl border border-stone-700 shadow-inner flex flex-col justify-center text-center">
                         <div class="mb-6">
                             <p class="text-xs text-stone-400 uppercase tracking-widest mb-1">Ingreso Mensual Proyectado</p>
@@ -221,7 +217,6 @@
                             <p class="text-xs text-stone-500 mt-3">*Cálculos asumen 4.33 semanas por mes. Tarifas basadas en Global Medicare Averages 2026. Los pagadores comerciales pueden tener reembolsos distintos.</p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -231,6 +226,62 @@
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Directorio de Suplidores en Puerto Rico</h2>
                 <p class="mt-2 text-stone-600">Contactos de distribuidores de equipo médico en Puerto Rico para cotizar localmente.</p>
+            </div>
+
+            <!-- Formulario Desplegable para Añadir Suplidor -->
+            <div class="bg-white shadow-md rounded-xl p-6 mb-8 border border-stone-200 transition-all duration-300">
+                <div class="flex justify-between items-center cursor-pointer group" onclick="window.toggleAddSupplierForm()">
+                    <h3 class="text-lg font-bold text-teal-800 flex items-center group-hover:text-teal-600 transition-colors">
+                        <span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">➕</span> 
+                        Añadir Nuevo Suplidor
+                    </h3>
+                    <span id="form-toggle-icon" class="text-stone-400 font-bold transform transition-transform duration-300">▼</span>
+                </div>
+                
+                <form id="add-supplier-form" class="hidden mt-6 space-y-6" onsubmit="window.handleAddSupplier(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Compañía / Suplidor <span class="text-red-500">*</span></label>
+                            <input type="text" id="supp-name" required class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Ubicación (Pueblo, PR) <span class="text-red-500">*</span></label>
+                            <input type="text" id="supp-loc" required class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Especialidad Comercial <span class="text-red-500">*</span></label>
+                            <input type="text" id="supp-spec" required placeholder="Ej. Mobiliario, Vitales..." class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Contacto (Teléfono/Email) <span class="text-red-500">*</span></label>
+                            <input type="text" id="supp-contact" required placeholder="(787) 000-0000" class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Sitio Web (URL)</label>
+                            <input type="url" id="supp-web" placeholder="https://" class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Enlace de Google Maps (URL)</label>
+                            <input type="url" id="supp-map" placeholder="https://maps.google.com/..." class="w-full rounded-md border-stone-300 shadow-sm focus:border-teal-500 focus:ring-teal-500 bg-stone-50 border p-2 text-sm outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-stone-200 pt-4">
+                        <label class="block text-sm font-bold text-stone-800 mb-3">Asignar al Catálogo (Seleccione los equipos que provee):</label>
+                        <div id="equipment-checkboxes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-stone-50 p-4 rounded-lg border border-stone-200">
+                            <!-- Los checkboxes se llenan solos con JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-end space-x-4 pt-2">
+                        <span id="supp-success-msg" class="text-teal-600 text-sm font-bold bg-teal-50 px-3 py-1 rounded border border-teal-200 opacity-0 transition-opacity duration-300">
+                            ¡Suplidor guardado en Supabase de forma segura!
+                        </span>
+                        <button type="submit" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm">
+                            Guardar Suplidor
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <div class="bg-white shadow-md rounded-xl overflow-hidden border border-stone-200">
@@ -260,85 +311,95 @@
         </div>
     </footer>
 
-    <script>
-        // Array conectado a los IDs de los suplidores reales
-        const equipmentData = [
-            {
-                id: 'vitals',
-                name: 'Máquina Toma de Vitales',
-                price: '$800 - $2,500',
-                desc: 'Monitor de signos vitales grado clínico (Ej. Welch Allyn Connex Spot). Debe incluir NIBP, SpO2, pulso y temperatura.',
-                image: 'vitals.png',
-                suppliers: [0, 1, 2, 3]
-            },
-            {
-                id: 'scale-reg',
-                name: 'Pesa Regular (Clínica)',
-                price: '$150 - $450',
-                desc: 'Báscula médica de columna con tallímetro. Capacidad típica hasta 500 lbs.',
-                image: 'scale-reg.png',
-                suppliers: [0, 1, 2, 3]
-            },
-            {
-                id: 'scale-bar',
-                name: 'Pesa Bariátrica',
-                price: '$800 - $1,800',
-                desc: 'Báscula de plataforma ancha diseñada para pacientes con obesidad severa. Capacidad mínima de 800 a 1,000 lbs.',
-                image: 'scale-bar.png',
-                suppliers: [0, 1, 2]
-            },
-            {
-                id: 'inbody',
-                name: 'Composición Corporal: InBody',
-                price: '$5,500 - $15,000',
-                desc: 'Analizador de composición corporal avanzado mediante impedancia bioeléctrica (BIA).',
-                image: 'inbody.png',
-                suppliers: [6, 2]
-            },
-            {
-                id: 'camilla',
-                name: 'Camilla de Examinación',
-                price: '$600 - $2,500',
-                desc: 'Mesa de examinación médica. Modelos manuales y motorizados (hi-lo).',
-                image: 'camilla.png',
-                suppliers: [0, 1, 2, 3]
-            },
-            {
-                id: 'cgm',
-                name: 'Professional CGM (Glucosa)',
-                price: '$800 - $2,000 (Inicio)',
-                desc: 'Monitoreo Continuo de Glucosa Profesional. Requiere inversión inicial en software/lectores más los sensores.',
-                image: 'cgm.png',
-                suppliers: [2, 3]
-            }
-        ];
+    <!-- LÓGICA DE JAVASCRIPT Y CONEXIÓN A SUPABASE -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-        // Suplidores reales de Puerto Rico e Internacionales
-        const suppliersData = [
-            { id: 0, name: 'Casa Médica Sales & Dist.', loc: 'Cayey, PR', spec: 'Mobiliario, Camillas, Vitales', contact: '(787) 263-3738', web: 'https://casamedicapr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Casa+Medica+Cayey+Puerto+Rico' },
-            { id: 1, name: 'Pro-Medical Equipment PR', loc: 'Mayagüez, PR', spec: 'Equipo Médico General, Pesas', contact: '(787) 833-3131', web: 'https://promedicalequipmentpr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pro-Medical+Equipment+Mayaguez+Puerto+Rico' },
-            { id: 2, name: 'Puerto Rico Hospital Supply', loc: 'Guaynabo, PR', spec: 'Suministros Mayores, Alta Tecnología', contact: '(787) 782-2222', web: 'https://www.prhospitalsupply.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Puerto+Rico+Hospital+Supply+Guaynabo+Puerto+Rico' },
-            { id: 3, name: 'J. Pica & Co. Inc.', loc: 'San Juan, PR', spec: 'Equipo Médico y Hospitalario', contact: '(787) 793-7575', web: 'http://www.jpica.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=J.+Pica+y+Co.+Inc.+San+Juan+Puerto+Rico' },
-            { id: 4, name: 'Echosens (FibroScan)', loc: 'EE.UU.', spec: 'Elastografía Hepática', contact: '(844) 324-6736', web: 'https://echosens.com', mapUrl: '' },
-            { id: 5, name: 'Hisky Medical (iLivTouch)', loc: 'Global', spec: 'Elastografía Hepática, Ultrasonido', contact: 'info@hisky-med.com', web: 'https://www.hisky-med.com', mapUrl: '' },
-            { id: 6, name: 'InBody USA', loc: 'EE.UU. (Envío PR)', spec: 'Composición Corporal', contact: '(323) 932-6503', web: 'https://inbodyusa.com', mapUrl: '' }
-        ];
-
-        function initApp() {
-            renderEquipmentGrid();
-            renderSuppliersTable();
-            initCharts();
-            calculateROI(); // Inicializa la calculadora de ROI al cargar
+        // ----------------------------------------------------------------------
+        // DATOS OFICIALES DE TU CUENTA DE SUPABASE
+        // ----------------------------------------------------------------------
+        const supabaseUrl = 'https://rqqwrbmrzgxgyijzytc.supabase.co'; 
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxcXdyYm1yemd4Z2N5aWp6eXRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNjY3MTcsImV4cCI6MjA5NTY0MjcxN30.WwWmF1QH3WyNVFDaWtby8YMSFqJyGQ21x-lZspLmn1A'; 
+        
+        // Inicializa Supabase
+        let supabase = null;
+        if(supabaseUrl && supabaseKey){
+            supabase = createClient(supabaseUrl, supabaseKey);
         }
 
-        function renderEquipmentGrid() {
+        // Datos Iniciales (Por defecto, la primera vez)
+        const defaultEquipmentData = [
+            { id: 'vitals', name: 'Máquina Toma de Vitales', price: '$800 - $2,500', desc: 'Monitor de signos vitales grado clínico. Debe incluir NIBP, SpO2, pulso y temperatura.', image: 'vitals.png', suppliers: [0, 1, 2] },
+            { id: 'scale-reg', name: 'Pesa Regular (Clínica)', price: '$150 - $450', desc: 'Báscula médica de columna con tallímetro. Capacidad típica hasta 500 lbs.', image: 'scale-reg.png', suppliers: [0, 1, 2] },
+            { id: 'scale-bar', name: 'Pesa Bariátrica', price: '$800 - $1,800', desc: 'Báscula de plataforma ancha diseñada para pacientes con obesidad severa.', image: 'scale-bar.png', suppliers: [0, 1, 2] },
+            { id: 'inbody', name: 'Composición Corporal: InBody', price: '$5,500 - $15,000', desc: 'Analizador de composición corporal avanzado mediante impedancia bioeléctrica (BIA).', image: 'inbody.png', suppliers: [6] },
+            { id: 'camilla', name: 'Camilla de Examinación', price: '$600 - $2,500', desc: 'Mesa de examinación médica. Modelos manuales y motorizados (hi-lo).', image: 'camilla.png', suppliers: [0, 1, 2] },
+            { id: 'cgm', name: 'Professional CGM (Glucosa)', price: '$800 - $2,000 (Inicio)', desc: 'Monitoreo Continuo de Glucosa Profesional. Requiere inversión inicial en software.', image: 'cgm.png', suppliers: [7] }
+        ];
+
+        const defaultSuppliersData = [
+            { id: 0, name: 'Casa Médica Sales & Dist.', loc: 'Cayey, PR', spec: 'Mobiliario, Camillas, Vitales', contact: '(787) 263-3738', web: 'https://casamedicapr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Casa+Medica+Cayey+Puerto+Rico' },
+            { id: 1, name: 'Pro-Medical Equipment PR', loc: 'Mayagüez, PR', spec: 'Equipo Médico General, Pesas', contact: '(787) 833-3131', web: 'https://promedicalequipmentpr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pro-Medical+Equipment+Mayaguez+Puerto+Rico' },
+            { id: 2, name: 'Puerto Rico Hospital Supply', loc: 'Guaynabo, PR', spec: 'Mobiliario Médico, Vitales, Suministros', contact: '(787) 782-2222', web: 'https://prhospital.com/', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Puerto+Rico+Hospital+Supply+Guaynabo+Puerto+Rico' },
+            { id: 4, name: 'Echosens (FibroScan)', loc: 'EE.UU.', spec: 'Elastografía Hepática', contact: '(844) 324-6736', web: 'https://echosens.com', mapUrl: '' },
+            { id: 5, name: 'Hisky Medical (iLivTouch)', loc: 'Global', spec: 'Elastografía Hepática, Ultrasonido', contact: 'info@hisky-med.com', web: 'https://www.hisky-med.com', mapUrl: '' },
+            { id: 6, name: 'InBody USA', loc: 'EE.UU. (Envío PR)', spec: 'Composición Corporal', contact: '(323) 932-6503', web: 'https://inbodyusa.com', mapUrl: '' },
+            { id: 7, name: 'Freedom Medical Wholesales', loc: 'Gurabo, PR', spec: 'Monitores CGM, Insumos', contact: '(787) 733-9990', web: 'https://www.facebook.com/fmwholesales/', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Freedom+Medical+Wholesales+Gurabo+Puerto+Rico' }
+        ];
+
+        // Variables de estado activas
+        let equipmentData = [...defaultEquipmentData];
+        let suppliersData = [...defaultSuppliersData];
+
+        // --- SISTEMA DE GUARDADO SUPABASE ---
+        async function loadSavedData() {
+            if(!supabase) return; // Si no hay llaves configuradas, usa los datos por defecto
+            
+            try {
+                const { data, error } = await supabase.from('app_state').select('*').eq('id', 1).single();
+                
+                if (data) {
+                    if(data.suppliers && data.suppliers.length > 0) suppliersData = data.suppliers;
+                    if(data.equipment && data.equipment.length > 0) equipmentData = data.equipment;
+                }
+            } catch (err) {
+                console.error("Error conectando a Supabase:", err);
+            }
+        }
+
+        async function saveToDatabase() {
+            if(!supabase) {
+                alert("Para guardar permanentemente, inserta las llaves de Supabase en el código.");
+                return;
+            }
+            try {
+                await supabase.from('app_state').update({ 
+                    equipment: equipmentData, 
+                    suppliers: suppliersData 
+                }).eq('id', 1);
+            } catch (err) {
+                console.error("Error guardando en Supabase:", err);
+            }
+        }
+
+        // Al iniciar la aplicación, espera a que cargue la base de datos
+        window.initApp = async function() {
+            await loadSavedData(); 
+            window.renderEquipmentGrid();
+            window.renderSuppliersTable();
+            window.initCharts();
+            window.calculateROI(); 
+            window.setupAddSupplierForm();
+        };
+
+        window.renderEquipmentGrid = function() {
             const grid = document.getElementById('equipment-grid');
             grid.innerHTML = '';
             
             equipmentData.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl shadow-sm border border-stone-200 cursor-pointer hover:shadow-md hover:border-teal-400 transition-all duration-200 flex flex-col overflow-hidden text-center';
-                card.onclick = () => showEquipmentDetail(item.id);
+                card.onclick = () => window.showEquipmentDetail(item.id);
                 
                 card.innerHTML = `
                     <div class="h-48 w-full bg-white flex items-center justify-center p-4 border-b border-stone-100">
@@ -353,7 +414,7 @@
             });
         }
 
-        function showEquipmentDetail(id) {
+        window.showEquipmentDetail = function(id) {
             const item = equipmentData.find(e => e.id === id);
             if(!item) return;
 
@@ -378,7 +439,6 @@
             const suppList = document.getElementById('detail-suppliers');
             suppList.innerHTML = '';
             
-            // Renderizado enriquecido de Suplidores en la tarjeta de detalle
             item.suppliers.forEach(suppId => {
                 const supplier = suppliersData.find(s => s.id === suppId);
                 if(supplier) {
@@ -410,8 +470,10 @@
             });
         }
 
-        function renderSuppliersTable() {
+        window.renderSuppliersTable = function() {
             const tbody = document.getElementById('suppliers-table-body');
+            tbody.innerHTML = '';
+            
             suppliersData.forEach(supp => {
                 const tr = document.createElement('tr');
                 
@@ -441,27 +503,15 @@
         let costChartInstance = null;
         let radarChartInstance = null;
 
-        function initCharts() {
+        window.initCharts = function() {
             const costCtx = document.getElementById('costChart').getContext('2d');
             costChartInstance = new Chart(costCtx, {
                 type: 'bar',
                 data: {
                     labels: ['FibroScan', 'iLivTouch'],
                     datasets: [
-                        {
-                            label: 'Costo Mínimo ($)',
-                            data: [85000, 50000],
-                            backgroundColor: 'rgba(15, 118, 110, 0.7)', 
-                            borderColor: 'rgba(15, 118, 110, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Costo Máximo ($)',
-                            data: [120000, 80000],
-                            backgroundColor: 'rgba(217, 119, 6, 0.7)',
-                            borderColor: 'rgba(217, 119, 6, 1)',
-                            borderWidth: 1
-                        }
+                        { label: 'Costo Mínimo ($)', data: [85000, 50000], backgroundColor: 'rgba(15, 118, 110, 0.7)', borderColor: 'rgba(15, 118, 110, 1)', borderWidth: 1 },
+                        { label: 'Costo Máximo ($)', data: [120000, 80000], backgroundColor: 'rgba(217, 119, 6, 0.7)', borderColor: 'rgba(217, 119, 6, 1)', borderWidth: 1 }
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false }
@@ -472,50 +522,37 @@
                 type: 'radar',
                 data: {
                     labels: ['Respaldo Clínico', 'UX', 'Mantenimiento', 'Guía Imagen', 'Costo Inicial'],
-                    datasets: [{
-                        label: 'FibroScan',
-                        data: [10, 8, 4, 3, 3],
-                        backgroundColor: 'rgba(15, 118, 110, 0.2)',
-                        borderColor: 'rgba(15, 118, 110, 1)'
-                    }, {
-                        label: 'iLivTouch',
-                        data: [6, 7, 7, 9, 8],
-                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
-                        borderColor: 'rgba(217, 119, 6, 1)'
-                    }]
+                    datasets: [
+                        { label: 'FibroScan', data: [10, 8, 4, 3, 3], backgroundColor: 'rgba(15, 118, 110, 0.2)', borderColor: 'rgba(15, 118, 110, 1)' },
+                        { label: 'iLivTouch', data: [6, 7, 7, 9, 8], backgroundColor: 'rgba(217, 119, 6, 0.2)', borderColor: 'rgba(217, 119, 6, 1)' }
+                    ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { r: { suggestedMin: 0, suggestedMax: 10 } } }
             });
         }
 
-        // Funciones para la Calculadora de ROI
-        function updateRoiVol() {
+        window.updateRoiVol = function() {
             document.getElementById('roi-vol-val').innerText = document.getElementById('roi-vol').value;
         }
 
-        function calculateROI() {
+        window.calculateROI = function() {
             const rate = parseFloat(document.getElementById('roi-cpt').value);
             const weeklyPatients = parseInt(document.getElementById('roi-vol').value);
             const machineCost = parseFloat(document.getElementById('roi-capex').value);
             
-            // Cálculos
             const weeklyRevenue = rate * weeklyPatients;
-            const monthlyRevenue = weeklyRevenue * 4.33; // Semanas promedio en un mes
+            const monthlyRevenue = weeklyRevenue * 4.33;
             const annualRevenue = weeklyRevenue * 52;
-            
-            // Tiempo de Recuperación (Evita división por cero si ponen 0 pacientes)
             const monthsToBreakEven = monthlyRevenue > 0 ? (machineCost / monthlyRevenue) : 0;
             
-            // Formato de moneda
             const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
             
-            // Actualizar interfaz
             document.getElementById('roi-monthly').innerText = formatter.format(monthlyRevenue);
             document.getElementById('roi-annual').innerText = formatter.format(annualRevenue);
             document.getElementById('roi-months').innerText = monthlyRevenue > 0 ? monthsToBreakEven.toFixed(1) : "∞";
         }
 
-        function switchTab(tabId) {
+        window.switchTab = function(tabId) {
             const sections = ['catalogo', 'analisis', 'suplidores'];
             sections.forEach(sec => {
                 document.getElementById('sec-' + sec).classList.add('hidden');
@@ -533,7 +570,83 @@
             }
         }
 
-        window.onload = initApp;
+        window.setupAddSupplierForm = function() {
+            const container = document.getElementById('equipment-checkboxes');
+            container.innerHTML = '';
+            
+            equipmentData.forEach(eq => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center space-x-2 text-sm text-stone-700 cursor-pointer hover:text-teal-700 transition-colors';
+                label.innerHTML = `
+                    <input type="checkbox" name="assign-eq" value="${eq.id}" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4 cursor-pointer">
+                    <span class="truncate" title="${eq.name}">${eq.name}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        window.toggleAddSupplierForm = function() {
+            const form = document.getElementById('add-supplier-form');
+            const icon = document.getElementById('form-toggle-icon');
+            
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                form.classList.add('fade-in');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                form.classList.add('hidden');
+                form.classList.remove('fade-in');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // --- Guardar nuevo suplidor ---
+        window.handleAddSupplier = async function(e) {
+            e.preventDefault();
+            
+            // 1. Obtener valores
+            const newSupplier = {
+                id: suppliersData.length > 0 ? Math.max(...suppliersData.map(s => s.id)) + 1 : 0,
+                name: document.getElementById('supp-name').value,
+                loc: document.getElementById('supp-loc').value,
+                spec: document.getElementById('supp-spec').value,
+                contact: document.getElementById('supp-contact').value,
+                web: document.getElementById('supp-web').value,
+                mapUrl: document.getElementById('supp-map').value
+            };
+
+            // 2. Modificamos arreglos
+            suppliersData.push(newSupplier);
+
+            const checkboxes = document.querySelectorAll('input[name="assign-eq"]:checked');
+            checkboxes.forEach(cb => {
+                const eqToUpdate = equipmentData.find(eq => eq.id === cb.value);
+                if(eqToUpdate && !eqToUpdate.suppliers.includes(newSupplier.id)) {
+                    eqToUpdate.suppliers.push(newSupplier.id);
+                }
+            });
+
+            // 3. Guardar en Base de Datos de Supabase
+            await saveToDatabase();
+
+            // 4. Refrescar UI
+            window.renderSuppliersTable();
+            document.getElementById('detail-empty').classList.remove('hidden');
+            document.getElementById('detail-content').classList.add('hidden');
+
+            // 5. Feedback visual
+            e.target.reset();
+            const msg = document.getElementById('supp-success-msg');
+            msg.classList.remove('opacity-0');
+            
+            setTimeout(() => {
+                msg.classList.add('opacity-0');
+                window.toggleAddSupplierForm();
+            }, 2500);
+        }
+
+        // Arrancar la app
+        window.onload = window.initApp;
     </script>
 </body>
 </html>
