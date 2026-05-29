@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adquisición de Equipo Médico - Puerto Rico</title>
     
-    <!-- Enlace al Favicon -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +47,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-</head>
+
+    </head>
 <body class="antialiased">
 
     <nav class="bg-white shadow-sm sticky top-0 z-50">
@@ -81,11 +81,9 @@
             </div>
 
             <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Cuadrícula de Equipos -->
                 <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4" id="equipment-grid">
                 </div>
 
-                <!-- Detalle del Equipo Seleccionado -->
                 <div class="w-full lg:w-1/3">
                     <div id="equipment-detail" class="bg-white rounded-xl shadow-md p-6 sticky top-24 border border-stone-100">
                         <div class="text-center text-stone-400 py-12" id="detail-empty">
@@ -93,7 +91,6 @@
                             <p>Seleccione un equipo de la lista para ver sus detalles, imágenes de referencia y costos estimados.</p>
                         </div>
                         <div id="detail-content" class="hidden">
-                            <!-- Contenedor de imagen ajustado -->
                             <div class="w-full h-48 mb-4 bg-white border border-stone-100 rounded-lg flex items-center justify-center p-2 overflow-hidden shadow-inner">
                                 <img id="detail-img" src="" alt="Detalle del equipo" class="max-w-full max-h-full object-contain">
                             </div>
@@ -115,7 +112,7 @@
         <section id="sec-analisis" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Análisis Comparativo: Elastografía Hepática</h2>
-                <p class="mt-2 text-stone-600">Esta sección aborda el requerimiento especial de la máquina FibroScan. Dado su alto costo de adquisición, se incluye una comparativa detallada contra una alternativa viable en el mercado (iLivTouch). Los gráficos interactivos a continuación ilustran la diferencia en inversión de capital (CAPEX) y un análisis de valoración de características.</p>
+                <p class="mt-2 text-stone-600">Esta sección aborda el requerimiento especial de la máquina FibroScan vs iLivTouch. Presenta visualizaciones comparativas del costo inicial de inversión, valoración de características, y una herramienta interactiva para proyectar la rentabilidad financiera (ROI) basada en las tarifas nacionales de Medicare actualizadas al 2026.</p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -136,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-md border border-stone-100 overflow-hidden">
+            <div class="bg-white rounded-xl shadow-md border border-stone-100 overflow-hidden mb-8">
                 <div class="bg-stone-100 px-6 py-4 border-b border-stone-200">
                     <h3 class="font-bold text-stone-800">Resumen de Alternativas</h3>
                 </div>
@@ -144,13 +141,80 @@
                     <div>
                         <h4 class="font-bold text-teal-800 flex items-center"><span class="mr-2">🔵</span> FibroScan (Echosens)</h4>
                         <p class="text-sm"><strong>Costo Estimado:</strong> $85,000 - $120,000+ (dependiendo del modelo).</p>
-                        <p class="text-sm mt-1">El estándar de oro no invasivo para medir la rigidez hepática. Su principal desventaja es el alto costo de adquisición inicial y los contratos de mantenimiento.</p>
+                        <p class="text-sm mt-1">El estándar de oro no invasivo para medir la rigidez hepática. Usualmente factura el CPT 91200 al no tener modo B de ultrasonido complejo. Su principal desventaja es el alto costo de adquisición inicial y los contratos de mantenimiento.</p>
                     </div>
                     <div class="border-t border-stone-100 pt-4">
                         <h4 class="font-bold text-amber-600 flex items-center"><span class="mr-2">🟠</span> iLivTouch (Hisky Medical)</h4>
                         <p class="text-sm"><strong>Costo Estimado:</strong> $50,000 - $80,000.</p>
-                        <p class="text-sm mt-1">Alternativa costo-efectiva con guía ultrasónica integrada en algunos modelos, facilitando la localización del hígado. Reduce el CAPEX significativamente.</p>
+                        <p class="text-sm mt-1">Alternativa costo-efectiva con guía ultrasónica integrada en algunos modelos (modo B-Ultrasound), facilitando la localización del hígado. Dependiendo de la integración, puede justificar la facturación del CPT 76981. Reduce el CAPEX significativamente.</p>
                     </div>
+                </div>
+            </div>
+
+            <div class="bg-stone-800 rounded-xl shadow-xl border border-stone-700 overflow-hidden mt-8 mb-8 text-stone-100">
+                <div class="px-6 py-5 border-b border-stone-700 bg-stone-900 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-xl text-stone-50">Proyección de Ingresos y Retorno de Inversión (ROI)</h3>
+                        <p class="text-stone-400 text-sm mt-1">Simulador basado en promedios de Medicare 2026 (Setting de Oficina/Global)</p>
+                    </div>
+                    <span class="text-4xl hidden md:block">📈</span>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-stone-800">
+                    
+                    <div class="md:col-span-7 space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-stone-300 mb-2">Seleccione el Código CPT a Facturar:</label>
+                            <select id="roi-cpt" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white font-medium focus:ring-2 focus:ring-teal-500" onchange="calculateROI()">
+                                <option value="112.56">CPT 76981 - Elastografía por Ultrasonido, Parénquima ($112.56 / paciente)</option>
+                                <option value="33.73">CPT 91200 - Elastografía Transitoria ($33.73 / paciente)</option>
+                            </select>
+                            <p class="text-xs text-stone-400 mt-2">Nota clínica: No se deben facturar 91200 y 76981 en conjunto según las guías del AMA.</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="block text-sm font-medium text-stone-300">Volumen de Pacientes (Semanal):</label>
+                                <span class="text-2xl font-bold text-teal-400" id="roi-vol-val">15</span>
+                            </div>
+                            <input type="range" id="roi-vol" min="1" max="60" value="15" class="w-full h-2 bg-stone-600 rounded-lg appearance-none cursor-pointer accent-teal-500" oninput="updateRoiVol(); calculateROI()">
+                            <div class="flex justify-between text-xs text-stone-500 mt-1">
+                                <span>1</span>
+                                <span>Pacientes / Sem</span>
+                                <span>60</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-stone-300 mb-2">Costo Estimado de la Máquina (CAPEX):</label>
+                            <select id="roi-capex" class="w-full border-none rounded-lg p-3 bg-stone-700 text-white focus:ring-2 focus:ring-teal-500" onchange="calculateROI()">
+                                <option value="65000">Estimado iLivTouch ($65,000)</option>
+                                <option value="105000">Estimado FibroScan ($105,000)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-5 bg-stone-900 p-6 rounded-xl border border-stone-700 shadow-inner flex flex-col justify-center text-center">
+                        <div class="mb-6">
+                            <p class="text-xs text-stone-400 uppercase tracking-widest mb-1">Ingreso Mensual Proyectado</p>
+                            <p class="text-4xl font-bold text-white" id="roi-monthly">$0</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-xs text-stone-400 uppercase tracking-widest mb-1">Ingreso Anual Proyectado</p>
+                            <p class="text-3xl font-bold text-teal-400" id="roi-annual">$0</p>
+                        </div>
+                        
+                        <div class="pt-6 border-t border-stone-700">
+                            <p class="text-sm text-stone-300 mb-1">Tiempo de Recuperación de Inversión:</p>
+                            <div class="flex items-end justify-center">
+                                <span class="text-3xl font-bold text-amber-400 mr-2" id="roi-months">0.0</span> 
+                                <span class="text-stone-400 pb-1">Meses</span>
+                            </div>
+                            <p class="text-xs text-stone-500 mt-3">*Cálculos asumen 4.33 semanas por mes. Tarifas basadas en Global Medicare Averages 2026. Los pagadores comerciales pueden tener reembolsos distintos.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -250,6 +314,7 @@
             renderEquipmentGrid();
             renderSuppliersTable();
             initCharts();
+            calculateROI(); // Inicializa la calculadora de ROI al cargar
         }
 
         function renderEquipmentGrid() {
@@ -372,6 +437,33 @@
             });
         }
 
+        // Funciones para la Calculadora de ROI
+        function updateRoiVol() {
+            document.getElementById('roi-vol-val').innerText = document.getElementById('roi-vol').value;
+        }
+
+        function calculateROI() {
+            const rate = parseFloat(document.getElementById('roi-cpt').value);
+            const weeklyPatients = parseInt(document.getElementById('roi-vol').value);
+            const machineCost = parseFloat(document.getElementById('roi-capex').value);
+            
+            // Cálculos
+            const weeklyRevenue = rate * weeklyPatients;
+            const monthlyRevenue = weeklyRevenue * 4.33; // Semanas promedio en un mes
+            const annualRevenue = weeklyRevenue * 52;
+            
+            // Tiempo de Recuperación (Evita división por cero si ponen 0 pacientes)
+            const monthsToBreakEven = monthlyRevenue > 0 ? (machineCost / monthlyRevenue) : 0;
+            
+            // Formato de moneda
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+            
+            // Actualizar interfaz
+            document.getElementById('roi-monthly').innerText = formatter.format(monthlyRevenue);
+            document.getElementById('roi-annual').innerText = formatter.format(annualRevenue);
+            document.getElementById('roi-months').innerText = monthlyRevenue > 0 ? monthsToBreakEven.toFixed(1) : "∞";
+        }
+
         function switchTab(tabId) {
             const sections = ['catalogo', 'analisis', 'suplidores'];
             sections.forEach(sec => {
@@ -390,10 +482,6 @@
             }
         }
 
-        window.onload = initApp;
-    </script>
-</body>
-</html>
         window.onload = initApp;
     </script>
 </body>
