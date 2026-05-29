@@ -63,17 +63,23 @@
 <body class="antialiased locked">
 
     <!-- ====================================================== -->
-    <!-- PANTALLA DE ACCESO (LOGIN DE ADMINISTRADOR)            -->
+    <!-- PANTALLA DE ACCESO (LOGIN MULTI-USUARIO)               -->
     <!-- ====================================================== -->
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-teal-900 px-4">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 fade-in">
             <div class="text-center mb-6">
                 <span class="text-5xl block mb-3">⚕️</span>
                 <h1 class="text-2xl font-bold text-stone-800">MedEquip PR Analítica</h1>
-                <p class="text-stone-500 text-sm mt-1">Acceso restringido. Introduce la contraseña para continuar.</p>
+                <p class="text-stone-500 text-sm mt-1">Acceso restringido. Inicia sesión para continuar.</p>
             </div>
 
             <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-stone-700 mb-1" for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" autocomplete="username" required
+                        class="w-full rounded-lg border border-stone-300 bg-stone-50 p-3 text-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"
+                        placeholder="tu@correo.com">
+                </div>
                 <div>
                     <label class="block text-sm font-medium text-stone-700 mb-1" for="login-password">Contraseña</label>
                     <input type="password" id="login-password" autocomplete="current-password" required
@@ -82,31 +88,16 @@
                 </div>
 
                 <p id="login-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                    Contraseña incorrecta. Inténtalo de nuevo.
+                    Correo o contraseña incorrectos.
                 </p>
 
-                <button type="submit"
-                    class="w-full bg-teal-700 text-white py-3 rounded-lg font-semibold hover:bg-teal-800 transition-colors shadow-sm">
+                <button type="submit" id="login-btn"
+                    class="w-full bg-teal-700 text-white py-3 rounded-lg font-semibold hover:bg-teal-800 transition-colors shadow-sm disabled:opacity-60">
                     Entrar
                 </button>
             </form>
 
-            <!-- Herramienta para que el administrador genere el hash de una nueva contraseña -->
-            <details class="mt-6 text-sm text-stone-500">
-                <summary class="cursor-pointer hover:text-teal-700 transition-colors select-none">🔧 Cambiar contraseña (generar hash)</summary>
-                <div class="mt-3 bg-stone-50 border border-stone-200 rounded-lg p-4 space-y-3">
-                    <p class="text-xs text-stone-500">Escribe la nueva contraseña y pulsa «Generar». Copia el hash resultante y pégalo en la variable <code class="bg-stone-200 px-1 rounded">ADMIN_PASSWORD_HASH</code> dentro del código de <code class="bg-stone-200 px-1 rounded">index.html</code>.</p>
-                    <input type="text" id="newpass-input"
-                        class="w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                        placeholder="Nueva contraseña">
-                    <button type="button" onclick="window.generatePasswordHash()"
-                        class="bg-stone-700 text-white px-4 py-2 rounded-md text-xs font-medium hover:bg-stone-800 transition-colors">Generar hash</button>
-                    <div id="newpass-output" class="hidden">
-                        <p class="text-xs text-stone-500 mb-1">Hash generado (cópialo):</p>
-                        <code id="newpass-hash" class="block break-all bg-stone-800 text-teal-300 text-xs p-2 rounded select-all"></code>
-                    </div>
-                </div>
-            </details>
+            <p class="mt-6 text-xs text-stone-400 text-center">¿No tienes acceso? Solicítalo a un administrador.</p>
         </div>
     </div>
 
@@ -117,10 +108,12 @@
                     <span class="text-2xl mr-2">⚕️</span>
                     <span class="font-bold text-xl text-stone-800 tracking-tight">MedEquip PR Analítica</span>
                 </div>
-                <div class="flex space-x-4 lg:space-x-8 mt-4 overflow-x-auto" id="nav-tabs">
-                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="tab-active px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">Catálogo General</button>
-                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
-                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
+                <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
+                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Catálogo General</button>
+                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
+                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
+                    <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
+                    <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
                     <button onclick="window.handleLogout()" id="logout-btn" title="Cerrar sesión" class="px-3 py-2 text-sm font-medium text-stone-400 hover:text-red-600 whitespace-nowrap transition-colors duration-200 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         Salir
@@ -371,6 +364,78 @@
             </div>
         </section>
 
+        <!-- SECCIÓN 4: ADMINISTRACIÓN (solo admins) -->
+        <section id="sec-admin" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Administración de Usuarios</h2>
+                <p class="mt-2 text-stone-600">Crea cuentas, asigna a qué áreas puede acceder cada persona, restablece contraseñas o elimina usuarios.</p>
+            </div>
+
+            <!-- Crear usuario -->
+            <div class="bg-white shadow-md rounded-xl p-6 mb-8 border border-stone-200">
+                <h3 class="text-lg font-bold text-teal-800 mb-4 flex items-center"><span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">➕</span> Crear nuevo usuario</h3>
+                <form id="create-user-form" onsubmit="window.handleCreateUser(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Correo electrónico <span class="text-red-500">*</span></label>
+                            <input type="email" id="new-user-email" required class="w-full rounded-md border border-stone-300 bg-stone-50 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Nombre</label>
+                            <input type="text" id="new-user-name" class="w-full rounded-md border border-stone-300 bg-stone-50 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Contraseña temporal <span class="text-red-500">*</span></label>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-user-password" required minlength="6" class="w-full rounded-md border border-stone-300 bg-stone-50 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="mín. 6 caracteres">
+                                <button type="button" onclick="window.generateTempPassword()" class="bg-stone-200 text-stone-700 px-3 rounded-md text-xs font-medium hover:bg-stone-300 whitespace-nowrap">Generar</button>
+                            </div>
+                        </div>
+                        <div class="flex items-end">
+                            <label class="flex items-center space-x-2 text-sm text-stone-700 cursor-pointer">
+                                <input type="checkbox" id="new-user-admin" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                                <span>Hacer administrador (acceso total)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="border-t border-stone-200 pt-4">
+                        <label class="block text-sm font-bold text-stone-800 mb-3">Áreas a las que puede acceder:</label>
+                        <div id="new-user-areas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-stone-50 p-4 rounded-lg border border-stone-200"></div>
+                    </div>
+                    <div class="flex items-center justify-end gap-4">
+                        <span id="create-user-msg" class="text-sm"></span>
+                        <button type="submit" id="create-user-btn" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm disabled:opacity-60">Crear usuario</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de usuarios -->
+            <div class="bg-white shadow-md rounded-xl overflow-hidden border border-stone-200">
+                <div class="bg-stone-100 px-6 py-3 border-b border-stone-200 flex justify-between items-center">
+                    <h3 class="font-bold text-stone-800">Usuarios</h3>
+                    <button onclick="window.loadUsers()" class="text-xs text-teal-700 hover:text-teal-900 font-medium">↻ Actualizar</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-stone-200">
+                        <thead class="bg-stone-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Usuario</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Acceso por área</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-stone-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-stone-200" id="users-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Aviso cuando el usuario no tiene áreas asignadas -->
+        <div id="no-access" class="hidden bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-6 text-center">
+            <p class="font-semibold">Tu cuenta aún no tiene áreas asignadas.</p>
+            <p class="text-sm mt-1">Pídele a un administrador que te dé acceso a las secciones que necesitas.</p>
+        </div>
+
     </main>
 
     <footer class="bg-stone-800 text-stone-400 py-8 mt-12">
@@ -396,78 +461,271 @@
         }
 
         // ======================================================
-        // CONTROL DE ACCESO (LOGIN DE ADMINISTRADOR)
+        // AUTENTICACIÓN MULTI-USUARIO (SUPABASE AUTH) + ACCESO POR ÁREA
         // ======================================================
-        // La contraseña NO se guarda en texto plano: aquí va su hash SHA-256.
-        // Contraseña por defecto: "MedEquip2026"  --> CÁMBIALA cuanto antes.
-        // Para generar el hash de una nueva contraseña, usa el enlace
-        // "🔧 Cambiar contraseña" en la pantalla de acceso, o ejecuta en una
-        // terminal:  printf '%s' 'TU_CLAVE' | sha256sum
-        const ADMIN_PASSWORD_HASH = 'e9751f290318374a2c9de54351810a8a832c29bf392f38780b554be07f877f57';
-        const AUTH_KEY = 'medequip_admin_auth';
+        const EDGE_FUNCTION = 'admin-users'; // nombre de la Edge Function
 
+        // Estado de sesión
         let appStarted = false;
+        let currentUser = null;
+        let currentProfile = null;       // { is_admin, full_name, email }
+        let allowedAreas = new Set();    // claves de áreas permitidas
+        let allAreas = [];               // catálogo completo (para el panel admin)
 
-        // Calcula el hash SHA-256 de un texto usando la Web Crypto API del navegador
-        async function sha256(text) {
-            const data = new TextEncoder().encode(text);
-            const buffer = await crypto.subtle.digest('SHA-256', data);
-            return Array.from(new Uint8Array(buffer))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-        }
+        function tabId(key) { return 'tab-' + key; }
+        function secId(key) { return 'sec-' + key; }
 
-        // Quita el bloqueo, oculta el login y arranca la app (una sola vez)
-        function unlockSite() {
-            document.body.classList.remove('locked');
-            if (!appStarted) {
-                appStarted = true;
-                window.initApp();
-            }
-        }
-
+        // --- LOGIN ---
         window.handleLogin = async function(e) {
             e.preventDefault();
-            const input = document.getElementById('login-password');
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
             const errorEl = document.getElementById('login-error');
-            const hash = await sha256(input.value);
+            const btn = document.getElementById('login-btn');
 
-            if (hash === ADMIN_PASSWORD_HASH) {
-                sessionStorage.setItem(AUTH_KEY, '1');
-                errorEl.classList.add('hidden');
-                input.value = '';
-                unlockSite();
-            } else {
+            errorEl.classList.add('hidden');
+            btn.disabled = true; btn.textContent = 'Entrando…';
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            btn.disabled = false; btn.textContent = 'Entrar';
+
+            if (error || !data?.user) {
+                errorEl.textContent = 'Correo o contraseña incorrectos.';
                 errorEl.classList.remove('hidden');
-                input.value = '';
-                input.focus();
+                return;
             }
+            document.getElementById('login-password').value = '';
+            await onSignedIn(data.user);
         };
 
-        window.handleLogout = function() {
-            sessionStorage.removeItem(AUTH_KEY);
+        window.handleLogout = async function() {
+            await supabase.auth.signOut();
             location.reload();
         };
 
-        // Herramienta para generar el hash de una contraseña nueva
-        window.generatePasswordHash = async function() {
-            const value = document.getElementById('newpass-input').value;
-            if (!value) return;
-            const hash = await sha256(value);
-            document.getElementById('newpass-hash').innerText = hash;
-            document.getElementById('newpass-output').classList.remove('hidden');
-        };
+        // --- Tras iniciar sesión: cargar perfil, áreas y aplicar acceso ---
+        async function onSignedIn(user) {
+            currentUser = user;
 
-        // Comprueba la sesión al cargar: si ya inició sesión, desbloquea directamente
-        function checkAuth() {
-            if (sessionStorage.getItem(AUTH_KEY) === '1') {
-                unlockSite();
+            const { data: profile } = await supabase
+                .from('profiles').select('is_admin, full_name, email')
+                .eq('id', user.id).maybeSingle();
+            currentProfile = profile || { is_admin: false, full_name: '', email: user.email };
+
+            const { data: areas } = await supabase
+                .from('areas').select('key, label, sort_order').order('sort_order');
+            allAreas = areas || [];
+
+            if (currentProfile.is_admin) {
+                allowedAreas = new Set(allAreas.map(a => a.key));
+            } else {
+                const { data: rows } = await supabase
+                    .from('user_area_access').select('area_key').eq('user_id', user.id);
+                allowedAreas = new Set((rows || []).map(r => r.area_key));
+            }
+
+            applyAccess();
+
+            const who = document.getElementById('nav-user');
+            if (who) who.textContent = currentProfile.email || user.email;
+
+            document.body.classList.remove('locked');
+            if (!appStarted) { appStarted = true; window.initApp(); }
+        }
+
+        // --- Mostrar/ocultar pestañas y secciones según el acceso ---
+        function applyAccess() {
+            const isAdmin = !!currentProfile?.is_admin;
+
+            allAreas.forEach(a => {
+                const tab = document.getElementById(tabId(a.key));
+                if (tab) tab.classList.toggle('hidden', !allowedAreas.has(a.key));
+            });
+
+            const adminTab = document.getElementById('tab-admin');
+            if (adminTab) adminTab.classList.toggle('hidden', !isAdmin);
+
+            const order = allAreas.map(a => a.key).filter(k => allowedAreas.has(k));
+            if (isAdmin) order.push('admin');
+            const first = order[0];
+
+            const noAccess = document.getElementById('no-access');
+            if (first) {
+                if (noAccess) noAccess.classList.add('hidden');
+                window.switchTab(first);
+            } else {
+                ['catalogo', 'analisis', 'suplidores', 'admin'].forEach(k => {
+                    const s = document.getElementById(secId(k)); if (s) s.classList.add('hidden');
+                });
+                if (noAccess) noAccess.classList.remove('hidden');
+            }
+        }
+
+        // --- Comprobar la sesión al cargar la página ---
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                await onSignedIn(session.user);
             } else {
                 document.body.classList.add('locked');
-                const input = document.getElementById('login-password');
+                const input = document.getElementById('login-email');
                 if (input) input.focus();
             }
         }
+
+        // ======================================================
+        // PANEL DE ADMINISTRACIÓN: GESTIÓN DE USUARIOS
+        // ======================================================
+        // Llama a la Edge Function (operaciones privilegiadas) con el token actual.
+        async function callAdmin(action, payload) {
+            const { data, error } = await supabase.functions.invoke(EDGE_FUNCTION, {
+                body: { action, ...payload },
+            });
+            if (error) {
+                let msg = error.message;
+                try { const ctx = await error.context?.json?.(); if (ctx?.error) msg = ctx.error; } catch (_) {}
+                throw new Error(msg || 'Error en la operación.');
+            }
+            if (data?.error) throw new Error(data.error);
+            return data;
+        }
+
+        // Checkboxes de áreas en el formulario de creación
+        window.setupCreateUserAreas = function() {
+            const box = document.getElementById('new-user-areas');
+            if (!box) return;
+            box.innerHTML = '';
+            allAreas.forEach(a => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center space-x-2 text-sm text-stone-700 cursor-pointer';
+                label.innerHTML = `<input type="checkbox" value="${a.key}" class="new-area-cb rounded text-teal-600 focus:ring-teal-500 w-4 h-4"><span>${a.label}</span>`;
+                box.appendChild(label);
+            });
+        };
+
+        // Cargar y pintar la tabla de usuarios
+        window.loadUsers = async function() {
+            const tbody = document.getElementById('users-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-4 text-stone-400 text-sm">Cargando…</td></tr>';
+
+            const { data: users, error } = await supabase
+                .from('profiles').select('id, email, full_name, is_admin').order('created_at');
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-red-600 text-sm">${error.message}</td></tr>`;
+                return;
+            }
+            const { data: access } = await supabase.from('user_area_access').select('user_id, area_key');
+            const byUser = {};
+            (access || []).forEach(r => { (byUser[r.user_id] = byUser[r.user_id] || new Set()).add(r.area_key); });
+
+            tbody.innerHTML = '';
+            (users || []).forEach(u => {
+                const areaSet = byUser[u.id] || new Set();
+                const isSelf = u.id === currentUser.id;
+                const safeEmail = (u.email || '').replace(/'/g, "\\'");
+                const areaChecks = allAreas.map(a => `
+                    <label class="inline-flex items-center gap-1 mr-3 text-xs text-stone-600 whitespace-nowrap">
+                        <input type="checkbox" ${areaSet.has(a.key) ? 'checked' : ''} ${u.is_admin ? 'disabled' : ''}
+                            onchange="window.toggleUserArea('${u.id}', '${a.key}', this.checked)"
+                            class="rounded text-teal-600 focus:ring-teal-500 w-3.5 h-3.5">${a.label}
+                    </label>`).join('');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-medium text-stone-800 text-sm">${u.email || ''}</div>
+                        <div class="text-xs text-stone-500">${u.full_name || ''}</div>
+                        ${u.is_admin ? '<span class="inline-block mt-1 text-xs bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full">Admin</span>' : ''}
+                    </td>
+                    <td class="px-4 py-3 align-top">${u.is_admin ? '<span class="text-xs text-stone-400">Acceso total</span>' : areaChecks}</td>
+                    <td class="px-4 py-3 align-top text-right whitespace-nowrap">
+                        <button onclick="window.adminResetPassword('${u.id}', '${safeEmail}')" class="text-amber-600 hover:text-amber-800 text-sm font-medium mr-3">Contraseña</button>
+                        ${isSelf ? '<span class="text-xs text-stone-300">—</span>' : `<button onclick="window.adminDeleteUser('${u.id}', '${safeEmail}')" class="text-red-600 hover:text-red-800 text-sm font-medium">Eliminar</button>`}
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-4 text-stone-400 text-sm">No hay usuarios todavía.</td></tr>';
+            }
+        };
+
+        // Generar una contraseña temporal aleatoria
+        window.generateTempPassword = function() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+            const arr = new Uint32Array(12);
+            crypto.getRandomValues(arr);
+            let p = '';
+            for (let i = 0; i < 12; i++) p += chars[arr[i] % chars.length];
+            document.getElementById('new-user-password').value = p;
+        };
+
+        // Crear usuario (vía Edge Function)
+        window.handleCreateUser = async function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('create-user-msg');
+            const btn = document.getElementById('create-user-btn');
+            const email = document.getElementById('new-user-email').value.trim();
+            const full_name = document.getElementById('new-user-name').value.trim();
+            const password = document.getElementById('new-user-password').value;
+            const is_admin = document.getElementById('new-user-admin').checked;
+            const area_keys = Array.from(document.querySelectorAll('.new-area-cb:checked')).map(cb => cb.value);
+
+            msg.className = 'text-sm'; msg.textContent = '';
+            btn.disabled = true; btn.textContent = 'Creando…';
+            try {
+                await callAdmin('create', { email, password, full_name, is_admin, area_keys });
+                msg.className = 'text-sm text-teal-700 font-medium';
+                msg.textContent = `✓ Usuario ${email} creado. Comparte su contraseña temporal de forma segura.`;
+                e.target.reset();
+                await window.loadUsers();
+            } catch (err) {
+                msg.className = 'text-sm text-red-600 font-medium';
+                msg.textContent = '✗ ' + err.message;
+            } finally {
+                btn.disabled = false; btn.textContent = 'Crear usuario';
+            }
+        };
+
+        // Asignar/quitar un área a un usuario (escritura directa; RLS exige admin)
+        window.toggleUserArea = async function(userId, areaKey, checked) {
+            try {
+                if (checked) {
+                    const { error } = await supabase.from('user_area_access').upsert({ user_id: userId, area_key: areaKey });
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase.from('user_area_access').delete().eq('user_id', userId).eq('area_key', areaKey);
+                    if (error) throw error;
+                }
+            } catch (err) {
+                alert('No se pudo actualizar el acceso: ' + err.message);
+                window.loadUsers();
+            }
+        };
+
+        // Restablecer contraseña (vía Edge Function)
+        window.adminResetPassword = async function(userId, email) {
+            const password = prompt(`Nueva contraseña temporal para ${email} (mín. 6 caracteres):`);
+            if (!password) return;
+            try {
+                await callAdmin('set_password', { user_id: userId, password });
+                alert('Contraseña actualizada. Compártela de forma segura con el usuario.');
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        };
+
+        // Eliminar usuario (vía Edge Function)
+        window.adminDeleteUser = async function(userId, email) {
+            if (!confirm(`¿Eliminar permanentemente a ${email}? Esta acción no se puede deshacer.`)) return;
+            try {
+                await callAdmin('delete', { user_id: userId });
+                await window.loadUsers();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        };
 
         // Datos Iniciales (Por defecto, la primera vez)
         const defaultEquipmentData = [
@@ -699,21 +957,27 @@
             document.getElementById('roi-months').innerText = monthlyRevenue > 0 ? monthsToBreakEven.toFixed(1) : "∞";
         }
 
-        window.switchTab = function(tabId) {
-            const sections = ['catalogo', 'analisis', 'suplidores'];
+        window.switchTab = function(tabKey) {
+            const sections = ['catalogo', 'analisis', 'suplidores', 'admin'];
             sections.forEach(sec => {
-                document.getElementById('sec-' + sec).classList.add('hidden');
-                document.getElementById('tab-' + sec).classList.remove('tab-active', 'text-teal-600');
-                document.getElementById('tab-' + sec).classList.add('text-stone-500');
+                const secEl = document.getElementById('sec-' + sec);
+                const tabEl = document.getElementById('tab-' + sec);
+                if (secEl) secEl.classList.add('hidden');
+                if (tabEl) { tabEl.classList.remove('tab-active', 'text-teal-600'); tabEl.classList.add('text-stone-500'); }
             });
 
-            document.getElementById('sec-' + tabId).classList.remove('hidden');
-            document.getElementById('tab-' + tabId).classList.add('tab-active');
-            document.getElementById('tab-' + tabId).classList.remove('text-stone-500');
+            const secEl = document.getElementById('sec-' + tabKey);
+            const tabEl = document.getElementById('tab-' + tabKey);
+            if (secEl) secEl.classList.remove('hidden');
+            if (tabEl) { tabEl.classList.add('tab-active'); tabEl.classList.remove('text-stone-500'); }
 
-            if(tabId === 'analisis') {
-                if(costChartInstance) costChartInstance.update();
-                if(radarChartInstance) radarChartInstance.update();
+            if (tabKey === 'analisis') {
+                if (costChartInstance) costChartInstance.update();
+                if (radarChartInstance) radarChartInstance.update();
+            }
+            if (tabKey === 'admin') {
+                window.setupCreateUserAreas();
+                window.loadUsers();
             }
         }
 
