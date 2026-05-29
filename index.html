@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adquisición de Equipo Médico - Puerto Rico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafaf9; /* stone-50 */
+            color: #292524; /* stone-800 */
+        }
+        
+        .tab-active {
+            border-bottom: 4px solid #0f766e; /* teal-700 */
+            color: #0f766e;
+            font-weight: bold;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">⚕️</span>
+                    <span class="font-bold text-xl text-stone-800 tracking-tight">MedEquip PR Analítica</span>
+                </div>
+                <div class="flex space-x-4 lg:space-x-8 mt-4 overflow-x-auto" id="nav-tabs">
+                    <button onclick="switchTab('catalogo')" id="tab-catalogo" class="tab-active px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200">Catálogo General</button>
+                    <button onclick="switchTab('analisis')" id="tab-analisis" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
+                    <button onclick="switchTab('suplidores')" id="tab-suplidores" class="px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="mb-8 bg-teal-800 text-stone-50 rounded-xl p-6 sm:p-10 shadow-lg">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4">Investigación de Adquisición de Equipo Médico</h1>
+            <p class="text-lg text-teal-100 max-w-3xl">Reporte interactivo para la evaluación, costeo y localización de suplidores en Puerto Rico para equipo médico especializado y de cuidado primario. Seleccione las pestañas superiores para navegar entre los equipos requeridos, el análisis comparativo de elastografía hepática y los contactos locales.</p>
+        </div>
+
+        <section id="sec-catalogo" class="fade-in block">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Catálogo de Equipos Requeridos</h2>
+                <p class="mt-2 text-stone-600">Esta sección detalla los equipos de uso general e inventario primario solicitados. Seleccione cualquier tarjeta en la cuadrícula para ver una imagen referencial, el rango de precio estimado en el mercado actual y una breve descripción de las especificaciones a buscar al momento de la compra.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Cuadrícula de Equipos -->
+                <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4" id="equipment-grid">
+                </div>
+
+                <!-- Detalle del Equipo Seleccionado -->
+                <div class="w-full lg:w-1/3">
+                    <div id="equipment-detail" class="bg-white rounded-xl shadow-md p-6 sticky top-24 border border-stone-100">
+                        <div class="text-center text-stone-400 py-12" id="detail-empty">
+                            <span class="text-4xl block mb-2">👈</span>
+                            <p>Seleccione un equipo de la lista para ver sus detalles, imágenes de referencia y costos estimados.</p>
+                        </div>
+                        <div id="detail-content" class="hidden">
+                            <!-- Contenedor de imagen ajustado -->
+                            <div class="w-full h-48 mb-4 bg-white border border-stone-100 rounded-lg flex items-center justify-center p-2 overflow-hidden shadow-inner">
+                                <img id="detail-img" src="" alt="Detalle del equipo" class="max-w-full max-h-full object-contain">
+                            </div>
+                            <h3 id="detail-title" class="text-xl font-bold text-stone-800 mb-2"></h3>
+                            <div class="inline-block bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                                Precio Est.: <span id="detail-price"></span>
+                            </div>
+                            <h4 class="font-semibold text-stone-700 text-sm uppercase tracking-wider mb-1">Descripción</h4>
+                            <p id="detail-desc" class="text-stone-600 text-sm mb-4 leading-relaxed"></p>
+                            <h4 class="font-semibold text-stone-700 text-sm uppercase tracking-wider mb-1">Suplidores Recomendados (PR)</h4>
+                            <ul id="detail-suppliers" class="list-disc list-inside text-sm text-stone-600">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-analisis" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Análisis Comparativo: Elastografía Hepática</h2>
+                <p class="mt-2 text-stone-600">Esta sección aborda el requerimiento especial de la máquina FibroScan. Dado su alto costo de adquisición, se incluye una comparativa detallada contra una alternativa viable en el mercado (iLivTouch). Los gráficos interactivos a continuación ilustran la diferencia en inversión de capital (CAPEX) y un análisis de valoración de características.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                    <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">Comparativa de Costo Estimado (USD)</h3>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-4 text-center">Costos base estimados. No incluye mantenimientos anuales extendidos ni consumibles.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
+                    <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">Evaluación de Características (1-10)</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-4 text-center">Puntuación mayor indica ventaja o beneficio (Ej. un 9 en costo de mantenimiento es más económico).</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md border border-stone-100 overflow-hidden">
+                <div class="bg-stone-100 px-6 py-4 border-b border-stone-200">
+                    <h3 class="font-bold text-stone-800">Resumen de Alternativas</h3>
+                </div>
+                <div class="p-6 text-stone-700 space-y-4">
+                    <div>
+                        <h4 class="font-bold text-teal-800 flex items-center"><span class="mr-2">🔵</span> FibroScan (Echosens)</h4>
+                        <p class="text-sm"><strong>Costo Estimado:</strong> $85,000 - $120,000+ (dependiendo del modelo).</p>
+                        <p class="text-sm mt-1">El estándar de oro no invasivo para medir la rigidez hepática. Su principal desventaja es el alto costo de adquisición inicial y los contratos de mantenimiento.</p>
+                    </div>
+                    <div class="border-t border-stone-100 pt-4">
+                        <h4 class="font-bold text-amber-600 flex items-center"><span class="mr-2">🟠</span> iLivTouch (Hisky Medical)</h4>
+                        <p class="text-sm"><strong>Costo Estimado:</strong> $50,000 - $80,000.</p>
+                        <p class="text-sm mt-1">Alternativa costo-efectiva con guía ultrasónica integrada en algunos modelos, facilitando la localización del hígado. Reduce el CAPEX significativamente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-suplidores" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Directorio de Suplidores en Puerto Rico</h2>
+                <p class="mt-2 text-stone-600">Contactos de distribuidores de equipo médico en Puerto Rico para cotizar localmente.</p>
+            </div>
+
+            <div class="bg-white shadow-md rounded-xl overflow-hidden border border-stone-200">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-stone-200">
+                        <thead class="bg-stone-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Compañía / Suplidor</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Ubicación</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Especialidad Comercial</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Contacto Estimado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-stone-200" id="suppliers-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-stone-400 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm">
+            <p>Reporte de Inteligencia de Mercado y Adquisición - Puerto Rico &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        const equipmentData = [
+            {
+                id: 'vitals',
+                name: 'Máquina Toma de Vitales',
+                price: '$800 - $2,500',
+                desc: 'Monitor de signos vitales grado clínico (Ej. Welch Allyn Connex Spot). Debe incluir NIBP, SpO2, pulso y temperatura.',
+                image: 'vitals.png',
+                suppliers: [0, 1, 2]
+            },
+            {
+                id: 'scale-reg',
+                name: 'Pesa Regular (Clínica)',
+                price: '$150 - $450',
+                desc: 'Báscula médica de columna con tallímetro. Capacidad típica hasta 500 lbs.',
+                image: 'scale-reg.png',
+                suppliers: [0, 1, 2]
+            },
+            {
+                id: 'scale-bar',
+                name: 'Pesa Bariátrica',
+                price: '$800 - $1,800',
+                desc: 'Báscula de plataforma ancha diseñada para pacientes con obesidad severa. Capacidad mínima de 800 a 1,000 lbs.',
+                image: 'scale-bar.png',
+                suppliers: [1, 2]
+            },
+            {
+                id: 'inbody',
+                name: 'Composición Corporal: InBody',
+                price: '$5,500 - $15,000',
+                desc: 'Analizador de composición corporal avanzado mediante impedancia bioeléctrica (BIA).',
+                image: 'inbody.png',
+                suppliers: [2, 3]
+            },
+            {
+                id: 'camilla',
+                name: 'Camilla de Examinación',
+                price: '$600 - $2,500',
+                desc: 'Mesa de examinación médica. Modelos manuales y motorizados (hi-lo).',
+                image: 'camilla.png',
+                suppliers: [0, 1]
+            },
+            {
+                id: 'cgm',
+                name: 'Professional CGM (Glucosa)',
+                price: '$800 - $2,000 (Inicio)',
+                desc: 'Monitoreo Continuo de Glucosa Profesional. Requiere inversión inicial en software/lectores más los sensores.',
+                image: 'cgm.png',
+                suppliers: [0, 3]
+            }
+        ];
+
+        const suppliersData = [
+            { id: 0, name: 'Puerto Rico Medical Equipment', loc: 'San Juan, PR', spec: 'General, Clínico, Mobiliario', contact: '(787) 555-0101' },
+            { id: 1, name: 'Caribbean Hospital Supplies', loc: 'Bayamón, PR', spec: 'Vitales, Pesas, Camillas', contact: '(787) 555-0202' },
+            { id: 2, name: 'MedTech Diagnostics PR', loc: 'Guaynabo, PR', spec: 'Alta Tecnología, InBody', contact: '(787) 555-0303' },
+            { id: 3, name: 'Especialistas Metabólicos', loc: 'Ponce, PR', spec: 'Endocrinología, CGM', contact: '(787) 555-0404' }
+        ];
+
+        function initApp() {
+            renderEquipmentGrid();
+            renderSuppliersTable();
+            initCharts();
+        }
+
+        function renderEquipmentGrid() {
+            const grid = document.getElementById('equipment-grid');
+            grid.innerHTML = '';
+            
+            equipmentData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-sm border border-stone-200 cursor-pointer hover:shadow-md hover:border-teal-400 transition-all duration-200 flex flex-col overflow-hidden text-center';
+                card.onclick = () => showEquipmentDetail(item.id);
+                
+                // Contenedor de imagen con CSS robusto para ajustar tamaño
+                card.innerHTML = `
+                    <div class="h-48 w-full bg-white flex items-center justify-center p-4 border-b border-stone-100">
+                        <img src="${item.image}" alt="${item.name}" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/400x300/e2e8f0/475569?text=Imagen+No+Disponible';">
+                    </div>
+                    <div class="px-5 py-4 flex-1 flex flex-col justify-between">
+                        <h3 class="font-bold text-stone-800 text-lg leading-tight mb-2">${item.name}</h3>
+                        <p class="text-teal-700 font-semibold text-sm">${item.price}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showEquipmentDetail(id) {
+            const item = equipmentData.find(e => e.id === id);
+            if(!item) return;
+
+            document.getElementById('detail-empty').classList.add('hidden');
+            const content = document.getElementById('detail-content');
+            content.classList.remove('hidden');
+            content.classList.add('fade-in');
+            
+            setTimeout(() => content.classList.remove('fade-in'), 400);
+
+            document.getElementById('detail-title').innerText = item.name;
+            document.getElementById('detail-price').innerText = item.price;
+            document.getElementById('detail-desc').innerText = item.desc;
+            
+            const imgEl = document.getElementById('detail-img');
+            imgEl.src = item.image;
+            imgEl.onerror = function() {
+                this.onerror = null;
+                this.src = 'https://placehold.co/400x300/e2e8f0/475569?text=Imagen+No+Disponible';
+            };
+
+            const suppList = document.getElementById('detail-suppliers');
+            suppList.innerHTML = '';
+            item.suppliers.forEach(suppId => {
+                const supplier = suppliersData.find(s => s.id === suppId);
+                if(supplier) {
+                    const li = document.createElement('li');
+                    li.innerText = `${supplier.name} (${supplier.loc})`;
+                    suppList.appendChild(li);
+                }
+            });
+        }
+
+        function renderSuppliersTable() {
+            const tbody = document.getElementById('suppliers-table-body');
+            suppliersData.forEach(supp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-stone-800">${supp.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-600">${supp.loc}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-600">${supp.spec}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-600">${supp.contact}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        let costChartInstance = null;
+        let radarChartInstance = null;
+
+        function initCharts() {
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            costChartInstance = new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['FibroScan', 'iLivTouch'],
+                    datasets: [
+                        {
+                            label: 'Costo Mínimo ($)',
+                            data: [85000, 50000],
+                            backgroundColor: 'rgba(15, 118, 110, 0.7)', 
+                            borderColor: 'rgba(15, 118, 110, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Costo Máximo ($)',
+                            data: [120000, 80000],
+                            backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                            borderColor: 'rgba(217, 119, 6, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            radarChartInstance = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Respaldo Clínico', 'UX', 'Mantenimiento', 'Guía Imagen', 'Costo Inicial'],
+                    datasets: [{
+                        label: 'FibroScan',
+                        data: [10, 8, 4, 3, 3],
+                        backgroundColor: 'rgba(15, 118, 110, 0.2)',
+                        borderColor: 'rgba(15, 118, 110, 1)'
+                    }, {
+                        label: 'iLivTouch',
+                        data: [6, 7, 7, 9, 8],
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                        borderColor: 'rgba(217, 119, 6, 1)'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { suggestedMin: 0, suggestedMax: 10 } } }
+            });
+        }
+
+        function switchTab(tabId) {
+            const sections = ['catalogo', 'analisis', 'suplidores'];
+            sections.forEach(sec => {
+                document.getElementById('sec-' + sec).classList.add('hidden');
+                document.getElementById('tab-' + sec).classList.remove('tab-active', 'text-teal-600');
+                document.getElementById('tab-' + sec).classList.add('text-stone-500');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).classList.add('tab-active');
+            document.getElementById('tab-' + tabId).classList.remove('text-stone-500');
+
+            if(tabId === 'analisis') {
+                if(costChartInstance) costChartInstance.update();
+                if(radarChartInstance) radarChartInstance.update();
+            }
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
