@@ -47,8 +47,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-
-    </head>
+</head>
 <body class="antialiased">
 
     <nav class="bg-white shadow-sm sticky top-0 z-50">
@@ -74,6 +73,7 @@
             <p class="text-lg text-teal-100 max-w-3xl">Reporte interactivo para la evaluación, costeo y localización de suplidores en Puerto Rico para equipo médico especializado y de cuidado primario. Seleccione las pestañas superiores para navegar entre los equipos requeridos, el análisis comparativo de elastografía hepática y los contactos locales.</p>
         </div>
 
+        <!-- SECCIÓN 1: CATÁLOGO -->
         <section id="sec-catalogo" class="fade-in block">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Catálogo de Equipos Requeridos</h2>
@@ -99,9 +99,11 @@
                                 Precio Est.: <span id="detail-price"></span>
                             </div>
                             <h4 class="font-semibold text-stone-700 text-sm uppercase tracking-wider mb-1">Descripción</h4>
-                            <p id="detail-desc" class="text-stone-600 text-sm mb-4 leading-relaxed"></p>
-                            <h4 class="font-semibold text-stone-700 text-sm uppercase tracking-wider mb-1">Suplidores Recomendados (PR)</h4>
-                            <ul id="detail-suppliers" class="list-disc list-inside text-sm text-stone-600">
+                            <p id="detail-desc" class="text-stone-600 text-sm mb-6 leading-relaxed"></p>
+                            
+                            <h4 class="font-semibold text-stone-700 text-sm uppercase tracking-wider mb-2 border-b border-stone-100 pb-1">Suplidores Recomendados (PR)</h4>
+                            <ul id="detail-suppliers" class="space-y-3">
+                                <!-- Llenado dinámicamente con JS -->
                             </ul>
                         </div>
                     </div>
@@ -109,12 +111,14 @@
             </div>
         </section>
 
+        <!-- SECCIÓN 2: ANÁLISIS DE ELASTOGRAFÍA & ROI -->
         <section id="sec-analisis" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Análisis Comparativo: Elastografía Hepática</h2>
                 <p class="mt-2 text-stone-600">Esta sección aborda el requerimiento especial de la máquina FibroScan vs iLivTouch. Presenta visualizaciones comparativas del costo inicial de inversión, valoración de características, y una herramienta interactiva para proyectar la rentabilidad financiera (ROI) basada en las tarifas nacionales de Medicare actualizadas al 2026.</p>
             </div>
 
+            <!-- Gráficos Existentes -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="bg-white p-6 rounded-xl shadow-md border border-stone-100">
                     <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">Comparativa de Costo Estimado (USD)</h3>
@@ -151,6 +155,7 @@
                 </div>
             </div>
 
+            <!-- Calculadora de Retorno de Inversión (ROI) -->
             <div class="bg-stone-800 rounded-xl shadow-xl border border-stone-700 overflow-hidden mt-8 mb-8 text-stone-100">
                 <div class="px-6 py-5 border-b border-stone-700 bg-stone-900 flex justify-between items-center">
                     <div>
@@ -162,6 +167,7 @@
                 
                 <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-stone-800">
                     
+                    <!-- Controles Izquierda -->
                     <div class="md:col-span-7 space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-stone-300 mb-2">Seleccione el Código CPT a Facturar:</label>
@@ -194,6 +200,7 @@
                         </div>
                     </div>
 
+                    <!-- Resultados Derecha -->
                     <div class="md:col-span-5 bg-stone-900 p-6 rounded-xl border border-stone-700 shadow-inner flex flex-col justify-center text-center">
                         <div class="mb-6">
                             <p class="text-xs text-stone-400 uppercase tracking-widest mb-1">Ingreso Mensual Proyectado</p>
@@ -219,6 +226,7 @@
             </div>
         </section>
 
+        <!-- SECCIÓN 3: DIRECTORIO -->
         <section id="sec-suplidores" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Directorio de Suplidores en Puerto Rico</h2>
@@ -253,6 +261,7 @@
     </footer>
 
     <script>
+        // Array conectado a los IDs de los suplidores reales
         const equipmentData = [
             {
                 id: 'vitals',
@@ -304,14 +313,15 @@
             }
         ];
 
+        // Suplidores reales de Puerto Rico e Internacionales
         const suppliersData = [
             { id: 0, name: 'Casa Médica Sales & Dist.', loc: 'Cayey, PR', spec: 'Mobiliario, Camillas, Vitales', contact: '(787) 263-3738', web: 'https://casamedicapr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Casa+Medica+Cayey+Puerto+Rico' },
             { id: 1, name: 'Pro-Medical Equipment PR', loc: 'Mayagüez, PR', spec: 'Equipo Médico General, Pesas', contact: '(787) 833-3131', web: 'https://promedicalequipmentpr.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Pro-Medical+Equipment+Mayaguez+Puerto+Rico' },
             { id: 2, name: 'Puerto Rico Hospital Supply', loc: 'Guaynabo, PR', spec: 'Suministros Mayores, Alta Tecnología', contact: '(787) 782-2222', web: 'https://www.prhospitalsupply.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=Puerto+Rico+Hospital+Supply+Guaynabo+Puerto+Rico' },
             { id: 3, name: 'J. Pica & Co. Inc.', loc: 'San Juan, PR', spec: 'Equipo Médico y Hospitalario', contact: '(787) 793-7575', web: 'http://www.jpica.com', mapUrl: 'https://www.google.com/maps/search/?api=1&query=J.+Pica+y+Co.+Inc.+San+Juan+Puerto+Rico' },
-            { id: 4, name: 'Echosens (FibroScan)', loc: 'EE.UU. (Venta Directa PR)', spec: 'Elastografía Hepática', contact: '(844) 324-6736', web: 'https://echosens.com', mapUrl: '' },
-            { id: 5, name: 'Hisky Medical (iLivTouch)', loc: 'Global (Contactar Dist.)', spec: 'Elastografía Hepática, Ultrasonido', contact: 'info@hisky-med.com', web: 'https://www.hisky-med.com', mapUrl: '' },
-            { id: 6, name: 'InBody USA', loc: 'EE.UU. (Envío a PR)', spec: 'Composición Corporal', contact: '(323) 932-6503', web: 'https://inbodyusa.com', mapUrl: '' }
+            { id: 4, name: 'Echosens (FibroScan)', loc: 'EE.UU.', spec: 'Elastografía Hepática', contact: '(844) 324-6736', web: 'https://echosens.com', mapUrl: '' },
+            { id: 5, name: 'Hisky Medical (iLivTouch)', loc: 'Global', spec: 'Elastografía Hepática, Ultrasonido', contact: 'info@hisky-med.com', web: 'https://www.hisky-med.com', mapUrl: '' },
+            { id: 6, name: 'InBody USA', loc: 'EE.UU. (Envío PR)', spec: 'Composición Corporal', contact: '(323) 932-6503', web: 'https://inbodyusa.com', mapUrl: '' }
         ];
 
         function initApp() {
@@ -367,11 +377,34 @@
 
             const suppList = document.getElementById('detail-suppliers');
             suppList.innerHTML = '';
+            
+            // Renderizado enriquecido de Suplidores en la tarjeta de detalle
             item.suppliers.forEach(suppId => {
                 const supplier = suppliersData.find(s => s.id === suppId);
                 if(supplier) {
                     const li = document.createElement('li');
-                    li.innerText = `${supplier.name} (${supplier.loc})`;
+                    li.className = "bg-stone-50 p-3 rounded border border-stone-100 flex flex-col";
+                    
+                    const mapLink = supplier.mapUrl 
+                        ? `<a href="${supplier.mapUrl}" target="_blank" class="text-teal-600 hover:text-teal-800 hover:underline flex items-center transition-colors" title="Ver en Maps">
+                               <svg class="w-3 h-3 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                               ${supplier.loc}
+                           </a>` 
+                        : `<span class="text-stone-500">${supplier.loc}</span>`;
+
+                    li.innerHTML = `
+                        <div class="font-bold text-stone-800 text-sm">${supplier.name}</div>
+                        <div class="text-xs mt-1 space-y-1">
+                            <div class="flex items-center text-stone-600">📞 ${supplier.contact}</div>
+                            <div class="flex items-center space-x-3">
+                                ${mapLink}
+                                <a href="${supplier.web}" target="_blank" class="text-teal-600 hover:text-teal-800 hover:underline flex items-center transition-colors">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    Website
+                                </a>
+                            </div>
+                        </div>
+                    `;
                     suppList.appendChild(li);
                 }
             });
@@ -382,7 +415,6 @@
             suppliersData.forEach(supp => {
                 const tr = document.createElement('tr');
                 
-                // Creamos el enlace del mapa condicionalmente (si existe url de mapa, mostramos icono + link)
                 const locationHTML = supp.mapUrl 
                     ? `<a href="${supp.mapUrl}" target="_blank" class="text-teal-600 hover:text-teal-800 hover:underline font-medium inline-flex items-center transition-colors" title="Ver en Google Maps">
                            <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
