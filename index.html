@@ -231,7 +231,7 @@
             <!-- Formulario Desplegable para Añadir Suplidor -->
             <div class="bg-white shadow-md rounded-xl p-6 mb-8 border border-stone-200 transition-all duration-300">
                 <div class="flex justify-between items-center cursor-pointer group" onclick="window.toggleAddSupplierForm()">
-                    <h3 class="text-lg font-bold text-teal-800 flex items-center group-hover:text-teal-600 transition-colors">
+                    <h3 id="form-title" class="text-lg font-bold text-teal-800 flex items-center group-hover:text-teal-600 transition-colors">
                         <span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">➕</span> 
                         Añadir Nuevo Suplidor
                     </h3>
@@ -277,8 +277,11 @@
                         <span id="supp-success-msg" class="text-teal-600 text-sm font-bold bg-teal-50 px-3 py-1 rounded border border-teal-200 opacity-0 transition-opacity duration-300">
                             ¡Suplidor guardado en Supabase de forma segura!
                         </span>
+                        <button type="button" id="cancel-edit-btn" onclick="window.cancelEdit()" class="hidden bg-stone-200 text-stone-700 px-4 py-2 rounded-lg font-medium hover:bg-stone-300 transition-colors">
+                            Cancelar
+                        </button>
                         <button type="submit" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm">
-                            Guardar Suplidor
+                            <span id="submit-btn-text">Guardar Suplidor</span>
                         </button>
                     </div>
                 </form>
@@ -294,6 +297,7 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Especialidad Comercial</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Contacto Estimado</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Sitio Web</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-stone-500 uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-stone-200" id="suppliers-table-body">
@@ -350,6 +354,7 @@
         // Variables de estado activas
         let equipmentData = [...defaultEquipmentData];
         let suppliersData = [...defaultSuppliersData];
+        let editingSupplierId = null;
 
         // --- SISTEMA DE GUARDADO SUPABASE ---
         async function loadSavedData() {
@@ -495,6 +500,10 @@
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         </a>
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="window.editSupplier(${supp.id})" class="text-amber-600 hover:text-amber-900 mr-4 font-bold transition-colors">Editar</button>
+                        <button onclick="window.deleteSupplier(${supp.id})" class="text-red-600 hover:text-red-900 font-bold transition-colors">Eliminar</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -600,49 +609,146 @@
             }
         }
 
-        // --- Guardar nuevo suplidor ---
+        // --- Guardar nuevo suplidor o actualizar existente ---
         window.handleAddSupplier = async function(e) {
             e.preventDefault();
             
             // 1. Obtener valores
-            const newSupplier = {
-                id: suppliersData.length > 0 ? Math.max(...suppliersData.map(s => s.id)) + 1 : 0,
-                name: document.getElementById('supp-name').value,
-                loc: document.getElementById('supp-loc').value,
-                spec: document.getElementById('supp-spec').value,
-                contact: document.getElementById('supp-contact').value,
-                web: document.getElementById('supp-web').value,
-                mapUrl: document.getElementById('supp-map').value
-            };
+            const name = document.getElementById('supp-name').value;
+            const loc = document.getElementById('supp-loc').value;
+            const spec = document.getElementById('supp-spec').value;
+            const contact = document.getElementById('supp-contact').value;
+            const web = document.getElementById('supp-web').value;
+            const mapUrl = document.getElementById('supp-map').value;
 
-            // 2. Modificamos arreglos
-            suppliersData.push(newSupplier);
-
-            const checkboxes = document.querySelectorAll('input[name="assign-eq"]:checked');
-            checkboxes.forEach(cb => {
-                const eqToUpdate = equipmentData.find(eq => eq.id === cb.value);
-                if(eqToUpdate && !eqToUpdate.suppliers.includes(newSupplier.id)) {
-                    eqToUpdate.suppliers.push(newSupplier.id);
+            if (editingSupplierId !== null) {
+                // MODO EDICIÓN
+                const suppIndex = suppliersData.findIndex(s => s.id === editingSupplierId);
+                if (suppIndex > -1) {
+                    suppliersData[suppIndex] = { ...suppliersData[suppIndex], name, loc, spec, contact, web, mapUrl };
                 }
-            });
+                
+                // Actualizar vínculos con equipos
+                const selectedEqIds = Array.from(document.querySelectorAll('input[name="assign-eq"]:checked')).map(cb => cb.value);
+                equipmentData.forEach(eq => {
+                    const hasSupp = eq.suppliers.includes(editingSupplierId);
+                    const shouldHaveSupp = selectedEqIds.includes(eq.id);
+                    
+                    if (shouldHaveSupp && !hasSupp) {
+                        eq.suppliers.push(editingSupplierId);
+                    } else if (!shouldHaveSupp && hasSupp) {
+                        eq.suppliers = eq.suppliers.filter(id => id !== editingSupplierId);
+                    }
+                });
+
+            } else {
+                // MODO CREACIÓN
+                const newId = suppliersData.length > 0 ? Math.max(...suppliersData.map(s => s.id)) + 1 : 0;
+                const newSupplier = { id: newId, name, loc, spec, contact, web, mapUrl };
+                suppliersData.push(newSupplier);
+
+                const checkboxes = document.querySelectorAll('input[name="assign-eq"]:checked');
+                checkboxes.forEach(cb => {
+                    const eqToUpdate = equipmentData.find(eq => eq.id === cb.value);
+                    if(eqToUpdate && !eqToUpdate.suppliers.includes(newId)) {
+                        eqToUpdate.suppliers.push(newId);
+                    }
+                });
+            }
 
             // 3. Guardar en Base de Datos de Supabase
             await saveToDatabase();
 
             // 4. Refrescar UI
             window.renderSuppliersTable();
+            window.renderEquipmentGrid(); // Refrescar el catálogo también
             document.getElementById('detail-empty').classList.remove('hidden');
             document.getElementById('detail-content').classList.add('hidden');
 
-            // 5. Feedback visual
-            e.target.reset();
+            // 5. Feedback visual y reinicio
             const msg = document.getElementById('supp-success-msg');
+            msg.innerText = editingSupplierId !== null ? '¡Suplidor actualizado exitosamente!' : '¡Suplidor guardado en Supabase!';
             msg.classList.remove('opacity-0');
+            
+            // Reiniciar estado
+            editingSupplierId = null;
+            document.getElementById('form-title').innerHTML = `<span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">➕</span> Añadir Nuevo Suplidor`;
+            document.getElementById('submit-btn-text').innerText = 'Guardar Suplidor';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            e.target.reset();
+            document.querySelectorAll('input[name="assign-eq"]').forEach(cb => cb.checked = false);
             
             setTimeout(() => {
                 msg.classList.add('opacity-0');
-                window.toggleAddSupplierForm();
+                if (!document.getElementById('add-supplier-form').classList.contains('hidden')) {
+                    window.toggleAddSupplierForm();
+                }
             }, 2500);
+        }
+
+        // --- Funciones para Editar y Eliminar ---
+        window.editSupplier = function(id) {
+            const supp = suppliersData.find(s => s.id === id);
+            if (!supp) return;
+
+            editingSupplierId = id;
+            document.getElementById('supp-name').value = supp.name || '';
+            document.getElementById('supp-loc').value = supp.loc || '';
+            document.getElementById('supp-spec').value = supp.spec || '';
+            document.getElementById('supp-contact').value = supp.contact || '';
+            document.getElementById('supp-web').value = supp.web || '';
+            document.getElementById('supp-map').value = supp.mapUrl || '';
+
+            // Cambiar UI del formulario
+            document.getElementById('form-title').innerHTML = `<span class="mr-2 bg-amber-100 text-amber-800 rounded-full w-8 h-8 flex items-center justify-center">✏️</span> Editar Suplidor`;
+            document.getElementById('submit-btn-text').innerText = 'Actualizar Suplidor';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            // Marcar checkboxes correspondientes
+            document.querySelectorAll('input[name="assign-eq"]').forEach(cb => {
+                const eq = equipmentData.find(e => e.id === cb.value);
+                cb.checked = eq && eq.suppliers.includes(id);
+            });
+
+            // Abrir el formulario si está cerrado
+            const form = document.getElementById('add-supplier-form');
+            if (form.classList.contains('hidden')) {
+                window.toggleAddSupplierForm();
+            }
+            
+            // Hacer scroll hacia el formulario
+            document.getElementById('sec-suplidores').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        window.cancelEdit = function() {
+            editingSupplierId = null;
+            document.getElementById('add-supplier-form').reset();
+            document.getElementById('form-title').innerHTML = `<span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">➕</span> Añadir Nuevo Suplidor`;
+            document.getElementById('submit-btn-text').innerText = 'Guardar Suplidor';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            document.querySelectorAll('input[name="assign-eq"]').forEach(cb => cb.checked = false);
+            
+            window.toggleAddSupplierForm(); // Cerrarlo
+        }
+
+        window.deleteSupplier = async function(id) {
+            if (!confirm('¿Estás seguro de que deseas eliminar permanentemente este suplidor? Esta acción no se puede deshacer.')) return;
+
+            // Eliminar de los datos
+            suppliersData = suppliersData.filter(s => s.id !== id);
+
+            // Eliminar de las asociaciones de equipos
+            equipmentData.forEach(eq => {
+                eq.suppliers = eq.suppliers.filter(suppId => suppId !== id);
+            });
+
+            // Guardar en la nube y actualizar la vista
+            await saveToDatabase();
+            window.renderSuppliersTable();
+            window.renderEquipmentGrid(); 
+            
+            document.getElementById('detail-empty').classList.remove('hidden');
+            document.getElementById('detail-content').classList.add('hidden');
         }
 
         // Arrancar la app
