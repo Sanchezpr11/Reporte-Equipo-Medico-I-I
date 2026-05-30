@@ -82,6 +82,15 @@ create policy app_state_rw on public.app_state for all
 --    Demo client_id = 00000000-0000-0000-0000-0000000000de
 --    Re-ejecutable: borra lo previo del Demo y reinserta.
 -- ════════════════════════════════════════════════════════════════════════
+-- Reconciliar esquema de brand_info (tu base puede tener menos columnas que el
+-- archivo de esquema; estas son idempotentes y no afectan datos existentes).
+alter table public.brand_info add column if not exists slogan           text default '';
+alter table public.brand_info add column if not exists colors           text default '';
+alter table public.brand_info add column if not exists website          text default '';
+alter table public.brand_info add column if not exists social           text default '';
+alter table public.brand_info add column if not exists marketing_budget numeric;
+alter table public.brand_info add column if not exists notes            text default '';
+
 do $$
 declare d constant uuid := '00000000-0000-0000-0000-0000000000de';
 begin
