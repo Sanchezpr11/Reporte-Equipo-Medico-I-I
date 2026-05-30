@@ -110,11 +110,11 @@
                 </div>
                 <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
                     <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
-                    <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
                     <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
+                    <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
                     <button onclick="window.switchTab('equipos')" id="tab-equipos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos Médicos</button>
+                    <button onclick="window.switchTab('equipos_oficina')" id="tab-equipos_oficina" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos de Oficina</button>
                     <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
-                    <button onclick="window.switchTab('marca')" id="tab-marca" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Marca</button>
                     <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
                     <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
                     <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
@@ -131,7 +131,7 @@
         
         <div class="mb-8 bg-teal-800 text-stone-50 rounded-xl p-6 sm:p-10 shadow-lg">
             <h1 class="text-3xl sm:text-4xl font-bold mb-4">Centro de Control del Proyecto</h1>
-            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: local, remodelación, financiamiento, equipos, personal, marca y permisos. Usa las pestañas para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
+            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: financiamiento, local, equipos médicos, equipos de oficina, personal y permisos. Usa las pestañas para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
         </div>
 
         <!-- RESUMEN: avance por área -->
@@ -391,63 +391,6 @@
             </form>
         </section>
 
-        <!-- ÁREA: MARCA -->
-        <section id="sec-marca" class="fade-in hidden">
-            <div class="mb-6 border-b border-stone-200 pb-4">
-                <h2 class="text-2xl font-semibold text-stone-800">Marca</h2>
-                <p class="mt-2 text-stone-600">La identidad de la clínica: nombre, eslogan, colores, web y redes; logo/recursos; y un checklist de marca.</p>
-            </div>
-
-            <form onsubmit="window.saveBrandInfo(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-semibold text-stone-800">Identidad</h3>
-                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="text-sm"><span class="text-stone-600">Nombre</span>
-                        <input id="brand-name" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Nombre de la clínica"></label>
-                    <label class="text-sm"><span class="text-stone-600">Eslogan</span>
-                        <input id="brand-slogan" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Frase / tagline"></label>
-                    <label class="text-sm"><span class="text-stone-600">Colores</span>
-                        <input id="brand-colors" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Verde azulado, beige"></label>
-                    <label class="text-sm"><span class="text-stone-600">Sitio web</span>
-                        <input id="brand-website" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="dominio.com"></label>
-                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Redes sociales</span>
-                        <input id="brand-social" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="@instagram, Facebook, etc."></label>
-                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Presupuesto de mercadeo ($) <span class="text-teal-600">· financiamiento</span></span>
-                        <input id="brand-marketing" type="number" step="any" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 30000"></label>
-                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
-                        <textarea id="brand-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ideas, decisiones, referencias…"></textarea></label>
-                </div>
-            </form>
-
-            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
-                <div class="flex justify-between items-center mb-1 flex-wrap gap-2">
-                    <h3 class="font-semibold text-stone-800">🎨 Logo y recursos visuales</h3>
-                    <label class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors cursor-pointer">
-                        + Subir
-                        <input type="file" id="media-input-marca" accept="image/*,video/*" multiple class="hidden" onchange="window.handleUploadMedia(event, 'marca')">
-                    </label>
-                </div>
-                <p id="media-hint-marca" class="text-xs text-stone-400 mb-4">Logo, mockups, paleta… (máx. 50 MB por archivo).</p>
-                <div id="media-grid-marca" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-2">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-semibold text-stone-800">Checklist de marca</h3>
-                    <span id="marca-progress-text" class="text-sm text-stone-500">0/0 · 0%</span>
-                </div>
-                <div class="w-full bg-stone-100 rounded-full h-2.5 mb-4">
-                    <div id="marca-progress-bar" class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:0%"></div>
-                </div>
-                <div id="marca-tasks-list"></div>
-            </div>
-            <form onsubmit="window.handleAddMarcaTask(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
-                <input id="marca-task-title" required placeholder="Nueva tarea de marca… (ej. Diseñar logo)" class="flex-1 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
-            </form>
-        </section>
 
         <!-- ÁREA: EQUIPOS MÉDICOS (agrupa catálogo, análisis y suplidores) -->
         <section id="sec-equipos" class="fade-in hidden">
@@ -460,7 +403,6 @@
                 <button onclick="window.switchEquipo('analisis')" id="subtab-analisis" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Análisis</button>
                 <button onclick="window.switchEquipo('suplidores')" id="subtab-suplidores" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Suplidores</button>
                 <button onclick="window.switchEquipo('compra')" id="subtab-compra" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Lista de compra</button>
-                <button onclick="window.switchEquipo('oficina')" id="subtab-oficina" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Equipo de oficina</button>
             </div>
 
         <!-- SECCIÓN 1: CATÁLOGO -->
@@ -737,12 +679,13 @@
                 <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir equipo</button>
             </form>
         </section>
+        </section><!-- /sec-equipos -->
 
-        <!-- SECCIÓN 5: EQUIPO DE OFICINA -->
-        <section id="sec-oficina" class="fade-in hidden">
+        <!-- ÁREA: EQUIPOS DE OFICINA -->
+        <section id="sec-equipos_oficina" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
-                <h2 class="text-2xl font-semibold text-stone-800">Equipo de oficina</h2>
-                <p class="mt-2 text-stone-600">Mobiliario y enseres de la oficina: escritorios, sillas, sala de espera, nevera, lockers, supplies y más.</p>
+                <h2 class="text-2xl font-semibold text-stone-800">Equipos de Oficina</h2>
+                <p class="mt-2 text-stone-600">Mobiliario y enseres de la oficina: escritorios, sillas, sala de espera, nevera, lockers, supplies y más. El total alimenta el estimado de financiamiento.</p>
             </div>
             <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 flex justify-between items-center">
                 <span class="text-sm font-medium text-teal-800">Total equipo de oficina</span>
@@ -761,7 +704,6 @@
                 <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir artículo</button>
             </form>
         </section>
-        </section><!-- /sec-equipos -->
 
         <!-- SECCIÓN 4: ADMINISTRACIÓN (solo admins) -->
         <section id="sec-admin" class="fade-in hidden">
@@ -941,7 +883,7 @@
             allowedAreas.add('resumen');
 
             // Mostrar/ocultar cada pestaña según el acceso.
-            const allTabKeys = ['resumen', 'local', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos'];
+            const allTabKeys = ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos'];
             allTabKeys.forEach(k => {
                 const tab = document.getElementById('tab-' + k);
                 if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
@@ -1353,13 +1295,13 @@
 
         window.switchTab = function(tabKey) {
             // Ocultar todas las secciones
-            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'marca', 'equipos', 'admin', 'tracker'].forEach(sec => {
+            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'admin', 'tracker'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
 
             // Desactivar el estilo de todas las pestañas
-            ['resumen', 'local', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
+            ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos', 'admin'].forEach(k => {
                 const t = document.getElementById('tab-' + k);
                 if (t) { t.classList.remove('tab-active', 'text-teal-600'); t.classList.add('text-stone-500'); }
             });
@@ -1375,7 +1317,7 @@
                 financiamiento: window.renderFinanciamiento,
                 personal: window.renderPersonal,
                 permisos: window.renderPermisos,
-                marca: window.renderMarca
+                equipos_oficina: window.renderOficina
             };
             if (tabKey === 'equipos') {
                 document.getElementById('sec-equipos').classList.remove('hidden');
@@ -1397,7 +1339,7 @@
 
         // Sub-navegación dentro de "Equipos Médicos"
         window.switchEquipo = function(sub) {
-            ['catalogo', 'analisis', 'suplidores', 'compra', 'oficina'].forEach(s => {
+            ['catalogo', 'analisis', 'suplidores', 'compra'].forEach(s => {
                 const sec = document.getElementById('sec-' + s);
                 if (sec) sec.classList.toggle('hidden', s !== sub);
                 const st = document.getElementById('subtab-' + s);
@@ -1415,7 +1357,6 @@
                 window.refreshAnalysisChoice();
             }
             if (sub === 'compra') window.renderCompra();
-            if (sub === 'oficina') window.renderOficina();
         };
 
         // --- Equipos médicos: lista de compra con alternativas de suplidores ---
@@ -1546,7 +1487,7 @@
         // --- Equipo de oficina ---
         window.renderOficina = async function() {
             const list = document.getElementById('oficina-list');
-            const { data, error } = await supabase.from('office_equipment').select('*').eq('area_key', 'equipos').order('created_at');
+            const { data, error } = await supabase.from('office_equipment').select('*').eq('area_key', 'equipos_oficina').order('created_at');
             if (error) { list.innerHTML = sqlErr(error, 'equipos-alternativas.sql'); document.getElementById('oficina-total').textContent = '$0'; return; }
             const eq = data || [];
             list.innerHTML = eq.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipo de oficina. Añade el primero abajo 👇</p>';
@@ -1586,7 +1527,7 @@
             const price = document.getElementById('no-price').value;
             const qty = document.getElementById('no-qty').value;
             const { error } = await supabase.from('office_equipment').insert({
-                area_key: 'equipos', name,
+                area_key: 'equipos_oficina', name,
                 category: document.getElementById('no-category').value.trim(),
                 unit_price: price === '' ? null : Number(price),
                 quantity: qty === '' ? 1 : parseInt(qty, 10)
@@ -1611,8 +1552,6 @@
         // ======================================================
         // SEGUIMIENTO DE PROYECTO: MÓDULO DE TAREAS POR ÁREA
         // ======================================================
-        const TRACKER_AREAS = ['financiamiento', 'personal', 'marca', 'permisos'];
-
         function areaLabel(key) {
             const a = allAreas.find(x => x.key === key);
             return a ? a.label : key;
@@ -1733,14 +1672,15 @@
 
             // Traer los datos de cada área en paralelo (tolerante si una tabla aún no existe)
             const safe = (res) => (res && !res.error && res.data) ? res.data : [];
-            const [tasksR, stagesR, docsR, positionsR, permitsR] = await Promise.all([
+            const [tasksR, stagesR, docsR, positionsR, permitsR, officeEqR] = await Promise.all([
                 supabase.from('tasks').select('area_key, status'),
                 supabase.from('stages').select('progress').eq('area_key', 'local'),
                 supabase.from('bank_documents').select('status').eq('area_key', 'financiamiento'),
                 supabase.from('positions').select('status').eq('area_key', 'personal'),
-                supabase.from('permits').select('status').eq('area_key', 'permisos')
+                supabase.from('permits').select('status').eq('area_key', 'permisos'),
+                supabase.from('office_equipment').select('status').eq('area_key', 'equipos_oficina')
             ]);
-            const tasks = safe(tasksR), stages = safe(stagesR), docs = safe(docsR), positions = safe(positionsR), permits = safe(permitsR);
+            const tasks = safe(tasksR), stages = safe(stagesR), docs = safe(docsR), positions = safe(positionsR), permits = safe(permitsR), officeEq = safe(officeEqR);
 
             const byArea = {};
             tasks.forEach(t => { const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 }; g.total++; if (t.status === 'hecho') g.done++; });
@@ -1764,11 +1704,15 @@
                     const total = permits.length, ok = permits.filter(p => p.status === 'obtenido').length;
                     return { pct: total ? Math.round(ok / total * 100) : 0, sub: total ? `${ok}/${total} obtenidos` : 'Sin permisos aún' };
                 }
+                if (key === 'equipos_oficina') {
+                    const total = officeEq.length, bought = officeEq.filter(o => o.status === 'comprado').length;
+                    return { pct: total ? Math.round(bought / total * 100) : 0, sub: total ? `${bought}/${total} comprados` : 'Sin artículos aún' };
+                }
                 const g = byArea[key] || { total: 0, done: 0 };
                 return { pct: g.total ? Math.round(g.done / g.total * 100) : 0, sub: g.total ? `${g.done}/${g.total} tareas` : 'Sin tareas aún' };
             }
 
-            const PROJECT_AREAS = ['local', 'financiamiento', 'personal', 'marca', 'permisos'];
+            const PROJECT_AREAS = ['financiamiento', 'local', 'equipos_oficina', 'personal', 'permisos'];
             const areasToShow = PROJECT_AREAS.filter(k => allowedAreas.has(k));
             container.innerHTML = '';
             if (areasToShow.length === 0) {
@@ -2144,21 +2088,20 @@
             { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista', color: '#14b8a6' },
             { key: 'nomina', label: 'Personal (nómina 6 meses)', src: 'Personal · ½ anual', color: '#0ea5e9' },
             { key: 'equipos', label: 'Equipos médicos', src: 'Equipos · lista de compra', color: '#f59e0b' },
-            { key: 'oficina', label: 'Equipo de oficina', src: 'Equipos · equipo de oficina', color: '#6366f1' },
-            { key: 'mercadeo', label: 'Mercadeo', src: 'Marca · presupuesto', color: '#a855f7' }
+            { key: 'oficina', label: 'Equipo de oficina', src: 'Equipos de Oficina', color: '#6366f1' },
+            { key: 'mercadeo', label: 'Mercadeo', src: 'manual', color: '#a855f7' }
         ];
         let finPieInstance = null;
 
         async function renderFinBreakdown() {
             const legend = document.getElementById('fin-legend');
-            const [ovR, officeR, contrR, posR, equipR, brandR, officeEqR] = await Promise.all([
+            const [ovR, officeR, contrR, posR, equipR, officeEqR] = await Promise.all([
                 supabase.from('finance_estimates').select('*').eq('area_key', 'financiamiento'),
                 supabase.from('office_info').select('purchase_price').eq('area_key', 'local').maybeSingle(),
                 supabase.from('contractors').select('quote_amount,status').eq('area_key', 'local'),
                 supabase.from('positions').select('salary').eq('area_key', 'personal'),
                 supabase.from('equipment_items').select('quantity, equipment_quotes(price, selected)').eq('area_key', 'equipos'),
-                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle(),
-                supabase.from('office_equipment').select('quantity, unit_price').eq('area_key', 'equipos')
+                supabase.from('office_equipment').select('quantity, unit_price').eq('area_key', 'equipos_oficina')
             ]);
             if (ovR.error) { legend.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
             const ov = {}; (ovR.data || []).forEach(r => { ov[r.item_key] = r.amount; });
@@ -2171,7 +2114,7 @@
                     const sel = (it.equipment_quotes || []).find(q => q.selected);
                     return a + (sel ? num(sel.price) : 0) * (num(it.quantity) || 1);
                 }, 0),
-                mercadeo: num(brandR.data && brandR.data.marketing_budget),
+                mercadeo: 0,
                 oficina: (officeEqR.data || []).reduce((a, o) => a + num(o.unit_price) * (num(o.quantity) || 1), 0)
             };
             let total = 0;
@@ -2179,7 +2122,7 @@
                 const hasOv = ov[it.key] !== undefined && ov[it.key] !== null;
                 const val = hasOv ? Number(ov[it.key]) : (auto[it.key] || 0);
                 total += val;
-                const note = hasOv ? 'ajustado a mano' : (auto[it.key] ? `de ${it.src}` : `de ${it.src} · sin datos`);
+                const note = hasOv ? 'ajustado a mano' : (it.src === 'manual' ? 'ingresa el estimado' : (auto[it.key] ? `de ${it.src}` : `de ${it.src} · sin datos`));
                 return { ...it, val, note };
             });
 
@@ -2560,83 +2503,6 @@
             if (!confirm('¿Eliminar este permiso?')) return;
             await supabase.from('permits').delete().eq('id', id);
             window.renderPermisos();
-        };
-
-        // ======================================================
-        // ÁREA MARCA (identidad + logo/recursos + checklist)
-        // ======================================================
-        window.renderMarca = async function() {
-            await Promise.all([loadBrandInfo(), renderMedia('marca'), renderMarcaTasks()]);
-        };
-
-        async function loadBrandInfo() {
-            const { data } = await supabase.from('brand_info').select('*').eq('area_key', 'marca').maybeSingle();
-            const b = data || {};
-            document.getElementById('brand-name').value = b.name || '';
-            document.getElementById('brand-slogan').value = b.slogan || '';
-            document.getElementById('brand-colors').value = b.colors || '';
-            document.getElementById('brand-website').value = b.website || '';
-            document.getElementById('brand-social').value = b.social || '';
-            document.getElementById('brand-marketing').value = (b.marketing_budget ?? '');
-            document.getElementById('brand-notes').value = b.notes || '';
-        }
-        window.saveBrandInfo = async function(e) {
-            e.preventDefault();
-            const payload = {
-                area_key: 'marca',
-                name: document.getElementById('brand-name').value.trim(),
-                slogan: document.getElementById('brand-slogan').value.trim(),
-                colors: document.getElementById('brand-colors').value.trim(),
-                website: document.getElementById('brand-website').value.trim(),
-                social: document.getElementById('brand-social').value.trim(),
-                marketing_budget: document.getElementById('brand-marketing').value === '' ? null : Number(document.getElementById('brand-marketing').value),
-                notes: document.getElementById('brand-notes').value.trim(),
-                updated_at: new Date().toISOString()
-            };
-            const { error } = await supabase.from('brand_info').upsert(payload, { onConflict: 'area_key' });
-            if (error) { alert('No se pudo guardar: ' + error.message); return; }
-            const btn = e.target.querySelector('button[type=submit]');
-            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
-        };
-
-        async function renderMarcaTasks() {
-            const list = document.getElementById('marca-tasks-list');
-            const { data, error } = await supabase.from('tasks').select('*').eq('area_key', 'marca').order('created_at');
-            if (error) { list.innerHTML = sqlErr(error, 'phase1-tracker.sql'); return; }
-            const ts = data || [];
-            list.innerHTML = ts.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay tareas de marca.</p>';
-            ts.forEach(t => {
-                const done = t.status === 'hecho';
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0';
-                row.innerHTML = `
-                    <input type="checkbox" ${done ? 'checked' : ''} onchange="window.toggleMarcaTask('${t.id}', this.checked)" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
-                    <span class="flex-1 text-sm ${done ? 'line-through text-stone-400' : 'text-stone-800'}">${escapeHtml(t.title)}</span>
-                    <button onclick="window.deleteMarcaTask('${t.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
-                list.appendChild(row);
-            });
-            const total = ts.length, done = ts.filter(t => t.status === 'hecho').length;
-            const pct = total ? Math.round(done / total * 100) : 0;
-            document.getElementById('marca-progress-bar').style.width = pct + '%';
-            document.getElementById('marca-progress-text').textContent = `${done}/${total} · ${pct}%`;
-        }
-        window.handleAddMarcaTask = async function(e) {
-            e.preventDefault();
-            const input = document.getElementById('marca-task-title');
-            const title = input.value.trim();
-            if (!title) return;
-            const { error } = await supabase.from('tasks').insert({ area_key: 'marca', title });
-            if (error) { alert('Error: ' + error.message); return; }
-            input.value = ''; renderMarcaTasks();
-        };
-        window.toggleMarcaTask = async function(id, checked) {
-            await supabase.from('tasks').update({ status: checked ? 'hecho' : 'pendiente' }).eq('id', id);
-            renderMarcaTasks();
-        };
-        window.deleteMarcaTask = async function(id) {
-            if (!confirm('¿Eliminar esta tarea?')) return;
-            await supabase.from('tasks').delete().eq('id', id);
-            renderMarcaTasks();
         };
 
         window.setupAddSupplierForm = function() {
