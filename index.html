@@ -205,11 +205,11 @@
                     <h3 class="font-semibold text-stone-800">📷 Fotos y videos de la oficina</h3>
                     <label class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors cursor-pointer">
                         + Subir
-                        <input type="file" id="office-media-input" accept="image/*,video/*" multiple class="hidden" onchange="window.handleUploadMedia(event)">
+                        <input type="file" id="media-input-local" accept="image/*,video/*" multiple class="hidden" onchange="window.handleUploadMedia(event, 'local')">
                     </label>
                 </div>
-                <p id="office-media-hint" class="text-xs text-stone-400 mb-4">Imágenes y videos (máx. 50 MB por archivo).</p>
-                <div id="office-media-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+                <p id="media-hint-local" class="text-xs text-stone-400 mb-4">Imágenes y videos (máx. 50 MB por archivo).</p>
+                <div id="media-grid-local" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
             </div>
 
             <!-- Cómo va todo: resumen de fases -->
@@ -273,6 +273,162 @@
                     <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir etapa</button>
                 </form>
             </div>
+        </section>
+
+        <!-- ÁREA: FINANCIAMIENTO -->
+        <section id="sec-financiamiento" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Financiamiento</h2>
+                <p class="mt-2 text-stone-600">El dinero del proyecto: de dónde vienen los fondos y en qué se gastan (estimado vs. real).</p>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <p class="text-xs text-stone-400 uppercase tracking-wide">Fondos confirmados</p>
+                    <p id="fin-funds" class="text-xl font-bold text-stone-800 mt-1">$0</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <p class="text-xs text-stone-400 uppercase tracking-wide">Gasto estimado</p>
+                    <p id="fin-est" class="text-xl font-bold text-stone-800 mt-1">$0</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <p class="text-xs text-stone-400 uppercase tracking-wide">Gasto real</p>
+                    <p id="fin-actual" class="text-xl font-bold text-stone-800 mt-1">$0</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <p class="text-xs text-stone-400 uppercase tracking-wide">Disponible</p>
+                    <p id="fin-available" class="text-xl font-bold text-teal-700 mt-1">$0</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <h3 class="font-semibold text-stone-800 mb-3">Fuentes de fondos</h3>
+                <div id="funding-list"></div>
+            </div>
+            <form onsubmit="window.handleAddFunding(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <input id="nf-name" required placeholder="Fuente * (ej. Préstamo BPPR)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <select id="nf-type" class="rounded-md border border-stone-300 p-2 text-sm bg-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <option value="prestamo">Préstamo</option>
+                        <option value="inversion">Inversión</option>
+                        <option value="ahorro">Ahorro propio</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                    <input id="nf-amount" type="number" step="any" placeholder="Monto ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir fuente</button>
+            </form>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <h3 class="font-semibold text-stone-800 mb-3">Gastos</h3>
+                <div id="expenses-list"></div>
+            </div>
+            <form onsubmit="window.handleAddExpense(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <input id="ne-concept" required placeholder="Concepto * (ej. Equipos médicos)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="ne-category" placeholder="Categoría" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="ne-estimated" type="number" step="any" placeholder="Estimado ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir gasto</button>
+            </form>
+        </section>
+
+        <!-- ÁREA: PERSONAL -->
+        <section id="sec-personal" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Personal</h2>
+                <p class="mt-2 text-stone-600">Los puestos del equipo y cómo va cada contratación.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
+                <p id="personal-summary" class="text-sm text-stone-600">—</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div id="positions-list"></div>
+            </div>
+            <form onsubmit="window.handleAddPosition(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input id="np-title" required placeholder="Puesto * (ej. Recepcionista)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="np-salary" type="number" step="any" placeholder="Salario ($, opcional)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir puesto</button>
+            </form>
+        </section>
+
+        <!-- ÁREA: PERMISOS Y CREDENCIALES -->
+        <section id="sec-permisos" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Permisos y Credenciales</h2>
+                <p class="mt-2 text-stone-600">Licencias, registros y seguros, con sus fechas de emisión y vencimiento.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
+                <p id="permisos-summary" class="text-sm text-stone-600">—</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div id="permits-list"></div>
+            </div>
+            <form onsubmit="window.handleAddPermit(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input id="npm-name" required placeholder="Permiso * (ej. Licencia sanitaria)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="npm-type" placeholder="Tipo / entidad" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir permiso</button>
+            </form>
+        </section>
+
+        <!-- ÁREA: MARCA -->
+        <section id="sec-marca" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Marca</h2>
+                <p class="mt-2 text-stone-600">La identidad de la clínica: nombre, eslogan, colores, web y redes; logo/recursos; y un checklist de marca.</p>
+            </div>
+
+            <form onsubmit="window.saveBrandInfo(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-stone-800">Identidad</h3>
+                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="text-sm"><span class="text-stone-600">Nombre</span>
+                        <input id="brand-name" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Nombre de la clínica"></label>
+                    <label class="text-sm"><span class="text-stone-600">Eslogan</span>
+                        <input id="brand-slogan" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Frase / tagline"></label>
+                    <label class="text-sm"><span class="text-stone-600">Colores</span>
+                        <input id="brand-colors" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Verde azulado, beige"></label>
+                    <label class="text-sm"><span class="text-stone-600">Sitio web</span>
+                        <input id="brand-website" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="dominio.com"></label>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Redes sociales</span>
+                        <input id="brand-social" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="@instagram, Facebook, etc."></label>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
+                        <textarea id="brand-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ideas, decisiones, referencias…"></textarea></label>
+                </div>
+            </form>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-1 flex-wrap gap-2">
+                    <h3 class="font-semibold text-stone-800">🎨 Logo y recursos visuales</h3>
+                    <label class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors cursor-pointer">
+                        + Subir
+                        <input type="file" id="media-input-marca" accept="image/*,video/*" multiple class="hidden" onchange="window.handleUploadMedia(event, 'marca')">
+                    </label>
+                </div>
+                <p id="media-hint-marca" class="text-xs text-stone-400 mb-4">Logo, mockups, paleta… (máx. 50 MB por archivo).</p>
+                <div id="media-grid-marca" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-2">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-stone-800">Checklist de marca</h3>
+                    <span id="marca-progress-text" class="text-sm text-stone-500">0/0 · 0%</span>
+                </div>
+                <div class="w-full bg-stone-100 rounded-full h-2.5 mb-4">
+                    <div id="marca-progress-bar" class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:0%"></div>
+                </div>
+                <div id="marca-tasks-list"></div>
+            </div>
+            <form onsubmit="window.handleAddMarcaTask(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
+                <input id="marca-task-title" required placeholder="Nueva tarea de marca… (ej. Diseñar logo)" class="flex-1 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
+            </form>
         </section>
 
         <!-- ÁREA: EQUIPOS MÉDICOS (agrupa catálogo, análisis y suplidores) -->
@@ -1111,10 +1267,8 @@
         }
 
         window.switchTab = function(tabKey) {
-            const trackerAreas = ['financiamiento', 'personal', 'marca', 'permisos'];
-
             // Ocultar todas las secciones
-            ['equipos', 'admin', 'resumen', 'tracker', 'local'].forEach(sec => {
+            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'marca', 'equipos', 'admin', 'tracker'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
@@ -1129,19 +1283,22 @@
             const tabEl = document.getElementById('tab-' + tabKey);
             if (tabEl) { tabEl.classList.add('tab-active'); tabEl.classList.remove('text-stone-500'); }
 
-            // Mostrar la sección correcta
-            if (tabKey === 'resumen') {
-                document.getElementById('sec-resumen').classList.remove('hidden');
-                window.renderResumen();
-            } else if (tabKey === 'local') {
-                document.getElementById('sec-local').classList.remove('hidden');
-                window.renderLocal();
-            } else if (tabKey === 'equipos') {
+            // Mostrar la sección correcta y cargar sus datos
+            const renderers = {
+                resumen: window.renderResumen,
+                local: window.renderLocal,
+                financiamiento: window.renderFinanciamiento,
+                personal: window.renderPersonal,
+                permisos: window.renderPermisos,
+                marca: window.renderMarca
+            };
+            if (tabKey === 'equipos') {
                 document.getElementById('sec-equipos').classList.remove('hidden');
                 window.switchEquipo('catalogo');
-            } else if (trackerAreas.includes(tabKey)) {
-                document.getElementById('sec-tracker').classList.remove('hidden');
-                window.renderTracker(tabKey);
+            } else if (renderers[tabKey]) {
+                const sec = document.getElementById('sec-' + tabKey);
+                if (sec) sec.classList.remove('hidden');
+                renderers[tabKey]();
             } else {
                 const secEl = document.getElementById('sec-' + tabKey);
                 if (secEl) secEl.classList.remove('hidden');
@@ -1296,44 +1453,55 @@
             const container = document.getElementById('resumen-cards');
             container.innerHTML = '<p class="text-stone-400 text-sm">Cargando…</p>';
 
-            const { data: tasks, error } = await supabase.from('tasks').select('area_key, status');
-            if (error) {
-                container.innerHTML = `<p class="text-red-600 text-sm col-span-full">No se pudo cargar el resumen: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/phase1-tracker.sql</code>?</p>`;
-                return;
+            // Traer los datos de cada área en paralelo (tolerante si una tabla aún no existe)
+            const safe = (res) => (res && !res.error && res.data) ? res.data : [];
+            const [tasksR, stagesR, expensesR, positionsR, permitsR] = await Promise.all([
+                supabase.from('tasks').select('area_key, status'),
+                supabase.from('stages').select('progress').eq('area_key', 'local'),
+                supabase.from('expenses').select('estimated, actual, status').eq('area_key', 'financiamiento'),
+                supabase.from('positions').select('status').eq('area_key', 'personal'),
+                supabase.from('permits').select('status').eq('area_key', 'permisos')
+            ]);
+            const tasks = safe(tasksR), stages = safe(stagesR), expenses = safe(expensesR), positions = safe(positionsR), permits = safe(permitsR);
+
+            const byArea = {};
+            tasks.forEach(t => { const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 }; g.total++; if (t.status === 'hecho') g.done++; });
+            const money = (n) => '$' + Number(n || 0).toLocaleString('en-US');
+
+            function progressFor(key) {
+                if (key === 'local') {
+                    const pct = stages.length ? Math.round(stages.reduce((a, s) => a + (s.progress || 0), 0) / stages.length) : 0;
+                    const done = stages.filter(s => (s.progress || 0) >= 100).length;
+                    return { pct, sub: stages.length ? `${done}/${stages.length} etapas de obra` : 'Fase 1: contratistas' };
+                }
+                if (key === 'financiamiento') {
+                    const total = expenses.length;
+                    const paid = expenses.filter(e => e.status === 'pagado');
+                    const est = expenses.reduce((a, e) => a + (Number(e.estimated) || 0), 0);
+                    const paidAmt = paid.reduce((a, e) => a + (Number(e.actual) || Number(e.estimated) || 0), 0);
+                    return { pct: total ? Math.round(paid.length / total * 100) : 0, sub: total ? `${money(paidAmt)} pagado de ${money(est)}` : 'Sin gastos aún' };
+                }
+                if (key === 'personal') {
+                    const total = positions.length, hired = positions.filter(p => p.status === 'contratado').length;
+                    return { pct: total ? Math.round(hired / total * 100) : 0, sub: total ? `${hired}/${total} contratados` : 'Sin puestos aún' };
+                }
+                if (key === 'permisos') {
+                    const total = permits.length, ok = permits.filter(p => p.status === 'obtenido').length;
+                    return { pct: total ? Math.round(ok / total * 100) : 0, sub: total ? `${ok}/${total} obtenidos` : 'Sin permisos aún' };
+                }
+                const g = byArea[key] || { total: 0, done: 0 };
+                return { pct: g.total ? Math.round(g.done / g.total * 100) : 0, sub: g.total ? `${g.done}/${g.total} tareas` : 'Sin tareas aún' };
             }
 
-            // Áreas tipo checklist: progreso = tareas hechas / total
-            const byArea = {};
-            (tasks || []).forEach(t => {
-                const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 };
-                g.total++; if (t.status === 'hecho') g.done++;
-            });
-
-            // El área Local usa etapas de obra (Fase 2). Tolerante si aún no existe la tabla.
-            let localStages = [];
-            const stagesRes = await supabase.from('stages').select('area_key, progress').eq('area_key', 'local');
-            if (!stagesRes.error) localStages = stagesRes.data || [];
-
-            // Orden de las áreas de proyecto en el resumen (local es a medida; el resto, checklist)
-            const PROJECT_AREAS = ['local', ...TRACKER_AREAS];
+            const PROJECT_AREAS = ['local', 'financiamiento', 'personal', 'marca', 'permisos'];
             const areasToShow = PROJECT_AREAS.filter(k => allowedAreas.has(k));
             container.innerHTML = '';
             if (areasToShow.length === 0) {
                 container.innerHTML = '<p class="text-stone-500 text-sm col-span-full">Aún no tienes áreas de proyecto asignadas. Pídele acceso a un administrador.</p>';
                 return;
             }
-
             areasToShow.forEach(key => {
-                let pct, sub;
-                if (key === 'local') {
-                    pct = localStages.length ? Math.round(localStages.reduce((a, s) => a + (s.progress || 0), 0) / localStages.length) : 0;
-                    const done = localStages.filter(s => (s.progress || 0) >= 100).length;
-                    sub = localStages.length ? `${done}/${localStages.length} etapas de obra` : 'Fase 1: análisis de contratistas';
-                } else {
-                    const g = byArea[key] || { total: 0, done: 0 };
-                    pct = g.total ? Math.round(g.done / g.total * 100) : 0;
-                    sub = `${g.done}/${g.total} tareas completadas`;
-                }
+                const { pct, sub } = progressFor(key);
                 const card = document.createElement('button');
                 card.onclick = () => window.switchTab(key);
                 card.className = 'text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md hover:border-teal-400 transition-all';
@@ -1371,7 +1539,7 @@
 
         window.renderLocal = async function() {
             window.switchFase('f1');
-            await Promise.all([loadOfficeInfo(), renderContractors(), renderStages(), renderMedia()]);
+            await Promise.all([loadOfficeInfo(), renderContractors(), renderStages(), renderMedia('local')]);
         };
 
         // --- Información de la oficina ---
@@ -1611,33 +1779,33 @@
 
         // --- Fotos y videos de la oficina (Supabase Storage) ---
         const MEDIA_BUCKET = 'office-media';
-        const MEDIA_PREFIX = 'local';
 
         function isVideoName(n) { return /\.(mp4|mov|webm|m4v|ogg|ogv)$/i.test(n); }
 
-        async function renderMedia() {
-            const grid = document.getElementById('office-media-grid');
+        // Galería reutilizable por área (carpeta = área). Usa ids media-grid-<area> / media-hint-<area>.
+        async function renderMedia(area) {
+            const grid = document.getElementById('media-grid-' + area);
             if (!grid) return;
             grid.innerHTML = '<p class="text-stone-400 text-sm col-span-full">Cargando…</p>';
             const { data: files, error } = await supabase.storage.from(MEDIA_BUCKET)
-                .list(MEDIA_PREFIX, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+                .list(area, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
             if (error) {
-                grid.innerHTML = `<p class="text-red-600 text-sm col-span-full">No se pudo cargar la galería: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/area-local-media.sql</code>?</p>`;
+                grid.innerHTML = `<p class="text-red-600 text-sm col-span-full">No se pudo cargar la galería: ${escapeHtml(error.message)}.<br>¿Ya corriste el SQL de almacenamiento?</p>`;
                 return;
             }
             const items = (files || []).filter(f => f.name && f.id);
             if (items.length === 0) {
-                grid.innerHTML = '<p class="text-stone-400 text-sm col-span-full py-4">Aún no hay fotos ni videos. Usa «+ Subir» 📷</p>';
+                grid.innerHTML = '<p class="text-stone-400 text-sm col-span-full py-4">Aún no hay archivos. Usa «+ Subir» 📷</p>';
                 return;
             }
-            const paths = items.map(f => `${MEDIA_PREFIX}/${f.name}`);
+            const paths = items.map(f => `${area}/${f.name}`);
             const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 3600);
             const urlByPath = {};
             (signed || []).forEach(s => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
 
             grid.innerHTML = '';
             items.forEach(f => {
-                const url = urlByPath[`${MEDIA_PREFIX}/${f.name}`];
+                const url = urlByPath[`${area}/${f.name}`];
                 const cell = document.createElement('div');
                 cell.className = 'relative group rounded-lg overflow-hidden border border-stone-200 bg-stone-50 aspect-square';
                 const inner = !url
@@ -1646,34 +1814,391 @@
                         ? `<video src="${url}" controls class="w-full h-full object-cover"></video>`
                         : `<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(f.name)}" loading="lazy" class="w-full h-full object-cover"></a>`);
                 cell.innerHTML = `${inner}
-                    <button onclick="window.deleteMedia('${escapeHtml(f.name)}')" title="Eliminar" class="absolute top-1 right-1 bg-black/50 hover:bg-red-600 text-white rounded-full w-6 h-6 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity">✕</button>`;
+                    <button onclick="window.deleteMedia('${area}','${escapeHtml(f.name)}')" title="Eliminar" class="absolute top-1 right-1 bg-black/50 hover:bg-red-600 text-white rounded-full w-6 h-6 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity">✕</button>`;
                 grid.appendChild(cell);
             });
         }
 
-        window.handleUploadMedia = async function(e) {
+        window.handleUploadMedia = async function(e, area) {
             const files = Array.from(e.target.files || []);
             if (!files.length) return;
-            const hint = document.getElementById('office-media-hint');
+            const hint = document.getElementById('media-hint-' + area);
             let fail = 0;
             for (const file of files) {
-                hint.textContent = `Subiendo ${file.name}…`;
+                if (hint) hint.textContent = `Subiendo ${file.name}…`;
                 const safe = file.name.replace(/[^\w.\-]+/g, '_');
-                const path = `${MEDIA_PREFIX}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+                const path = `${area}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
                 const { error } = await supabase.storage.from(MEDIA_BUCKET)
                     .upload(path, file, { upsert: false, contentType: file.type || undefined });
                 if (error) { fail++; console.error('upload', file.name, error); }
             }
             e.target.value = '';
-            hint.textContent = 'Imágenes y videos (máx. 50 MB por archivo).' + (fail ? ` — ${fail} no se pudieron subir (revisa tamaño/tipo).` : '');
-            renderMedia();
+            if (hint) hint.textContent = 'Archivos (máx. 50 MB por archivo).' + (fail ? ` — ${fail} no se pudieron subir (revisa tamaño/tipo).` : '');
+            renderMedia(area);
         };
 
-        window.deleteMedia = async function(name) {
+        window.deleteMedia = async function(area, name) {
             if (!confirm('¿Eliminar este archivo?')) return;
-            const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([`${MEDIA_PREFIX}/${name}`]);
+            const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([`${area}/${name}`]);
             if (error) { alert('Error: ' + error.message); return; }
-            renderMedia();
+            renderMedia(area);
+        };
+
+        // ======================================================
+        // HELPERS COMUNES
+        // ======================================================
+        function fmtMoney(n) {
+            return (n !== null && n !== undefined && n !== '') ? '$' + Number(n).toLocaleString('en-US') : '—';
+        }
+        function sqlErr(error, file) {
+            return `<p class="text-red-600 text-sm">Error: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/${file}</code>?</p>`;
+        }
+
+        // ======================================================
+        // ÁREA FINANCIAMIENTO (fuentes de fondos + gastos)
+        // ======================================================
+        window.renderFinanciamiento = async function() {
+            const [fR, eR] = await Promise.all([
+                supabase.from('funding_sources').select('*').eq('area_key', 'financiamiento').order('created_at'),
+                supabase.from('expenses').select('*').eq('area_key', 'financiamiento').order('created_at')
+            ]);
+            renderFundingList(fR);
+            renderExpensesList(eR);
+            const fs = fR.data || [], ex = eR.data || [];
+            const funds = fs.filter(f => f.status !== 'proyectado').reduce((a, f) => a + (Number(f.amount) || 0), 0);
+            const est = ex.reduce((a, x) => a + (Number(x.estimated) || 0), 0);
+            const act = ex.reduce((a, x) => a + (Number(x.actual) || 0), 0);
+            document.getElementById('fin-funds').textContent = fmtMoney(funds);
+            document.getElementById('fin-est').textContent = fmtMoney(est);
+            document.getElementById('fin-actual').textContent = fmtMoney(act);
+            document.getElementById('fin-available').textContent = fmtMoney(funds - act);
+        };
+
+        const FUND_TYPES = { prestamo: 'Préstamo', inversion: 'Inversión', ahorro: 'Ahorro propio', otro: 'Otro' };
+        const FUND_STATUS = { proyectado: 'Proyectado', confirmado: 'Confirmado', recibido: 'Recibido' };
+
+        function renderFundingList(res) {
+            const list = document.getElementById('funding-list');
+            if (res.error) { list.innerHTML = sqlErr(res.error, 'areas-fase2.sql'); return; }
+            const fs = res.data || [];
+            list.innerHTML = fs.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay fuentes de fondos.</p>';
+            fs.forEach(f => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm';
+                row.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <span class="font-medium text-stone-800">${escapeHtml(f.name)}</span>
+                        <span class="text-xs text-stone-400">· ${FUND_TYPES[f.type] || f.type}</span>
+                    </div>
+                    <span class="font-semibold text-stone-800">${fmtMoney(f.amount)}</span>
+                    <select onchange="window.updateFunding('${f.id}', this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
+                        ${Object.entries(FUND_STATUS).map(([v, l]) => `<option value="${v}" ${f.status === v ? 'selected' : ''}>${l}</option>`).join('')}
+                    </select>
+                    <button onclick="window.deleteFunding('${f.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                list.appendChild(row);
+            });
+        }
+
+        window.handleAddFunding = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('nf-name').value.trim();
+            if (!name) return;
+            const amt = document.getElementById('nf-amount').value;
+            const { error } = await supabase.from('funding_sources').insert({
+                area_key: 'financiamiento', name, type: document.getElementById('nf-type').value,
+                amount: amt === '' ? null : Number(amt)
+            });
+            if (error) { alert('Error: ' + error.message); return; }
+            e.target.reset(); window.renderFinanciamiento();
+        };
+        window.updateFunding = async function(id, status) {
+            await supabase.from('funding_sources').update({ status }).eq('id', id);
+            window.renderFinanciamiento();
+        };
+        window.deleteFunding = async function(id) {
+            if (!confirm('¿Eliminar esta fuente?')) return;
+            await supabase.from('funding_sources').delete().eq('id', id);
+            window.renderFinanciamiento();
+        };
+
+        function renderExpensesList(res) {
+            const list = document.getElementById('expenses-list');
+            if (res.error) { list.innerHTML = sqlErr(res.error, 'areas-fase2.sql'); return; }
+            const ex = res.data || [];
+            list.innerHTML = ex.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay gastos.</p>';
+            ex.forEach(x => {
+                const paid = x.status === 'pagado';
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 flex-wrap py-3 border-b border-stone-100 last:border-0 text-sm';
+                row.innerHTML = `
+                    <div class="flex-1 min-w-[8rem]">
+                        <span class="font-medium text-stone-800">${escapeHtml(x.concept)}</span>
+                        ${x.category ? `<span class="text-xs text-stone-400">· ${escapeHtml(x.category)}</span>` : ''}
+                    </div>
+                    <span class="text-xs text-stone-400">Est.</span><span class="font-medium text-stone-700">${fmtMoney(x.estimated)}</span>
+                    <label class="text-xs text-stone-400 flex items-center gap-1">Real
+                        <input type="number" step="any" value="${x.actual ?? ''}" placeholder="—" onchange="window.updateExpense('${x.id}','actual',this.value)" class="w-24 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                    <select onchange="window.updateExpense('${x.id}','status',this.value)" class="text-xs rounded-md border ${paid ? 'border-teal-300 text-teal-700' : 'border-stone-300'} bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
+                        <option value="pendiente" ${!paid ? 'selected' : ''}>Pendiente</option>
+                        <option value="pagado" ${paid ? 'selected' : ''}>Pagado</option>
+                    </select>
+                    <button onclick="window.deleteExpense('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                list.appendChild(row);
+            });
+        }
+
+        window.handleAddExpense = async function(e) {
+            e.preventDefault();
+            const concept = document.getElementById('ne-concept').value.trim();
+            if (!concept) return;
+            const est = document.getElementById('ne-estimated').value;
+            const { error } = await supabase.from('expenses').insert({
+                area_key: 'financiamiento', concept,
+                category: document.getElementById('ne-category').value.trim(),
+                estimated: est === '' ? null : Number(est)
+            });
+            if (error) { alert('Error: ' + error.message); return; }
+            e.target.reset(); window.renderFinanciamiento();
+        };
+        window.updateExpense = async function(id, field, value) {
+            const patch = {};
+            patch[field] = (field === 'actual') ? (value === '' ? null : Number(value)) : value;
+            await supabase.from('expenses').update(patch).eq('id', id);
+            window.renderFinanciamiento();
+        };
+        window.deleteExpense = async function(id) {
+            if (!confirm('¿Eliminar este gasto?')) return;
+            await supabase.from('expenses').delete().eq('id', id);
+            window.renderFinanciamiento();
+        };
+
+        // ======================================================
+        // ÁREA PERSONAL (puestos)
+        // ======================================================
+        const POSITION_STATUS = { por_abrir: 'Por abrir', abierto: 'Abierto', entrevistando: 'Entrevistando', contratado: 'Contratado' };
+
+        window.renderPersonal = async function() {
+            const list = document.getElementById('positions-list');
+            const { data, error } = await supabase.from('positions').select('*').eq('area_key', 'personal').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); document.getElementById('personal-summary').textContent = '—'; return; }
+            const ps = data || [];
+            list.innerHTML = ps.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay puestos. Añade el primero abajo 👇</p>';
+            ps.forEach(p => {
+                const hired = p.status === 'contratado';
+                const row = document.createElement('div');
+                row.className = `border rounded-lg p-4 mb-3 ${hired ? 'border-teal-400 bg-teal-50' : 'border-stone-200'}`;
+                row.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 mb-1">
+                        <h4 class="font-semibold text-stone-800">${escapeHtml(p.title)}</h4>
+                        <select onchange="window.updatePosition('${p.id}','status',this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 font-medium outline-none focus:ring-1 focus:ring-teal-500">
+                            ${Object.entries(POSITION_STATUS).map(([v, l]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-sm text-stone-600">
+                        <div><span class="text-stone-400">Candidato:</span> ${escapeHtml(p.candidate || '—')}</div>
+                        <div><span class="text-stone-400">Salario:</span> ${fmtMoney(p.salary)}</div>
+                        <div><span class="text-stone-400">Inicio:</span> ${p.start_date || '—'}</div>
+                    </div>
+                    ${p.notes ? `<p class="text-xs text-stone-500 mt-2">${escapeHtml(p.notes)}</p>` : ''}
+                    <div class="mt-3 flex gap-4">
+                        <button onclick="window.editPosition('${p.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
+                        <button onclick="window.deletePosition('${p.id}')" class="text-xs font-medium text-stone-400 hover:text-red-600">Eliminar</button>
+                    </div>`;
+                list.appendChild(row);
+            });
+            const hired = ps.filter(p => p.status === 'contratado').length;
+            document.getElementById('personal-summary').textContent = ps.length ? `${ps.length} puesto(s) · ${hired} contratado(s)` : 'Sin puestos todavía';
+        };
+
+        window.handleAddPosition = async function(e) {
+            e.preventDefault();
+            const title = document.getElementById('np-title').value.trim();
+            if (!title) return;
+            const salary = document.getElementById('np-salary').value;
+            const { error } = await supabase.from('positions').insert({ area_key: 'personal', title, salary: salary === '' ? null : Number(salary) });
+            if (error) { alert('Error: ' + error.message); return; }
+            e.target.reset(); window.renderPersonal();
+        };
+        window.updatePosition = async function(id, field, value) {
+            await supabase.from('positions').update({ [field]: value }).eq('id', id);
+            window.renderPersonal();
+        };
+        window.editPosition = async function(id) {
+            const { data: p } = await supabase.from('positions').select('*').eq('id', id).single();
+            if (!p) return;
+            const title = prompt('Puesto:', p.title); if (title === null) return;
+            const candidate = prompt('Candidato:', p.candidate || ''); if (candidate === null) return;
+            const salary = prompt('Salario ($, solo número):', p.salary ?? ''); if (salary === null) return;
+            const start = prompt('Fecha de inicio (AAAA-MM-DD):', p.start_date || ''); if (start === null) return;
+            const notes = prompt('Notas:', p.notes || ''); if (notes === null) return;
+            const { error } = await supabase.from('positions').update({
+                title: title.trim(), candidate: candidate.trim(),
+                salary: salary.trim() === '' ? null : Number(salary),
+                start_date: start.trim() || null, notes: notes.trim()
+            }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderPersonal();
+        };
+        window.deletePosition = async function(id) {
+            if (!confirm('¿Eliminar este puesto?')) return;
+            await supabase.from('positions').delete().eq('id', id);
+            window.renderPersonal();
+        };
+
+        // ======================================================
+        // ÁREA PERMISOS (licencias y credenciales)
+        // ======================================================
+        const PERMIT_STATUS = { pendiente: 'Pendiente', en_tramite: 'En trámite', obtenido: 'Obtenido', vencido: 'Vencido' };
+
+        window.renderPermisos = async function() {
+            const list = document.getElementById('permits-list');
+            const { data, error } = await supabase.from('permits').select('*').eq('area_key', 'permisos').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); document.getElementById('permisos-summary').textContent = '—'; return; }
+            const ps = data || [];
+            const today = new Date().toISOString().slice(0, 10);
+            const soon = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+            list.innerHTML = ps.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay permisos. Añade el primero abajo 👇</p>';
+            ps.forEach(p => {
+                const expiring = p.expiry_date && p.expiry_date <= soon && p.expiry_date >= today;
+                const expired = p.expiry_date && p.expiry_date < today;
+                const ok = p.status === 'obtenido';
+                const row = document.createElement('div');
+                row.className = `border rounded-lg p-4 mb-3 ${ok ? 'border-teal-400 bg-teal-50' : 'border-stone-200'}`;
+                row.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 mb-1">
+                        <div><h4 class="font-semibold text-stone-800">${escapeHtml(p.name)}</h4>
+                            ${p.type ? `<span class="text-xs text-stone-400">${escapeHtml(p.type)}</span>` : ''}</div>
+                        <select onchange="window.updatePermit('${p.id}','status',this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 font-medium outline-none focus:ring-1 focus:ring-teal-500">
+                            ${Object.entries(PERMIT_STATUS).map(([v, l]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-3 flex-wrap mt-2 text-xs text-stone-500">
+                        <label class="flex items-center gap-1">Emitido
+                            <input type="date" value="${p.issued_date || ''}" onchange="window.updatePermit('${p.id}','issued_date',this.value)" class="rounded-md border border-stone-300 p-1 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        </label>
+                        <label class="flex items-center gap-1">Vence
+                            <input type="date" value="${p.expiry_date || ''}" onchange="window.updatePermit('${p.id}','expiry_date',this.value)" class="rounded-md border ${expired ? 'border-red-400 text-red-600' : (expiring ? 'border-amber-400 text-amber-700' : 'border-stone-300')} p-1 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        </label>
+                        ${expired ? '<span class="text-red-600 font-medium">¡Vencido!</span>' : (expiring ? '<span class="text-amber-700 font-medium">Por vencer</span>' : '')}
+                    </div>
+                    <div class="text-sm text-stone-600 mt-2"><span class="text-stone-400">Responsable:</span> ${escapeHtml(p.responsible || '—')}</div>
+                    ${p.notes ? `<p class="text-xs text-stone-500 mt-1">${escapeHtml(p.notes)}</p>` : ''}
+                    <div class="mt-3 flex gap-4">
+                        <button onclick="window.editPermit('${p.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
+                        <button onclick="window.deletePermit('${p.id}')" class="text-xs font-medium text-stone-400 hover:text-red-600">Eliminar</button>
+                    </div>`;
+                list.appendChild(row);
+            });
+            const ok = ps.filter(p => p.status === 'obtenido').length;
+            const exp = ps.filter(p => p.expiry_date && p.expiry_date < today).length;
+            document.getElementById('permisos-summary').textContent = ps.length ? `${ps.length} permiso(s) · ${ok} obtenido(s)${exp ? ` · ${exp} vencido(s)` : ''}` : 'Sin permisos todavía';
+        };
+
+        window.handleAddPermit = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('npm-name').value.trim();
+            if (!name) return;
+            const { error } = await supabase.from('permits').insert({ area_key: 'permisos', name, type: document.getElementById('npm-type').value.trim() });
+            if (error) { alert('Error: ' + error.message); return; }
+            e.target.reset(); window.renderPermisos();
+        };
+        window.updatePermit = async function(id, field, value) {
+            const patch = {};
+            patch[field] = field.endsWith('_date') ? (value || null) : value;
+            await supabase.from('permits').update(patch).eq('id', id);
+            window.renderPermisos();
+        };
+        window.editPermit = async function(id) {
+            const { data: p } = await supabase.from('permits').select('*').eq('id', id).single();
+            if (!p) return;
+            const name = prompt('Permiso:', p.name); if (name === null) return;
+            const type = prompt('Tipo / entidad:', p.type || ''); if (type === null) return;
+            const responsible = prompt('Responsable:', p.responsible || ''); if (responsible === null) return;
+            const notes = prompt('Notas:', p.notes || ''); if (notes === null) return;
+            const { error } = await supabase.from('permits').update({ name: name.trim(), type: type.trim(), responsible: responsible.trim(), notes: notes.trim() }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderPermisos();
+        };
+        window.deletePermit = async function(id) {
+            if (!confirm('¿Eliminar este permiso?')) return;
+            await supabase.from('permits').delete().eq('id', id);
+            window.renderPermisos();
+        };
+
+        // ======================================================
+        // ÁREA MARCA (identidad + logo/recursos + checklist)
+        // ======================================================
+        window.renderMarca = async function() {
+            await Promise.all([loadBrandInfo(), renderMedia('marca'), renderMarcaTasks()]);
+        };
+
+        async function loadBrandInfo() {
+            const { data } = await supabase.from('brand_info').select('*').eq('area_key', 'marca').maybeSingle();
+            const b = data || {};
+            document.getElementById('brand-name').value = b.name || '';
+            document.getElementById('brand-slogan').value = b.slogan || '';
+            document.getElementById('brand-colors').value = b.colors || '';
+            document.getElementById('brand-website').value = b.website || '';
+            document.getElementById('brand-social').value = b.social || '';
+            document.getElementById('brand-notes').value = b.notes || '';
+        }
+        window.saveBrandInfo = async function(e) {
+            e.preventDefault();
+            const payload = {
+                area_key: 'marca',
+                name: document.getElementById('brand-name').value.trim(),
+                slogan: document.getElementById('brand-slogan').value.trim(),
+                colors: document.getElementById('brand-colors').value.trim(),
+                website: document.getElementById('brand-website').value.trim(),
+                social: document.getElementById('brand-social').value.trim(),
+                notes: document.getElementById('brand-notes').value.trim(),
+                updated_at: new Date().toISOString()
+            };
+            const { error } = await supabase.from('brand_info').upsert(payload, { onConflict: 'area_key' });
+            if (error) { alert('No se pudo guardar: ' + error.message); return; }
+            const btn = e.target.querySelector('button[type=submit]');
+            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
+        };
+
+        async function renderMarcaTasks() {
+            const list = document.getElementById('marca-tasks-list');
+            const { data, error } = await supabase.from('tasks').select('*').eq('area_key', 'marca').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'phase1-tracker.sql'); return; }
+            const ts = data || [];
+            list.innerHTML = ts.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay tareas de marca.</p>';
+            ts.forEach(t => {
+                const done = t.status === 'hecho';
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0';
+                row.innerHTML = `
+                    <input type="checkbox" ${done ? 'checked' : ''} onchange="window.toggleMarcaTask('${t.id}', this.checked)" class="rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                    <span class="flex-1 text-sm ${done ? 'line-through text-stone-400' : 'text-stone-800'}">${escapeHtml(t.title)}</span>
+                    <button onclick="window.deleteMarcaTask('${t.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                list.appendChild(row);
+            });
+            const total = ts.length, done = ts.filter(t => t.status === 'hecho').length;
+            const pct = total ? Math.round(done / total * 100) : 0;
+            document.getElementById('marca-progress-bar').style.width = pct + '%';
+            document.getElementById('marca-progress-text').textContent = `${done}/${total} · ${pct}%`;
+        }
+        window.handleAddMarcaTask = async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('marca-task-title');
+            const title = input.value.trim();
+            if (!title) return;
+            const { error } = await supabase.from('tasks').insert({ area_key: 'marca', title });
+            if (error) { alert('Error: ' + error.message); return; }
+            input.value = ''; renderMarcaTasks();
+        };
+        window.toggleMarcaTask = async function(id, checked) {
+            await supabase.from('tasks').update({ status: checked ? 'hecho' : 'pendiente' }).eq('id', id);
+            renderMarcaTasks();
+        };
+        window.deleteMarcaTask = async function(id) {
+            if (!confirm('¿Eliminar esta tarea?')) return;
+            await supabase.from('tasks').delete().eq('id', id);
+            renderMarcaTasks();
         };
 
         window.setupAddSupplierForm = function() {
