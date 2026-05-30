@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     
     <style>
         .chart-container {
@@ -2536,7 +2537,7 @@
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-stone-800">${escapeHtml(d.name)}</p>
                             ${d.description ? `<p class="text-xs text-stone-500 mt-0.5">${escapeHtml(d.description)}</p>` : ''}
-                            ${d.doc_key === 'costo_total' ? `<p class="text-xs text-teal-700 mt-1">💡 Total estimado del proyecto: <span id="doc-costo-total" class="font-semibold">—</span> (ver desglose arriba)</p>` : ''}
+                            ${d.doc_key === 'costo_total' ? `<div id="costo-total-panel" class="mt-2 bg-stone-50 border border-stone-200 rounded-lg p-3"></div>` : ''}
                             ${d.notes ? `<p class="text-xs text-stone-500 mt-1">📝 ${escapeHtml(d.notes)}</p>` : ''}
                             <div id="doc-files-${d.id}" class="mt-2"></div>
                             <div class="mt-2 flex gap-4 items-center flex-wrap">
@@ -2553,8 +2554,162 @@
             const done = docs.filter(d => d.status === 'entregado').length;
             document.getElementById('bank-docs-progress').textContent = `${done}/${docs.length}`;
             docs.forEach(d => renderDocFiles(d.id));
-            const costoEl = document.getElementById('doc-costo-total');
-            if (costoEl) costoEl.textContent = document.getElementById('fin-total').textContent;
+            renderCostoTotalPanel();
+        }
+
+        // --- "Costo total del proyecto": desglose por área (médicos/oficina/contratista) + pie + PDF ---
+        let costoPieInstance = null;
+        async function renderCostoTotalPanel() {
+            const panel = document.getElementById('costo-total-panel');
+            if (!panel) return;
+            const num = (v) => Number(v) || 0;
+            const [equipR, officeEqR, contrR] = await Promise.all([
+                supabase.from('equipment_items').select('name, quantity, equipment_quotes(price, selected)').eq('area_key', 'equipos'),
+                supabase.from('office_equipment').select('name, quantity, unit_price').eq('area_key', 'equipos_oficina'),
+                supabase.from('contractors').select('name, quote_amount, status').eq('area_key', 'local')
+            ]);
+            const medItems = (equipR.data || []).map(it => {
+                const sel = (it.equipment_quotes || []).find(q => q.selected);
+                return { name: it.name, total: (sel ? num(sel.price) : 0) * (num(it.quantity) || 1) };
+            });
+            const offItems = (officeEqR.data || []).map(x => ({ name: x.name, total: num(x.unit_price) * (num(x.quantity) || 1) }));
+            const selContractor = (contrR.data || []).find(c => c.status === 'seleccionado');
+            const medTotal = medItems.reduce((a, x) => a + x.total, 0);
+            const offTotal = offItems.reduce((a, x) => a + x.total, 0);
+            const conTotal = selContractor ? num(selContractor.quote_amount) : 0;
+            const grand = medTotal + offTotal + conTotal;
+
+            window.__costoData = { medItems, offItems, selContractor, medTotal, offTotal, conTotal, grand };
+
+            panel.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <div class="relative shrink-0" style="width:150px;height:150px;"><canvas id="costoPieChart"></canvas></div>
+                    <div class="flex-1 w-full text-sm">
+                        <div class="flex justify-between py-1 border-b border-stone-200"><span><span class="inline-block w-3 h-3 rounded-sm mr-1" style="background:#f59e0b"></span>Equipos médicos</span><span class="font-semibold">${fmtMoney(medTotal)}</span></div>
+                        <div class="flex justify-between py-1 border-b border-stone-200"><span><span class="inline-block w-3 h-3 rounded-sm mr-1" style="background:#6366f1"></span>Equipos de oficina</span><span class="font-semibold">${fmtMoney(offTotal)}</span></div>
+                        <div class="flex justify-between py-1 border-b border-stone-200"><span><span class="inline-block w-3 h-3 rounded-sm mr-1" style="background:#14b8a6"></span>Cotización de contratista</span><span class="font-semibold">${fmtMoney(conTotal)}</span></div>
+                        <div class="flex justify-between py-1.5 text-teal-800"><span class="font-bold">Costo total del proyecto</span><span class="font-bold">${fmtMoney(grand)}</span></div>
+                    </div>
+                </div>
+                <button onclick="window.generateCostoPDF()" class="mt-3 w-full bg-teal-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">📄 Generar PDF combinado (resumen + cotizaciones)</button>
+                <p id="costo-pdf-status" class="text-xs text-stone-400 mt-1"></p>`;
+
+            const canvas = document.getElementById('costoPieChart');
+            if (canvas && window.Chart) {
+                const data = { labels: ['Equipos médicos', 'Equipos de oficina', 'Contratista'], datasets: [{ data: [medTotal, offTotal, conTotal], backgroundColor: ['#f59e0b', '#6366f1', '#14b8a6'], borderWidth: 2, borderColor: '#fff' }] };
+                if (costoPieInstance) { costoPieInstance.data = data; costoPieInstance.update(); }
+                else costoPieInstance = new Chart(canvas.getContext('2d'), { type: 'doughnut', data, options: { responsive: true, maintainAspectRatio: false, cutout: '58%', plugins: { legend: { display: false } } } });
+            }
+        }
+
+        // Generar un PDF combinado: portada con el desglose + todas las cotizaciones adjuntas
+        window.generateCostoPDF = async function() {
+            const status = document.getElementById('costo-pdf-status');
+            const setStatus = (t) => { if (status) status.textContent = t; };
+            if (!window.PDFLib) { alert('No se pudo cargar la librería de PDF. Revisa tu conexión e inténtalo de nuevo.'); return; }
+            const d = window.__costoData;
+            if (!d) { alert('Primero abre el desglose.'); return; }
+            setStatus('Generando PDF…');
+            try {
+                const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+                const pdf = await PDFDocument.create();
+                const font = await pdf.embedFont(StandardFonts.Helvetica);
+                const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+                const money = (n) => '$' + Number(n || 0).toLocaleString('en-US');
+
+                // --- Portada / resumen ---
+                let page = pdf.addPage([612, 792]);
+                let y = 740;
+                const draw = (text, opts = {}) => {
+                    page.drawText(String(text), { x: opts.x || 50, y, size: opts.size || 11, font: opts.bold ? bold : font, color: opts.color || rgb(0.13, 0.13, 0.13) });
+                    y -= (opts.gap || 18);
+                };
+                draw('Costo total del proyecto', { size: 20, bold: true, color: rgb(0.06, 0.46, 0.43), gap: 14 });
+                draw('Clínica de Endocrinología — Santurce, PR', { size: 10, color: rgb(0.4, 0.4, 0.4), gap: 10 });
+                draw('Generado: ' + new Date().toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' }), { size: 9, color: rgb(0.5, 0.5, 0.5), gap: 24 });
+
+                const section = (title, items, sub) => {
+                    draw(title + '   ' + money(sub), { size: 13, bold: true, color: rgb(0.1, 0.1, 0.1), gap: 18 });
+                    if (!items.length) { draw('   (sin artículos)', { size: 10, color: rgb(0.5, 0.5, 0.5) }); }
+                    items.forEach(it => {
+                        if (y < 70) { page = pdf.addPage([612, 792]); y = 740; }
+                        draw('   • ' + it.name, { size: 10, gap: 0 });
+                        page.drawText(money(it.total), { x: 480, y, size: 10, font });
+                        y -= 16;
+                    });
+                    y -= 10;
+                };
+                section('Equipos médicos', d.medItems, d.medTotal);
+                section('Equipos de oficina', d.offItems, d.offTotal);
+                section('Cotización de contratista', d.selContractor ? [{ name: d.selContractor.name, total: d.conTotal }] : [], d.conTotal);
+                if (y < 90) { page = pdf.addPage([612, 792]); y = 740; }
+                y -= 6;
+                page.drawLine({ start: { x: 50, y: y + 12 }, end: { x: 562, y: y + 12 }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+                draw('COSTO TOTAL DEL PROYECTO', { size: 14, bold: true, color: rgb(0.06, 0.46, 0.43), gap: 0 });
+                page.drawText(money(d.grand), { x: 460, y, size: 14, font: bold, color: rgb(0.06, 0.46, 0.43) });
+
+                // --- Adjuntar cotizaciones de respaldo (PDFs e imágenes) ---
+                const attachments = await collectQuoteFiles();
+                setStatus(`Adjuntando ${attachments.length} cotización(es)…`);
+                for (const att of attachments) {
+                    try {
+                        const bytes = await (await fetch(att.url)).arrayBuffer();
+                        const sep = pdf.addPage([612, 792]);
+                        sep.drawText('Cotización: ' + att.label, { x: 50, y: 750, size: 12, font: bold, color: rgb(0.06, 0.46, 0.43) });
+                        if (/\.pdf$/i.test(att.name)) {
+                            const src = await PDFDocument.load(bytes);
+                            const pages = await pdf.copyPages(src, src.getPageIndices());
+                            pages.forEach(p => pdf.addPage(p));
+                        } else if (/\.(png)$/i.test(att.name)) {
+                            const img = await pdf.embedPng(bytes); placeImage(sep, img);
+                        } else if (/\.(jpg|jpeg)$/i.test(att.name)) {
+                            const img = await pdf.embedJpg(bytes); placeImage(sep, img);
+                        } else {
+                            sep.drawText('(Formato no incluible: ' + att.name + ')', { x: 50, y: 720, size: 10, font });
+                        }
+                    } catch (err) { console.error('adjuntar', att, err); }
+                }
+
+                const blob = new Blob([await pdf.save()], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'Costo-total-del-proyecto.pdf'; a.click();
+                URL.revokeObjectURL(url);
+                setStatus(`✓ PDF generado (${attachments.length} cotización(es) incluida(s)).`);
+            } catch (err) {
+                console.error(err); setStatus(''); alert('No se pudo generar el PDF: ' + err.message);
+            }
+        };
+        function placeImage(page, img) {
+            const maxW = 512, maxH = 660;
+            let { width, height } = img.scale(1);
+            const r = Math.min(maxW / width, maxH / height, 1);
+            width *= r; height *= r;
+            page.drawImage(img, { x: (612 - width) / 2, y: 710 - height, width, height });
+        }
+        async function collectQuoteFiles() {
+            const out = [];
+            const add = async (prefix, label) => {
+                const { data: files } = await supabase.storage.from(MEDIA_BUCKET).list(prefix, { limit: 100 });
+                const items = (files || []).filter(f => f.name && f.id);
+                if (!items.length) return;
+                const paths = items.map(f => `${prefix}/${f.name}`);
+                const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 600);
+                (signed || []).forEach((s, i) => { if (s.signedUrl) out.push({ url: s.signedUrl, name: items[i].name, label }); });
+            };
+            // Equipos médicos: cotizaciones por alternativa seleccionada
+            const { data: meds } = await supabase.from('equipment_items').select('name, equipment_quotes(id, selected)').eq('area_key', 'equipos');
+            for (const it of (meds || [])) {
+                const sel = (it.equipment_quotes || []).find(q => q.selected);
+                if (sel) await add(`equipos/quotes/${sel.id}`, 'Médico — ' + it.name);
+            }
+            // Equipos de oficina: cotización por artículo
+            const { data: offs } = await supabase.from('office_equipment').select('id, name').eq('area_key', 'equipos_oficina');
+            for (const x of (offs || [])) await add(`equipos_oficina/items/${x.id}`, 'Oficina — ' + x.name);
+            // Contratista seleccionado
+            const { data: cons } = await supabase.from('contractors').select('id, name, status').eq('area_key', 'local').eq('status', 'seleccionado');
+            for (const c of (cons || [])) await add(`local/contractors/${c.id}`, 'Contratista — ' + c.name);
+            return out;
         }
 
         async function renderDocFiles(docId) {
