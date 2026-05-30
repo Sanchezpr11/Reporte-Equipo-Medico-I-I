@@ -130,16 +130,37 @@ create policy permits_rw on public.permits for all
 
 -- ---------- MARCA: identidad (una fila) ----------
 create table if not exists public.brand_info (
-    area_key   text primary key references public.areas(key) on delete cascade,
-    name       text default '',
-    slogan     text default '',
-    colors     text default '',
-    website    text default '',
-    social     text default '',
-    notes      text default '',
-    updated_at timestamptz not null default now()
+    area_key         text primary key references public.areas(key) on delete cascade,
+    name             text default '',
+    slogan           text default '',
+    colors           text default '',
+    website          text default '',
+    social           text default '',
+    marketing_budget numeric,                       -- presupuesto de mercadeo (va al financiamiento)
+    notes            text default '',
+    updated_at       timestamptz not null default now()
 );
 alter table public.brand_info enable row level security;
 drop policy if exists brand_info_rw on public.brand_info;
 create policy brand_info_rw on public.brand_info for all
     using (public.has_area(area_key)) with check (public.has_area(area_key));
+
+-- ---------- EQUIPOS: lista de equipos escogidos para comprar ----------
+create table if not exists public.purchase_equipment (
+    id         uuid primary key default gen_random_uuid(),
+    area_key   text not null default 'equipos' references public.areas(key) on delete cascade,
+    name       text not null,
+    price      numeric,
+    quantity   int not null default 1,
+    notes      text default '',
+    created_at timestamptz not null default now()
+);
+create index if not exists purchase_equipment_area_idx on public.purchase_equipment(area_key);
+alter table public.purchase_equipment enable row level security;
+drop policy if exists purchase_equipment_rw on public.purchase_equipment;
+create policy purchase_equipment_rw on public.purchase_equipment for all
+    using (public.has_area(area_key)) with check (public.has_area(area_key));
+
+-- ---------- LOCAL: precio de compra del local (numérico, va al financiamiento) ----------
+-- (office_info se creó en area-local.sql; aquí solo añadimos la columna.)
+alter table public.office_info add column if not exists purchase_price numeric;

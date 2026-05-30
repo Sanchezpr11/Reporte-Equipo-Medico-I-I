@@ -192,6 +192,8 @@
                         <input id="office-size" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 1,200 pies²"></label>
                     <label class="text-sm"><span class="text-stone-600">Precio / opción</span>
                         <input id="office-price" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. $250,000"></label>
+                    <label class="text-sm"><span class="text-stone-600">Precio del local ($) <span class="text-teal-600">· financiamiento</span></span>
+                        <input id="office-purchase-price" type="number" step="any" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 250000"></label>
                     <label class="text-sm"><span class="text-stone-600">Estatus</span>
                         <input id="office-status" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Opción de compra realizada"></label>
                     <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
@@ -289,7 +291,14 @@
                 <p class="text-teal-200 text-xs mt-2">Se nutre del estimado de cada área. Toca «Editar» en un renglón para ajustarlo a mano.</p>
             </div>
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-8">
-                <div id="fin-breakdown"></div>
+                <h3 class="font-semibold text-stone-800 mb-1">Estimado de solicitud de financiamiento</h3>
+                <p class="text-xs text-stone-400 mb-4">Desglose por área (ayuda al contable a preparar los documentos). Toca «Editar» para ajustar un renglón a mano.</p>
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <div class="relative shrink-0" style="width:200px;height:200px;">
+                        <canvas id="finPieChart"></canvas>
+                    </div>
+                    <div id="fin-legend" class="flex-1 w-full"></div>
+                </div>
             </div>
 
             <!-- Producto financiero -->
@@ -405,6 +414,8 @@
                         <input id="brand-website" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="dominio.com"></label>
                     <label class="text-sm sm:col-span-2"><span class="text-stone-600">Redes sociales</span>
                         <input id="brand-social" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="@instagram, Facebook, etc."></label>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Presupuesto de mercadeo ($) <span class="text-teal-600">· financiamiento</span></span>
+                        <input id="brand-marketing" type="number" step="any" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 30000"></label>
                     <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
                         <textarea id="brand-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ideas, decisiones, referencias…"></textarea></label>
                 </div>
@@ -448,6 +459,7 @@
                 <button onclick="window.switchEquipo('catalogo')" id="subtab-catalogo" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Catálogo</button>
                 <button onclick="window.switchEquipo('analisis')" id="subtab-analisis" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Análisis</button>
                 <button onclick="window.switchEquipo('suplidores')" id="subtab-suplidores" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Suplidores</button>
+                <button onclick="window.switchEquipo('compra')" id="subtab-compra" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Lista de compra</button>
             </div>
 
         <!-- SECCIÓN 1: CATÁLOGO -->
@@ -682,6 +694,29 @@
                     </table>
                 </div>
             </div>
+        </section>
+
+        <!-- SECCIÓN 4: LISTA DE COMPRA (equipos escogidos para comprar) -->
+        <section id="sec-compra" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Lista de compra</h2>
+                <p class="mt-2 text-stone-600">Los equipos escogidos para comprar. El total alimenta el estimado de financiamiento (renglón «Equipos médicos»).</p>
+            </div>
+            <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 flex justify-between items-center">
+                <span class="text-sm font-medium text-teal-800">Total a comprar</span>
+                <span id="compra-total" class="text-xl font-bold text-teal-800">$0</span>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div id="compra-list"></div>
+            </div>
+            <form onsubmit="window.handleAddEquipo(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <input id="nq-name" required placeholder="Equipo * (ej. FibroScan)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nq-price" type="number" step="any" placeholder="Precio unitario ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nq-qty" type="number" min="1" value="1" placeholder="Cant." class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir equipo</button>
+            </form>
         </section>
         </section><!-- /sec-equipos -->
 
@@ -1319,7 +1354,7 @@
 
         // Sub-navegación dentro de "Equipos Médicos"
         window.switchEquipo = function(sub) {
-            ['catalogo', 'analisis', 'suplidores'].forEach(s => {
+            ['catalogo', 'analisis', 'suplidores', 'compra'].forEach(s => {
                 const sec = document.getElementById('sec-' + s);
                 if (sec) sec.classList.toggle('hidden', s !== sub);
                 const st = document.getElementById('subtab-' + s);
@@ -1335,6 +1370,52 @@
                 if (costChartInstance) costChartInstance.update();
                 if (radarChartInstance) radarChartInstance.update();
             }
+            if (sub === 'compra') window.renderCompra();
+        };
+
+        // --- Equipos: lista de compra (alimenta el financiamiento) ---
+        window.renderCompra = async function() {
+            const list = document.getElementById('compra-list');
+            const { data, error } = await supabase.from('purchase_equipment').select('*').eq('area_key', 'equipos').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); document.getElementById('compra-total').textContent = '$0'; return; }
+            const eq = data || [];
+            list.innerHTML = eq.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipos en la lista de compra. Añade el primero abajo 👇</p>';
+            let total = 0;
+            eq.forEach(x => {
+                const qty = Number(x.quantity) || 1;
+                const sub = (Number(x.price) || 0) * qty;
+                total += sub;
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm';
+                row.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <span class="font-medium text-stone-800">${escapeHtml(x.name)}</span>
+                        <span class="text-xs text-stone-400">· ${fmtMoney(x.price)} × ${qty}</span>
+                    </div>
+                    <span class="font-semibold text-stone-800">${fmtMoney(sub)}</span>
+                    <button onclick="window.deleteEquipo('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                list.appendChild(row);
+            });
+            document.getElementById('compra-total').textContent = fmtMoney(total);
+        };
+        window.handleAddEquipo = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('nq-name').value.trim();
+            if (!name) return;
+            const price = document.getElementById('nq-price').value;
+            const qty = document.getElementById('nq-qty').value;
+            const { error } = await supabase.from('purchase_equipment').insert({
+                area_key: 'equipos', name,
+                price: price === '' ? null : Number(price),
+                quantity: qty === '' ? 1 : parseInt(qty, 10)
+            });
+            if (error) { alert('Error: ' + error.message); return; }
+            e.target.reset(); document.getElementById('nq-qty').value = '1'; window.renderCompra();
+        };
+        window.deleteEquipo = async function(id) {
+            if (!confirm('¿Eliminar este equipo de la lista?')) return;
+            await supabase.from('purchase_equipment').delete().eq('id', id);
+            window.renderCompra();
         };
 
         // ======================================================
@@ -1553,6 +1634,7 @@
             document.getElementById('office-address').value = o.address || '';
             document.getElementById('office-size').value = o.size || '';
             document.getElementById('office-price').value = o.price || '';
+            document.getElementById('office-purchase-price').value = (o.purchase_price ?? '');
             document.getElementById('office-status').value = o.status || '';
             document.getElementById('office-notes').value = o.notes || '';
         }
@@ -1564,6 +1646,7 @@
                 address: document.getElementById('office-address').value.trim(),
                 size: document.getElementById('office-size').value.trim(),
                 price: document.getElementById('office-price').value.trim(),
+                purchase_price: document.getElementById('office-purchase-price').value === '' ? null : Number(document.getElementById('office-purchase-price').value),
                 status: document.getElementById('office-status').value.trim(),
                 notes: document.getElementById('office-notes').value.trim(),
                 updated_at: new Date().toISOString()
@@ -1867,55 +1950,81 @@
 
         // --- Total a solicitar (se nutre del estimado de cada área) ---
         const FIN_ITEMS = [
-            { key: 'local', label: 'Costo del local', src: 'Local' },
-            { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista seleccionado' },
-            { key: 'equipos', label: 'Equipos médicos', src: 'manual' },
-            { key: 'permisos', label: 'Permisología', src: 'Permisos' },
-            { key: 'nomina', label: 'Nómina (6 meses)', src: 'Personal · ½ compensación anual' },
-            { key: 'operacional', label: 'Gastos operacionales', src: 'manual' }
+            { key: 'local', label: 'Costo del local', src: 'Local', color: '#0f766e' },
+            { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista', color: '#14b8a6' },
+            { key: 'nomina', label: 'Personal (nómina 6 meses)', src: 'Personal · ½ anual', color: '#0ea5e9' },
+            { key: 'equipos', label: 'Equipos médicos', src: 'Equipos · lista de compra', color: '#f59e0b' },
+            { key: 'mercadeo', label: 'Mercadeo', src: 'Marca · presupuesto', color: '#a855f7' }
         ];
+        let finPieInstance = null;
 
         async function renderFinBreakdown() {
-            const wrap = document.getElementById('fin-breakdown');
-            const [ovR, officeR, contrR, posR, permR] = await Promise.all([
+            const legend = document.getElementById('fin-legend');
+            const [ovR, officeR, contrR, posR, equipR, brandR] = await Promise.all([
                 supabase.from('finance_estimates').select('*').eq('area_key', 'financiamiento'),
-                supabase.from('office_info').select('price').eq('area_key', 'local').maybeSingle(),
+                supabase.from('office_info').select('purchase_price').eq('area_key', 'local').maybeSingle(),
                 supabase.from('contractors').select('quote_amount,status').eq('area_key', 'local'),
                 supabase.from('positions').select('salary').eq('area_key', 'personal'),
-                supabase.from('permits').select('cost').eq('area_key', 'permisos')
+                supabase.from('purchase_equipment').select('price,quantity').eq('area_key', 'equipos'),
+                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle()
             ]);
-            if (ovR.error) { wrap.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
+            if (ovR.error) { legend.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
             const ov = {}; (ovR.data || []).forEach(r => { ov[r.item_key] = r.amount; });
-            const parseMoney = (t) => Number(String(t == null ? '' : t).replace(/[^0-9.]/g, '')) || 0;
+            const num = (v) => Number(v) || 0;
             const auto = {
-                local: parseMoney(officeR.data && officeR.data.price),
-                remodelacion: (contrR.data || []).filter(c => c.status === 'seleccionado').reduce((a, c) => a + (Number(c.quote_amount) || 0), 0),
-                equipos: 0,
-                permisos: (permR.data || []).reduce((a, p) => a + (Number(p.cost) || 0), 0),
-                nomina: (posR.data || []).reduce((a, p) => a + (Number(p.salary) || 0), 0) / 2,
-                operacional: 0
+                local: num(officeR.data && officeR.data.purchase_price),
+                remodelacion: (contrR.data || []).filter(c => c.status === 'seleccionado').reduce((a, c) => a + num(c.quote_amount), 0),
+                nomina: (posR.data || []).reduce((a, p) => a + num(p.salary), 0) / 2,
+                equipos: (equipR.data || []).reduce((a, e) => a + num(e.price) * (num(e.quantity) || 1), 0),
+                mercadeo: num(brandR.data && brandR.data.marketing_budget)
             };
             let total = 0;
-            wrap.innerHTML = '';
-            FIN_ITEMS.forEach(it => {
+            const slices = FIN_ITEMS.map(it => {
                 const hasOv = ov[it.key] !== undefined && ov[it.key] !== null;
                 const val = hasOv ? Number(ov[it.key]) : (auto[it.key] || 0);
                 total += val;
-                const note = hasOv ? 'ajustado a mano' : (auto[it.key] ? `de ${it.src}` : (it.src === 'manual' ? 'ingresa el estimado' : `de ${it.src} · sin datos`));
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 py-3 border-b border-stone-100 last:border-0';
-                row.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-stone-800">${it.label}</p>
-                        <p class="text-xs text-stone-400">${note}</p>
-                    </div>
-                    <span class="font-semibold text-stone-800">${fmtMoney(val)}</span>
-                    <button onclick="window.editFinItem('${it.key}','${it.label.replace(/'/g, "\\'")}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>`;
-                wrap.appendChild(row);
+                const note = hasOv ? 'ajustado a mano' : (auto[it.key] ? `de ${it.src}` : `de ${it.src} · sin datos`);
+                return { ...it, val, note };
             });
+
+            // Leyenda / desglose editable
+            legend.innerHTML = '';
+            slices.forEach(s => {
+                const pct = total > 0 ? Math.round(s.val / total * 100) : 0;
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0';
+                row.innerHTML = `
+                    <span class="inline-block shrink-0 rounded-sm" style="width:12px;height:12px;background:${s.color};"></span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-stone-800">${s.label}</p>
+                        <p class="text-xs text-stone-400">${s.note}</p>
+                    </div>
+                    <span class="text-sm font-semibold text-stone-800">${fmtMoney(s.val)}</span>
+                    <span class="text-xs text-stone-400 w-9 text-right">${pct}%</span>
+                    <button onclick="window.editFinItem('${s.key}','${s.label.replace(/'/g, "\\'")}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>`;
+                legend.appendChild(row);
+            });
+
             document.getElementById('fin-total').textContent = fmtMoney(total);
             const costoEl = document.getElementById('doc-costo-total');
             if (costoEl) costoEl.textContent = fmtMoney(total);
+
+            // Gráfica de pie (dona)
+            const canvas = document.getElementById('finPieChart');
+            if (canvas && window.Chart) {
+                const data = {
+                    labels: slices.map(s => s.label),
+                    datasets: [{ data: slices.map(s => s.val), backgroundColor: slices.map(s => s.color), borderWidth: 2, borderColor: '#fff' }]
+                };
+                if (finPieInstance) {
+                    finPieInstance.data = data; finPieInstance.update();
+                } else {
+                    finPieInstance = new Chart(canvas.getContext('2d'), {
+                        type: 'doughnut', data,
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false } } }
+                    });
+                }
+            }
         }
 
         window.editFinItem = async function(key, label) {
@@ -2272,6 +2381,7 @@
             document.getElementById('brand-colors').value = b.colors || '';
             document.getElementById('brand-website').value = b.website || '';
             document.getElementById('brand-social').value = b.social || '';
+            document.getElementById('brand-marketing').value = (b.marketing_budget ?? '');
             document.getElementById('brand-notes').value = b.notes || '';
         }
         window.saveBrandInfo = async function(e) {
@@ -2283,6 +2393,7 @@
                 colors: document.getElementById('brand-colors').value.trim(),
                 website: document.getElementById('brand-website').value.trim(),
                 social: document.getElementById('brand-social').value.trim(),
+                marketing_budget: document.getElementById('brand-marketing').value === '' ? null : Number(document.getElementById('brand-marketing').value),
                 notes: document.getElementById('brand-notes').value.trim(),
                 updated_at: new Date().toISOString()
             };
