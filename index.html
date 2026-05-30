@@ -2144,19 +2144,21 @@
             { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista', color: '#14b8a6' },
             { key: 'nomina', label: 'Personal (nómina 6 meses)', src: 'Personal · ½ anual', color: '#0ea5e9' },
             { key: 'equipos', label: 'Equipos médicos', src: 'Equipos · lista de compra', color: '#f59e0b' },
+            { key: 'oficina', label: 'Equipo de oficina', src: 'Equipos · equipo de oficina', color: '#6366f1' },
             { key: 'mercadeo', label: 'Mercadeo', src: 'Marca · presupuesto', color: '#a855f7' }
         ];
         let finPieInstance = null;
 
         async function renderFinBreakdown() {
             const legend = document.getElementById('fin-legend');
-            const [ovR, officeR, contrR, posR, equipR, brandR] = await Promise.all([
+            const [ovR, officeR, contrR, posR, equipR, brandR, officeEqR] = await Promise.all([
                 supabase.from('finance_estimates').select('*').eq('area_key', 'financiamiento'),
                 supabase.from('office_info').select('purchase_price').eq('area_key', 'local').maybeSingle(),
                 supabase.from('contractors').select('quote_amount,status').eq('area_key', 'local'),
                 supabase.from('positions').select('salary').eq('area_key', 'personal'),
                 supabase.from('equipment_items').select('quantity, equipment_quotes(price, selected)').eq('area_key', 'equipos'),
-                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle()
+                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle(),
+                supabase.from('office_equipment').select('quantity, unit_price').eq('area_key', 'equipos')
             ]);
             if (ovR.error) { legend.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
             const ov = {}; (ovR.data || []).forEach(r => { ov[r.item_key] = r.amount; });
@@ -2169,7 +2171,8 @@
                     const sel = (it.equipment_quotes || []).find(q => q.selected);
                     return a + (sel ? num(sel.price) : 0) * (num(it.quantity) || 1);
                 }, 0),
-                mercadeo: num(brandR.data && brandR.data.marketing_budget)
+                mercadeo: num(brandR.data && brandR.data.marketing_budget),
+                oficina: (officeEqR.data || []).reduce((a, o) => a + num(o.unit_price) * (num(o.quantity) || 1), 0)
             };
             let total = 0;
             const slices = FIN_ITEMS.map(it => {
