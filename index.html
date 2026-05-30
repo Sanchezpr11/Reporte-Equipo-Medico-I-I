@@ -460,6 +460,7 @@
                 <button onclick="window.switchEquipo('analisis')" id="subtab-analisis" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Análisis</button>
                 <button onclick="window.switchEquipo('suplidores')" id="subtab-suplidores" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Suplidores</button>
                 <button onclick="window.switchEquipo('compra')" id="subtab-compra" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Lista de compra</button>
+                <button onclick="window.switchEquipo('oficina')" id="subtab-oficina" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Equipo de oficina</button>
             </div>
 
         <!-- SECCIÓN 1: CATÁLOGO -->
@@ -539,6 +540,24 @@
                         <h4 class="font-bold text-amber-600 flex items-center"><span class="mr-2">🟠</span> iLivTouch (Hisky Medical)</h4>
                         <p class="text-sm"><strong>Costo Estimado:</strong> $50,000 - $80,000.</p>
                         <p class="text-sm mt-1">Alternativa costo-efectiva con guía ultrasónica integrada en algunos modelos (modo B-Ultrasound), facilitando la localización del hígado. Dependiendo de la integración, puede justificar la facturación del CPT 76981. Reduce el CAPEX significativamente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Elegir equipo para comprar (alimenta la lista de compra) -->
+            <div class="bg-white rounded-xl shadow-md border border-stone-100 p-6 mb-8">
+                <h3 class="font-bold text-stone-800 mb-1">¿Cuál eliges para comprar?</h3>
+                <p class="text-sm text-stone-500 mb-4">Al elegir, se añade a tu <strong>Lista de compra</strong> con los estimados de este análisis. Luego agregas las cotizaciones reales de suplidores.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="border border-stone-200 rounded-lg p-4">
+                        <p class="font-bold text-teal-800">🔵 FibroScan (Echosens)</p>
+                        <p class="text-xs text-stone-500 mb-3">$85,000 - $120,000</p>
+                        <button id="choose-fibroscan" onclick="window.chooseAnalysis('fibroscan')" class="w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors bg-stone-100 text-stone-700 hover:bg-stone-200">Elegir para comprar</button>
+                    </div>
+                    <div class="border border-stone-200 rounded-lg p-4">
+                        <p class="font-bold text-amber-600">🟠 iLivTouch (Hisky Medical)</p>
+                        <p class="text-xs text-stone-500 mb-3">$50,000 - $80,000</p>
+                        <button id="choose-iliv" onclick="window.chooseAnalysis('iliv')" class="w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors bg-stone-100 text-stone-700 hover:bg-stone-200">Elegir para comprar</button>
                     </div>
                 </div>
             </div>
@@ -700,7 +719,7 @@
         <section id="sec-compra" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Lista de compra</h2>
-                <p class="mt-2 text-stone-600">Los equipos escogidos para comprar. El total alimenta el estimado de financiamiento (renglón «Equipos médicos»).</p>
+                <p class="mt-2 text-stone-600">Para cada equipo añade <strong>2-3 alternativas</strong> de suplidores y elige una; el total alimenta el estimado de financiamiento (renglón «Equipos médicos»).</p>
             </div>
             <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 flex justify-between items-center">
                 <span class="text-sm font-medium text-teal-800">Total a comprar</span>
@@ -712,10 +731,34 @@
             <form onsubmit="window.handleAddEquipo(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <input id="nq-name" required placeholder="Equipo * (ej. FibroScan)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="nq-price" type="number" step="any" placeholder="Precio unitario ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nq-price" type="number" step="any" placeholder="Precio inicial ($, opcional)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     <input id="nq-qty" type="number" min="1" value="1" placeholder="Cant." class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 </div>
                 <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir equipo</button>
+            </form>
+        </section>
+
+        <!-- SECCIÓN 5: EQUIPO DE OFICINA -->
+        <section id="sec-oficina" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Equipo de oficina</h2>
+                <p class="mt-2 text-stone-600">Mobiliario y enseres de la oficina: escritorios, sillas, sala de espera, nevera, lockers, supplies y más.</p>
+            </div>
+            <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 flex justify-between items-center">
+                <span class="text-sm font-medium text-teal-800">Total equipo de oficina</span>
+                <span id="oficina-total" class="text-xl font-bold text-teal-800">$0</span>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div id="oficina-list"></div>
+            </div>
+            <form onsubmit="window.handleAddOffice(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                    <input id="no-name" required placeholder="Artículo * (ej. Escritorio)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="no-category" placeholder="Categoría" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="no-price" type="number" step="any" placeholder="Precio unit. ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="no-qty" type="number" min="1" value="1" placeholder="Cant." class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                </div>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir artículo</button>
             </form>
         </section>
         </section><!-- /sec-equipos -->
@@ -1354,7 +1397,7 @@
 
         // Sub-navegación dentro de "Equipos Médicos"
         window.switchEquipo = function(sub) {
-            ['catalogo', 'analisis', 'suplidores', 'compra'].forEach(s => {
+            ['catalogo', 'analisis', 'suplidores', 'compra', 'oficina'].forEach(s => {
                 const sec = document.getElementById('sec-' + s);
                 if (sec) sec.classList.toggle('hidden', s !== sub);
                 const st = document.getElementById('subtab-' + s);
@@ -1369,32 +1412,56 @@
             if (sub === 'analisis') {
                 if (costChartInstance) costChartInstance.update();
                 if (radarChartInstance) radarChartInstance.update();
+                window.refreshAnalysisChoice();
             }
             if (sub === 'compra') window.renderCompra();
+            if (sub === 'oficina') window.renderOficina();
         };
 
-        // --- Equipos: lista de compra (alimenta el financiamiento) ---
+        // --- Equipos médicos: lista de compra con alternativas de suplidores ---
         window.renderCompra = async function() {
             const list = document.getElementById('compra-list');
-            const { data, error } = await supabase.from('purchase_equipment').select('*').eq('area_key', 'equipos').order('created_at');
-            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); document.getElementById('compra-total').textContent = '$0'; return; }
-            const eq = data || [];
-            list.innerHTML = eq.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipos en la lista de compra. Añade el primero abajo 👇</p>';
+            const { data, error } = await supabase.from('equipment_items')
+                .select('*, equipment_quotes(*)').eq('area_key', 'equipos').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'equipos-alternativas.sql'); document.getElementById('compra-total').textContent = '$0'; return; }
+            const items = data || [];
+            list.innerHTML = items.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipos. Añádelos abajo, o elígelos desde el Análisis 👇</p>';
             let total = 0;
-            eq.forEach(x => {
-                const qty = Number(x.quantity) || 1;
-                const sub = (Number(x.price) || 0) * qty;
-                total += sub;
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm';
-                row.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <span class="font-medium text-stone-800">${escapeHtml(x.name)}</span>
-                        <span class="text-xs text-stone-400">· ${fmtMoney(x.price)} × ${qty}</span>
+            items.forEach(it => {
+                const quotes = (it.equipment_quotes || []).slice().sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+                const sel = quotes.find(q => q.selected);
+                const qty = Number(it.quantity) || 1;
+                const itemCost = sel ? (Number(sel.price) || 0) * qty : 0;
+                total += itemCost;
+                const quotesHtml = quotes.length ? quotes.map(q => {
+                    const on = q.selected;
+                    return `<div class="flex items-center gap-2 py-1 text-sm">
+                        <button onclick="window.selectQuote('${it.id}','${q.id}')" title="Elegir esta alternativa" class="shrink-0 w-5 h-5 rounded-full border flex items-center justify-center text-xs ${on ? 'bg-teal-600 border-teal-600 text-white' : 'border-stone-300 text-transparent hover:border-teal-400'}">✓</button>
+                        <span class="flex-1 ${on ? 'font-medium text-stone-800' : 'text-stone-600'}">${escapeHtml(q.supplier || 'Suplidor')}</span>
+                        <span class="${on ? 'font-semibold text-teal-700' : 'text-stone-500'}">${fmtMoney(q.price)}</span>
+                        <button onclick="window.deleteQuote('${q.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                    </div>`;
+                }).join('') : '<p class="text-xs text-amber-600 py-1">Añade al menos 2-3 alternativas de suplidores 👇</p>';
+                const card = document.createElement('div');
+                card.className = 'border border-stone-200 rounded-lg p-4 mb-3';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="min-w-0">
+                            <h4 class="font-semibold text-stone-800">${escapeHtml(it.name)}</h4>
+                            <p class="text-xs text-stone-400">Cantidad: ${qty}${sel ? '' : ' · falta elegir alternativa'}</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="font-bold text-stone-800">${fmtMoney(itemCost)}</p>
+                            <button onclick="window.deleteItem('${it.id}')" class="text-xs text-stone-400 hover:text-red-600">Eliminar</button>
+                        </div>
                     </div>
-                    <span class="font-semibold text-stone-800">${fmtMoney(sub)}</span>
-                    <button onclick="window.deleteEquipo('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
-                list.appendChild(row);
+                    <div class="mt-2 pl-1">${quotesHtml}</div>
+                    <form onsubmit="window.addQuote(event,'${it.id}')" class="flex gap-2 mt-2">
+                        <input id="qs-${it.id}" placeholder="Tienda / suplidor" class="flex-1 rounded-md border border-stone-300 p-1.5 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        <input id="qp-${it.id}" type="number" step="any" placeholder="Precio $" class="w-28 rounded-md border border-stone-300 p-1.5 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        <button type="submit" class="bg-stone-200 hover:bg-stone-300 text-stone-700 px-3 rounded-md text-sm whitespace-nowrap">+ Alternativa</button>
+                    </form>`;
+                list.appendChild(card);
             });
             document.getElementById('compra-total').textContent = fmtMoney(total);
         };
@@ -1404,18 +1471,141 @@
             if (!name) return;
             const price = document.getElementById('nq-price').value;
             const qty = document.getElementById('nq-qty').value;
-            const { error } = await supabase.from('purchase_equipment').insert({
+            const { data: item, error } = await supabase.from('equipment_items')
+                .insert({ area_key: 'equipos', name, quantity: qty === '' ? 1 : parseInt(qty, 10) })
+                .select().single();
+            if (error) { alert('Error: ' + error.message); return; }
+            if (price !== '' && item) {
+                await supabase.from('equipment_quotes').insert({ area_key: 'equipos', item_id: item.id, supplier: 'Estimado inicial', price: Number(price), selected: true });
+            }
+            e.target.reset(); document.getElementById('nq-qty').value = '1'; window.renderCompra();
+        };
+        window.deleteItem = async function(id) {
+            if (!confirm('¿Eliminar este equipo y sus alternativas?')) return;
+            await supabase.from('equipment_items').delete().eq('id', id);
+            window.renderCompra();
+        };
+        window.addQuote = async function(e, itemId) {
+            e.preventDefault();
+            const supplier = document.getElementById('qs-' + itemId).value.trim();
+            const price = document.getElementById('qp-' + itemId).value;
+            if (!supplier && price === '') return;
+            const { data: existing } = await supabase.from('equipment_quotes').select('id').eq('item_id', itemId);
+            const isFirst = !existing || existing.length === 0;
+            const { error } = await supabase.from('equipment_quotes').insert({
+                area_key: 'equipos', item_id: itemId, supplier, price: price === '' ? null : Number(price), selected: isFirst
+            });
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderCompra();
+        };
+        window.selectQuote = async function(itemId, quoteId) {
+            await supabase.from('equipment_quotes').update({ selected: false }).eq('item_id', itemId);
+            await supabase.from('equipment_quotes').update({ selected: true }).eq('id', quoteId);
+            window.renderCompra();
+        };
+        window.deleteQuote = async function(quoteId) {
+            await supabase.from('equipment_quotes').delete().eq('id', quoteId);
+            window.renderCompra();
+        };
+
+        // --- Análisis: elegir FibroScan o iLivTouch (alimenta la lista de compra) ---
+        const ANALYSIS_OPTIONS = {
+            fibroscan: { name: 'FibroScan (Echosens)', min: 85000, max: 120000 },
+            iliv: { name: 'iLivTouch (Hisky Medical)', min: 50000, max: 80000 }
+        };
+        window.chooseAnalysis = async function(key) {
+            const opt = ANALYSIS_OPTIONS[key]; if (!opt) return;
+            const { data: existing } = await supabase.from('equipment_items').select('id').eq('area_key', 'equipos').eq('item_key', key);
+            if (existing && existing.length) { alert(`"${opt.name}" ya está en tu Lista de compra.`); return; }
+            const { data: item, error } = await supabase.from('equipment_items')
+                .insert({ area_key: 'equipos', name: opt.name, item_key: key, quantity: 1 }).select().single();
+            if (error) { alert('Error: ' + error.message); return; }
+            await supabase.from('equipment_quotes').insert([
+                { area_key: 'equipos', item_id: item.id, supplier: 'Estimado mínimo (análisis)', price: opt.min, selected: true },
+                { area_key: 'equipos', item_id: item.id, supplier: 'Estimado máximo (análisis)', price: opt.max, selected: false }
+            ]);
+            await window.refreshAnalysisChoice();
+            alert(`"${opt.name}" añadido a la Lista de compra con los estimados del análisis. Ve a «Lista de compra» para añadir cotizaciones reales de suplidores.`);
+        };
+        window.refreshAnalysisChoice = async function() {
+            const { data } = await supabase.from('equipment_items').select('item_key').eq('area_key', 'equipos').not('item_key', 'is', null);
+            const keys = new Set((data || []).map(r => r.item_key));
+            ['fibroscan', 'iliv'].forEach(k => {
+                const btn = document.getElementById('choose-' + k);
+                if (!btn) return;
+                const inList = keys.has(k);
+                btn.textContent = inList ? '✓ En tu lista de compra' : 'Elegir para comprar';
+                btn.classList.toggle('bg-teal-700', inList);
+                btn.classList.toggle('text-white', inList);
+                btn.classList.toggle('bg-stone-100', !inList);
+                btn.classList.toggle('text-stone-700', !inList);
+                btn.disabled = inList;
+            });
+        };
+
+        // --- Equipo de oficina ---
+        window.renderOficina = async function() {
+            const list = document.getElementById('oficina-list');
+            const { data, error } = await supabase.from('office_equipment').select('*').eq('area_key', 'equipos').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'equipos-alternativas.sql'); document.getElementById('oficina-total').textContent = '$0'; return; }
+            const eq = data || [];
+            list.innerHTML = eq.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipo de oficina. Añade el primero abajo 👇</p>';
+            let total = 0;
+            eq.forEach(x => {
+                const qty = Number(x.quantity) || 1;
+                const sub = (Number(x.unit_price) || 0) * qty;
+                total += sub;
+                const bought = x.status === 'comprado';
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm flex-wrap';
+                row.innerHTML = `
+                    <div class="flex-1 min-w-[8rem]">
+                        <span class="font-medium text-stone-800 ${bought ? 'line-through text-stone-400' : ''}">${escapeHtml(x.name)}</span>
+                        ${x.category ? `<span class="text-xs text-stone-400">· ${escapeHtml(x.category)}</span>` : ''}
+                    </div>
+                    <label class="text-xs text-stone-400 flex items-center gap-1">P. unit.
+                        <input type="number" step="any" value="${x.unit_price ?? ''}" placeholder="$" onchange="window.updateOffice('${x.id}','unit_price',this.value)" class="w-24 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                    <label class="text-xs text-stone-400 flex items-center gap-1">Cant.
+                        <input type="number" min="1" value="${qty}" onchange="window.updateOffice('${x.id}','quantity',this.value)" class="w-14 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                    <span class="font-semibold text-stone-800 w-24 text-right">${fmtMoney(sub)}</span>
+                    <select onchange="window.updateOffice('${x.id}','status',this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
+                        <option value="pendiente" ${!bought ? 'selected' : ''}>Pendiente</option>
+                        <option value="comprado" ${bought ? 'selected' : ''}>Comprado</option>
+                    </select>
+                    <button onclick="window.deleteOffice('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                list.appendChild(row);
+            });
+            document.getElementById('oficina-total').textContent = fmtMoney(total);
+        };
+        window.handleAddOffice = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('no-name').value.trim();
+            if (!name) return;
+            const price = document.getElementById('no-price').value;
+            const qty = document.getElementById('no-qty').value;
+            const { error } = await supabase.from('office_equipment').insert({
                 area_key: 'equipos', name,
-                price: price === '' ? null : Number(price),
+                category: document.getElementById('no-category').value.trim(),
+                unit_price: price === '' ? null : Number(price),
                 quantity: qty === '' ? 1 : parseInt(qty, 10)
             });
             if (error) { alert('Error: ' + error.message); return; }
-            e.target.reset(); document.getElementById('nq-qty').value = '1'; window.renderCompra();
+            e.target.reset(); document.getElementById('no-qty').value = '1'; window.renderOficina();
         };
-        window.deleteEquipo = async function(id) {
-            if (!confirm('¿Eliminar este equipo de la lista?')) return;
-            await supabase.from('purchase_equipment').delete().eq('id', id);
-            window.renderCompra();
+        window.updateOffice = async function(id, field, value) {
+            const patch = {};
+            if (field === 'unit_price') patch.unit_price = value === '' ? null : Number(value);
+            else if (field === 'quantity') patch.quantity = value === '' ? 1 : parseInt(value, 10);
+            else patch[field] = value;
+            await supabase.from('office_equipment').update(patch).eq('id', id);
+            window.renderOficina();
+        };
+        window.deleteOffice = async function(id) {
+            if (!confirm('¿Eliminar este equipo de oficina?')) return;
+            await supabase.from('office_equipment').delete().eq('id', id);
+            window.renderOficina();
         };
 
         // ======================================================
@@ -1954,19 +2144,21 @@
             { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista', color: '#14b8a6' },
             { key: 'nomina', label: 'Personal (nómina 6 meses)', src: 'Personal · ½ anual', color: '#0ea5e9' },
             { key: 'equipos', label: 'Equipos médicos', src: 'Equipos · lista de compra', color: '#f59e0b' },
+            { key: 'oficina', label: 'Equipo de oficina', src: 'Equipos · equipo de oficina', color: '#6366f1' },
             { key: 'mercadeo', label: 'Mercadeo', src: 'Marca · presupuesto', color: '#a855f7' }
         ];
         let finPieInstance = null;
 
         async function renderFinBreakdown() {
             const legend = document.getElementById('fin-legend');
-            const [ovR, officeR, contrR, posR, equipR, brandR] = await Promise.all([
+            const [ovR, officeR, contrR, posR, equipR, brandR, officeEqR] = await Promise.all([
                 supabase.from('finance_estimates').select('*').eq('area_key', 'financiamiento'),
                 supabase.from('office_info').select('purchase_price').eq('area_key', 'local').maybeSingle(),
                 supabase.from('contractors').select('quote_amount,status').eq('area_key', 'local'),
                 supabase.from('positions').select('salary').eq('area_key', 'personal'),
-                supabase.from('purchase_equipment').select('price,quantity').eq('area_key', 'equipos'),
-                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle()
+                supabase.from('equipment_items').select('quantity, equipment_quotes(price, selected)').eq('area_key', 'equipos'),
+                supabase.from('brand_info').select('marketing_budget').eq('area_key', 'marca').maybeSingle(),
+                supabase.from('office_equipment').select('quantity, unit_price').eq('area_key', 'equipos')
             ]);
             if (ovR.error) { legend.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
             const ov = {}; (ovR.data || []).forEach(r => { ov[r.item_key] = r.amount; });
@@ -1975,8 +2167,12 @@
                 local: num(officeR.data && officeR.data.purchase_price),
                 remodelacion: (contrR.data || []).filter(c => c.status === 'seleccionado').reduce((a, c) => a + num(c.quote_amount), 0),
                 nomina: (posR.data || []).reduce((a, p) => a + num(p.salary), 0) / 2,
-                equipos: (equipR.data || []).reduce((a, e) => a + num(e.price) * (num(e.quantity) || 1), 0),
-                mercadeo: num(brandR.data && brandR.data.marketing_budget)
+                equipos: (equipR.data || []).reduce((a, it) => {
+                    const sel = (it.equipment_quotes || []).find(q => q.selected);
+                    return a + (sel ? num(sel.price) : 0) * (num(it.quantity) || 1);
+                }, 0),
+                mercadeo: num(brandR.data && brandR.data.marketing_budget),
+                oficina: (officeEqR.data || []).reduce((a, o) => a + num(o.unit_price) * (num(o.quantity) || 1), 0)
             };
             let total = 0;
             const slices = FIN_ITEMS.map(it => {
