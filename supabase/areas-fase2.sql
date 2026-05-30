@@ -67,10 +67,16 @@ from (values
      'Del Real Estate company y de la operación.', 2),
     ('financiamiento', 'business_plan',     'Business plan',
      '', 3),
-    ('financiamiento', 'estado_financiero', 'Estado de condición financiera de los Miembros',
-     'Estado reciente (incluye modelo a utilizar) + últimas dos planillas de contribución sobre ingresos.', 4),
+    ('financiamiento', 'estado_fin_hernandez', 'Estado de condición financiera — Dra. Hernández',
+     'Estado reciente (incluye modelo a utilizar).', 4),
+    ('financiamiento', 'planillas_hernandez',  'Planillas personales (últimos 2 años) — Dra. Hernández',
+     'Últimas dos planillas de contribución sobre ingresos.', 5),
+    ('financiamiento', 'estado_fin_arroyo',    'Estado de condición financiera — Dra. Arroyo',
+     'Estado reciente (incluye modelo a utilizar).', 6),
+    ('financiamiento', 'planillas_arroyo',     'Planillas personales (últimos 2 años) — Dra. Arroyo',
+     'Últimas dos planillas de contribución sobre ingresos.', 7),
     ('financiamiento', 'contrato_opcion',   'Copia del Contrato de Opción Compraventa firmado',
-     'Una vez esté disponible.', 5)
+     'Una vez esté disponible.', 8)
 ) as x(area_key, doc_key, name, description, ord)
 where not exists (
     select 1 from public.bank_documents b
