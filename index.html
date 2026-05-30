@@ -275,61 +275,68 @@
             </div>
         </section>
 
-        <!-- ÁREA: FINANCIAMIENTO -->
+        <!-- ÁREA: FINANCIAMIENTO (el préstamo del banco) -->
         <section id="sec-financiamiento" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Financiamiento</h2>
-                <p class="mt-2 text-stone-600">El dinero del proyecto: de dónde vienen los fondos y en qué se gastan (estimado vs. real).</p>
+                <p class="mt-2 text-stone-600">El préstamo con el banco: el producto financiero, los contactos, los documentos que solicitan y el total a solicitar (se nutre del estimado de cada área).</p>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
-                    <p class="text-xs text-stone-400 uppercase tracking-wide">Fondos confirmados</p>
-                    <p id="fin-funds" class="text-xl font-bold text-stone-800 mt-1">$0</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
-                    <p class="text-xs text-stone-400 uppercase tracking-wide">Gasto estimado</p>
-                    <p id="fin-est" class="text-xl font-bold text-stone-800 mt-1">$0</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
-                    <p class="text-xs text-stone-400 uppercase tracking-wide">Gasto real</p>
-                    <p id="fin-actual" class="text-xl font-bold text-stone-800 mt-1">$0</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
-                    <p class="text-xs text-stone-400 uppercase tracking-wide">Disponible</p>
-                    <p id="fin-available" class="text-xl font-bold text-teal-700 mt-1">$0</p>
-                </div>
+            <!-- Total a solicitar -->
+            <div class="bg-teal-800 text-stone-50 rounded-xl p-6 mb-4">
+                <p class="text-teal-100 text-sm">Total estimado a solicitar al banco</p>
+                <p id="fin-total" class="text-4xl font-bold mt-1">$0</p>
+                <p class="text-teal-200 text-xs mt-2">Se nutre del estimado de cada área. Toca «Editar» en un renglón para ajustarlo a mano.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-8">
+                <div id="fin-breakdown"></div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <h3 class="font-semibold text-stone-800 mb-3">Fuentes de fondos</h3>
-                <div id="funding-list"></div>
-            </div>
-            <form onsubmit="window.handleAddFunding(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <input id="nf-name" required placeholder="Fuente * (ej. Préstamo BPPR)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <select id="nf-type" class="rounded-md border border-stone-300 p-2 text-sm bg-white outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                        <option value="prestamo">Préstamo</option>
-                        <option value="inversion">Inversión</option>
-                        <option value="ahorro">Ahorro propio</option>
-                        <option value="otro">Otro</option>
-                    </select>
-                    <input id="nf-amount" type="number" step="any" placeholder="Monto ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+            <!-- Producto financiero -->
+            <form onsubmit="window.saveBankProduct(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-stone-800">Producto financiero</h3>
+                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
                 </div>
-                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir fuente</button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="text-sm"><span class="text-stone-600">Banco</span>
+                        <input id="bank-name" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Banco Popular"></label>
+                    <label class="text-sm"><span class="text-stone-600">Producto</span>
+                        <input id="bank-product" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Préstamo comercial / SBA"></label>
+                    <label class="text-sm"><span class="text-stone-600">Tasa</span>
+                        <input id="bank-rate" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 8.5%"></label>
+                    <label class="text-sm"><span class="text-stone-600">Plazo</span>
+                        <input id="bank-term" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 7 años"></label>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
+                        <textarea id="bank-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Condiciones, requisitos, próximos pasos…"></textarea></label>
+                </div>
             </form>
 
+            <!-- Contactos del banco -->
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <h3 class="font-semibold text-stone-800 mb-3">Gastos</h3>
-                <div id="expenses-list"></div>
+                <h3 class="font-semibold text-stone-800 mb-3">Contactos del banco</h3>
+                <div id="bank-contacts-list"></div>
             </div>
-            <form onsubmit="window.handleAddExpense(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <input id="ne-concept" required placeholder="Concepto * (ej. Equipos médicos)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="ne-category" placeholder="Categoría" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="ne-estimated" type="number" step="any" placeholder="Estimado ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+            <form onsubmit="window.handleAddBankContact(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input id="nbc-name" required placeholder="Nombre *" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nbc-phone" placeholder="Teléfono" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nbc-email" type="email" placeholder="Email" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 </div>
-                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir gasto</button>
+                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir contacto</button>
+            </form>
+
+            <!-- Documentos solicitados -->
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-stone-800">Documentos solicitados</h3>
+                    <span id="bank-docs-progress" class="text-sm text-stone-500">0/0</span>
+                </div>
+                <div id="bank-docs-list"></div>
+            </div>
+            <form onsubmit="window.handleAddBankDoc(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
+                <input id="nbd-name" required placeholder="Documento… (ej. Estados financieros 2 años)" class="flex-1 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
             </form>
         </section>
 
@@ -348,7 +355,7 @@
             <form onsubmit="window.handleAddPosition(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <input id="np-title" required placeholder="Puesto * (ej. Recepcionista)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="np-salary" type="number" step="any" placeholder="Salario ($, opcional)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="np-salary" type="number" step="any" placeholder="Salario anual ($, opcional)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 </div>
                 <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir puesto</button>
             </form>
@@ -1455,14 +1462,14 @@
 
             // Traer los datos de cada área en paralelo (tolerante si una tabla aún no existe)
             const safe = (res) => (res && !res.error && res.data) ? res.data : [];
-            const [tasksR, stagesR, expensesR, positionsR, permitsR] = await Promise.all([
+            const [tasksR, stagesR, docsR, positionsR, permitsR] = await Promise.all([
                 supabase.from('tasks').select('area_key, status'),
                 supabase.from('stages').select('progress').eq('area_key', 'local'),
-                supabase.from('expenses').select('estimated, actual, status').eq('area_key', 'financiamiento'),
+                supabase.from('bank_documents').select('status').eq('area_key', 'financiamiento'),
                 supabase.from('positions').select('status').eq('area_key', 'personal'),
                 supabase.from('permits').select('status').eq('area_key', 'permisos')
             ]);
-            const tasks = safe(tasksR), stages = safe(stagesR), expenses = safe(expensesR), positions = safe(positionsR), permits = safe(permitsR);
+            const tasks = safe(tasksR), stages = safe(stagesR), docs = safe(docsR), positions = safe(positionsR), permits = safe(permitsR);
 
             const byArea = {};
             tasks.forEach(t => { const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 }; g.total++; if (t.status === 'hecho') g.done++; });
@@ -1475,11 +1482,8 @@
                     return { pct, sub: stages.length ? `${done}/${stages.length} etapas de obra` : 'Fase 1: contratistas' };
                 }
                 if (key === 'financiamiento') {
-                    const total = expenses.length;
-                    const paid = expenses.filter(e => e.status === 'pagado');
-                    const est = expenses.reduce((a, e) => a + (Number(e.estimated) || 0), 0);
-                    const paidAmt = paid.reduce((a, e) => a + (Number(e.actual) || Number(e.estimated) || 0), 0);
-                    return { pct: total ? Math.round(paid.length / total * 100) : 0, sub: total ? `${money(paidAmt)} pagado de ${money(est)}` : 'Sin gastos aún' };
+                    const total = docs.length, done = docs.filter(d => d.status === 'entregado').length;
+                    return { pct: total ? Math.round(done / total * 100) : 0, sub: total ? `${done}/${total} documentos al banco` : 'Preparando solicitud' };
                 }
                 if (key === 'personal') {
                     const total = positions.length, hired = positions.filter(p => p.status === 'contratado').length;
@@ -1855,122 +1859,248 @@
         }
 
         // ======================================================
-        // ÁREA FINANCIAMIENTO (fuentes de fondos + gastos)
+        // ÁREA FINANCIAMIENTO (préstamo del banco)
         // ======================================================
         window.renderFinanciamiento = async function() {
-            const [fR, eR] = await Promise.all([
-                supabase.from('funding_sources').select('*').eq('area_key', 'financiamiento').order('created_at'),
-                supabase.from('expenses').select('*').eq('area_key', 'financiamiento').order('created_at')
-            ]);
-            renderFundingList(fR);
-            renderExpensesList(eR);
-            const fs = fR.data || [], ex = eR.data || [];
-            const funds = fs.filter(f => f.status !== 'proyectado').reduce((a, f) => a + (Number(f.amount) || 0), 0);
-            const est = ex.reduce((a, x) => a + (Number(x.estimated) || 0), 0);
-            const act = ex.reduce((a, x) => a + (Number(x.actual) || 0), 0);
-            document.getElementById('fin-funds').textContent = fmtMoney(funds);
-            document.getElementById('fin-est').textContent = fmtMoney(est);
-            document.getElementById('fin-actual').textContent = fmtMoney(act);
-            document.getElementById('fin-available').textContent = fmtMoney(funds - act);
+            await Promise.all([loadBankProduct(), renderBankContacts(), renderBankDocs(), renderFinBreakdown()]);
         };
 
-        const FUND_TYPES = { prestamo: 'Préstamo', inversion: 'Inversión', ahorro: 'Ahorro propio', otro: 'Otro' };
-        const FUND_STATUS = { proyectado: 'Proyectado', confirmado: 'Confirmado', recibido: 'Recibido' };
+        // --- Total a solicitar (se nutre del estimado de cada área) ---
+        const FIN_ITEMS = [
+            { key: 'local', label: 'Costo del local', src: 'Local' },
+            { key: 'remodelacion', label: 'Remodelación', src: 'Local · contratista seleccionado' },
+            { key: 'equipos', label: 'Equipos médicos', src: 'manual' },
+            { key: 'permisos', label: 'Permisología', src: 'Permisos' },
+            { key: 'nomina', label: 'Nómina (6 meses)', src: 'Personal · ½ compensación anual' },
+            { key: 'operacional', label: 'Gastos operacionales', src: 'manual' }
+        ];
 
-        function renderFundingList(res) {
-            const list = document.getElementById('funding-list');
-            if (res.error) { list.innerHTML = sqlErr(res.error, 'areas-fase2.sql'); return; }
-            const fs = res.data || [];
-            list.innerHTML = fs.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay fuentes de fondos.</p>';
-            fs.forEach(f => {
+        async function renderFinBreakdown() {
+            const wrap = document.getElementById('fin-breakdown');
+            const [ovR, officeR, contrR, posR, permR] = await Promise.all([
+                supabase.from('finance_estimates').select('*').eq('area_key', 'financiamiento'),
+                supabase.from('office_info').select('price').eq('area_key', 'local').maybeSingle(),
+                supabase.from('contractors').select('quote_amount,status').eq('area_key', 'local'),
+                supabase.from('positions').select('salary').eq('area_key', 'personal'),
+                supabase.from('permits').select('cost').eq('area_key', 'permisos')
+            ]);
+            if (ovR.error) { wrap.innerHTML = sqlErr(ovR.error, 'areas-fase2.sql'); return; }
+            const ov = {}; (ovR.data || []).forEach(r => { ov[r.item_key] = r.amount; });
+            const parseMoney = (t) => Number(String(t == null ? '' : t).replace(/[^0-9.]/g, '')) || 0;
+            const auto = {
+                local: parseMoney(officeR.data && officeR.data.price),
+                remodelacion: (contrR.data || []).filter(c => c.status === 'seleccionado').reduce((a, c) => a + (Number(c.quote_amount) || 0), 0),
+                equipos: 0,
+                permisos: (permR.data || []).reduce((a, p) => a + (Number(p.cost) || 0), 0),
+                nomina: (posR.data || []).reduce((a, p) => a + (Number(p.salary) || 0), 0) / 2,
+                operacional: 0
+            };
+            let total = 0;
+            wrap.innerHTML = '';
+            FIN_ITEMS.forEach(it => {
+                const hasOv = ov[it.key] !== undefined && ov[it.key] !== null;
+                const val = hasOv ? Number(ov[it.key]) : (auto[it.key] || 0);
+                total += val;
+                const note = hasOv ? 'ajustado a mano' : (auto[it.key] ? `de ${it.src}` : (it.src === 'manual' ? 'ingresa el estimado' : `de ${it.src} · sin datos`));
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 py-3 border-b border-stone-100 last:border-0';
+                row.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-stone-800">${it.label}</p>
+                        <p class="text-xs text-stone-400">${note}</p>
+                    </div>
+                    <span class="font-semibold text-stone-800">${fmtMoney(val)}</span>
+                    <button onclick="window.editFinItem('${it.key}','${it.label.replace(/'/g, "\\'")}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>`;
+                wrap.appendChild(row);
+            });
+            document.getElementById('fin-total').textContent = fmtMoney(total);
+            const costoEl = document.getElementById('doc-costo-total');
+            if (costoEl) costoEl.textContent = fmtMoney(total);
+        }
+
+        window.editFinItem = async function(key, label) {
+            const { data } = await supabase.from('finance_estimates').select('amount').eq('area_key', 'financiamiento').eq('item_key', key).maybeSingle();
+            const cur = prompt(`Monto para "${label}" (vacío = usar el estimado del área):`, (data && data.amount != null) ? data.amount : '');
+            if (cur === null) return;
+            if (cur.trim() === '') {
+                await supabase.from('finance_estimates').delete().eq('area_key', 'financiamiento').eq('item_key', key);
+            } else {
+                await supabase.from('finance_estimates').upsert({ area_key: 'financiamiento', item_key: key, amount: Number(cur) }, { onConflict: 'area_key,item_key' });
+            }
+            renderFinBreakdown();
+        };
+
+        // --- Producto financiero ---
+        async function loadBankProduct() {
+            const { data } = await supabase.from('bank_product').select('*').eq('area_key', 'financiamiento').maybeSingle();
+            const b = data || {};
+            document.getElementById('bank-name').value = b.bank || '';
+            document.getElementById('bank-product').value = b.product || '';
+            document.getElementById('bank-rate').value = b.rate || '';
+            document.getElementById('bank-term').value = b.term || '';
+            document.getElementById('bank-notes').value = b.notes || '';
+        }
+        window.saveBankProduct = async function(e) {
+            e.preventDefault();
+            const payload = {
+                area_key: 'financiamiento',
+                bank: document.getElementById('bank-name').value.trim(),
+                product: document.getElementById('bank-product').value.trim(),
+                rate: document.getElementById('bank-rate').value.trim(),
+                term: document.getElementById('bank-term').value.trim(),
+                notes: document.getElementById('bank-notes').value.trim(),
+                updated_at: new Date().toISOString()
+            };
+            const { error } = await supabase.from('bank_product').upsert(payload, { onConflict: 'area_key' });
+            if (error) { alert('No se pudo guardar: ' + error.message); return; }
+            const btn = e.target.querySelector('button[type=submit]');
+            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
+        };
+
+        // --- Contactos del banco ---
+        async function renderBankContacts() {
+            const list = document.getElementById('bank-contacts-list');
+            const { data, error } = await supabase.from('bank_contacts').select('*').eq('area_key', 'financiamiento').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); return; }
+            const cs = data || [];
+            list.innerHTML = cs.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay contactos.</p>';
+            cs.forEach(c => {
                 const row = document.createElement('div');
                 row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm';
                 row.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <span class="font-medium text-stone-800">${escapeHtml(f.name)}</span>
-                        <span class="text-xs text-stone-400">· ${FUND_TYPES[f.type] || f.type}</span>
+                        <span class="font-medium text-stone-800">${escapeHtml(c.name)}</span>
+                        ${c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="text-teal-700 hover:underline ml-2">${escapeHtml(c.email)}</a>` : ''}
                     </div>
-                    <span class="font-semibold text-stone-800">${fmtMoney(f.amount)}</span>
-                    <select onchange="window.updateFunding('${f.id}', this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
-                        ${Object.entries(FUND_STATUS).map(([v, l]) => `<option value="${v}" ${f.status === v ? 'selected' : ''}>${l}</option>`).join('')}
-                    </select>
-                    <button onclick="window.deleteFunding('${f.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                    ${c.phone ? `<a href="tel:${escapeHtml(c.phone)}" class="text-stone-600 whitespace-nowrap">${escapeHtml(c.phone)}</a>` : ''}
+                    <button onclick="window.deleteBankContact('${c.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
                 list.appendChild(row);
             });
         }
-
-        window.handleAddFunding = async function(e) {
+        window.handleAddBankContact = async function(e) {
             e.preventDefault();
-            const name = document.getElementById('nf-name').value.trim();
+            const name = document.getElementById('nbc-name').value.trim();
             if (!name) return;
-            const amt = document.getElementById('nf-amount').value;
-            const { error } = await supabase.from('funding_sources').insert({
-                area_key: 'financiamiento', name, type: document.getElementById('nf-type').value,
-                amount: amt === '' ? null : Number(amt)
+            const { error } = await supabase.from('bank_contacts').insert({
+                area_key: 'financiamiento', name,
+                phone: document.getElementById('nbc-phone').value.trim(),
+                email: document.getElementById('nbc-email').value.trim()
             });
             if (error) { alert('Error: ' + error.message); return; }
-            e.target.reset(); window.renderFinanciamiento();
+            e.target.reset(); renderBankContacts();
         };
-        window.updateFunding = async function(id, status) {
-            await supabase.from('funding_sources').update({ status }).eq('id', id);
-            window.renderFinanciamiento();
-        };
-        window.deleteFunding = async function(id) {
-            if (!confirm('¿Eliminar esta fuente?')) return;
-            await supabase.from('funding_sources').delete().eq('id', id);
-            window.renderFinanciamiento();
+        window.deleteBankContact = async function(id) {
+            if (!confirm('¿Eliminar este contacto?')) return;
+            await supabase.from('bank_contacts').delete().eq('id', id);
+            renderBankContacts();
         };
 
-        function renderExpensesList(res) {
-            const list = document.getElementById('expenses-list');
-            if (res.error) { list.innerHTML = sqlErr(res.error, 'areas-fase2.sql'); return; }
-            const ex = res.data || [];
-            list.innerHTML = ex.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay gastos.</p>';
-            ex.forEach(x => {
-                const paid = x.status === 'pagado';
+        // --- Documentos solicitados (con archivos adjuntos) ---
+        async function renderBankDocs() {
+            const list = document.getElementById('bank-docs-list');
+            const { data, error } = await supabase.from('bank_documents').select('*').eq('area_key', 'financiamiento').order('ord').order('created_at');
+            if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); document.getElementById('bank-docs-progress').textContent = '0/0'; return; }
+            const docs = data || [];
+            list.innerHTML = docs.length ? '' : '<p class="text-stone-400 text-sm py-3">No hay documentos. Añade uno abajo.</p>';
+            docs.forEach(d => {
+                const done = d.status === 'entregado';
+                const card = document.createElement('div');
+                card.className = `border rounded-lg p-4 mb-3 ${done ? 'border-teal-300 bg-teal-50' : 'border-stone-200'}`;
+                card.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" ${done ? 'checked' : ''} onchange="window.toggleBankDoc('${d.id}', this.checked)" class="mt-1 rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-stone-800">${escapeHtml(d.name)}</p>
+                            ${d.description ? `<p class="text-xs text-stone-500 mt-0.5">${escapeHtml(d.description)}</p>` : ''}
+                            ${d.doc_key === 'costo_total' ? `<p class="text-xs text-teal-700 mt-1">💡 Total estimado del proyecto: <span id="doc-costo-total" class="font-semibold">—</span> (ver desglose arriba)</p>` : ''}
+                            ${d.notes ? `<p class="text-xs text-stone-500 mt-1">📝 ${escapeHtml(d.notes)}</p>` : ''}
+                            <div id="doc-files-${d.id}" class="mt-2"></div>
+                            <div class="mt-2 flex gap-4 items-center flex-wrap">
+                                <label class="text-xs font-medium text-teal-700 hover:text-teal-800 cursor-pointer">+ Subir archivo
+                                    <input type="file" multiple class="hidden" onchange="window.uploadDocFile(event, '${d.id}')">
+                                </label>
+                                <button onclick="window.editBankDoc('${d.id}')" class="text-xs text-stone-400 hover:text-amber-600">Editar</button>
+                                <button onclick="window.deleteBankDoc('${d.id}')" class="text-xs text-stone-400 hover:text-red-600">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>`;
+                list.appendChild(card);
+            });
+            const done = docs.filter(d => d.status === 'entregado').length;
+            document.getElementById('bank-docs-progress').textContent = `${done}/${docs.length}`;
+            docs.forEach(d => renderDocFiles(d.id));
+            const costoEl = document.getElementById('doc-costo-total');
+            if (costoEl) costoEl.textContent = document.getElementById('fin-total').textContent;
+        }
+
+        async function renderDocFiles(docId) {
+            const box = document.getElementById('doc-files-' + docId);
+            if (!box) return;
+            const prefix = `financiamiento/${docId}`;
+            const { data: files, error } = await supabase.storage.from(MEDIA_BUCKET).list(prefix, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+            if (error) { box.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(error.message)}</p>`; return; }
+            const items = (files || []).filter(f => f.name && f.id);
+            if (!items.length) { box.innerHTML = '<p class="text-xs text-stone-400">Sin archivos.</p>'; return; }
+            const paths = items.map(f => `${prefix}/${f.name}`);
+            const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 3600);
+            const urlByPath = {}; (signed || []).forEach(s => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
+            box.innerHTML = '';
+            items.forEach(f => {
+                const url = urlByPath[`${prefix}/${f.name}`];
+                const display = f.name.replace(/^\d+-[a-z0-9]{1,6}-/i, '');
                 const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 flex-wrap py-3 border-b border-stone-100 last:border-0 text-sm';
+                row.className = 'flex items-center gap-2 text-sm py-1';
                 row.innerHTML = `
-                    <div class="flex-1 min-w-[8rem]">
-                        <span class="font-medium text-stone-800">${escapeHtml(x.concept)}</span>
-                        ${x.category ? `<span class="text-xs text-stone-400">· ${escapeHtml(x.category)}</span>` : ''}
-                    </div>
-                    <span class="text-xs text-stone-400">Est.</span><span class="font-medium text-stone-700">${fmtMoney(x.estimated)}</span>
-                    <label class="text-xs text-stone-400 flex items-center gap-1">Real
-                        <input type="number" step="any" value="${x.actual ?? ''}" placeholder="—" onchange="window.updateExpense('${x.id}','actual',this.value)" class="w-24 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
-                    </label>
-                    <select onchange="window.updateExpense('${x.id}','status',this.value)" class="text-xs rounded-md border ${paid ? 'border-teal-300 text-teal-700' : 'border-stone-300'} bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
-                        <option value="pendiente" ${!paid ? 'selected' : ''}>Pendiente</option>
-                        <option value="pagado" ${paid ? 'selected' : ''}>Pagado</option>
-                    </select>
-                    <button onclick="window.deleteExpense('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
-                list.appendChild(row);
+                    <span>📄</span>
+                    <a href="${url || '#'}" target="_blank" rel="noopener" class="flex-1 text-teal-700 hover:underline truncate">${escapeHtml(display)}</a>
+                    <button onclick="window.deleteDocFile('${docId}','${escapeHtml(f.name)}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                box.appendChild(row);
             });
         }
 
-        window.handleAddExpense = async function(e) {
+        window.uploadDocFile = async function(e, docId) {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            for (const file of files) {
+                const safe = file.name.replace(/[^\w.\-]+/g, '_');
+                const path = `financiamiento/${docId}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+                const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, { upsert: false, contentType: file.type || undefined });
+                if (error) { console.error('doc upload', error); alert('No se pudo subir ' + file.name + ': ' + error.message); }
+            }
+            e.target.value = '';
+            renderDocFiles(docId);
+        };
+        window.deleteDocFile = async function(docId, name) {
+            if (!confirm('¿Eliminar este archivo?')) return;
+            await supabase.storage.from(MEDIA_BUCKET).remove([`financiamiento/${docId}/${name}`]);
+            renderDocFiles(docId);
+        };
+
+        window.handleAddBankDoc = async function(e) {
             e.preventDefault();
-            const concept = document.getElementById('ne-concept').value.trim();
-            if (!concept) return;
-            const est = document.getElementById('ne-estimated').value;
-            const { error } = await supabase.from('expenses').insert({
-                area_key: 'financiamiento', concept,
-                category: document.getElementById('ne-category').value.trim(),
-                estimated: est === '' ? null : Number(est)
-            });
+            const input = document.getElementById('nbd-name');
+            const name = input.value.trim();
+            if (!name) return;
+            const { error } = await supabase.from('bank_documents').insert({ area_key: 'financiamiento', name });
             if (error) { alert('Error: ' + error.message); return; }
-            e.target.reset(); window.renderFinanciamiento();
+            input.value = ''; renderBankDocs();
         };
-        window.updateExpense = async function(id, field, value) {
-            const patch = {};
-            patch[field] = (field === 'actual') ? (value === '' ? null : Number(value)) : value;
-            await supabase.from('expenses').update(patch).eq('id', id);
-            window.renderFinanciamiento();
+        window.toggleBankDoc = async function(id, checked) {
+            await supabase.from('bank_documents').update({ status: checked ? 'entregado' : 'pendiente' }).eq('id', id);
+            renderBankDocs();
         };
-        window.deleteExpense = async function(id) {
-            if (!confirm('¿Eliminar este gasto?')) return;
-            await supabase.from('expenses').delete().eq('id', id);
-            window.renderFinanciamiento();
+        window.editBankDoc = async function(id) {
+            const { data: d } = await supabase.from('bank_documents').select('*').eq('id', id).single();
+            if (!d) return;
+            const name = prompt('Documento:', d.name); if (name === null) return;
+            const notes = prompt('Notas:', d.notes || ''); if (notes === null) return;
+            await supabase.from('bank_documents').update({ name: name.trim(), notes: notes.trim() }).eq('id', id);
+            renderBankDocs();
+        };
+        window.deleteBankDoc = async function(id) {
+            if (!confirm('¿Eliminar este documento de la lista?')) return;
+            await supabase.from('bank_documents').delete().eq('id', id);
+            renderBankDocs();
         };
 
         // ======================================================
@@ -2029,7 +2159,7 @@
             if (!p) return;
             const title = prompt('Puesto:', p.title); if (title === null) return;
             const candidate = prompt('Candidato:', p.candidate || ''); if (candidate === null) return;
-            const salary = prompt('Salario ($, solo número):', p.salary ?? ''); if (salary === null) return;
+            const salary = prompt('Salario anual ($, solo número):', p.salary ?? ''); if (salary === null) return;
             const start = prompt('Fecha de inicio (AAAA-MM-DD):', p.start_date || ''); if (start === null) return;
             const notes = prompt('Notas:', p.notes || ''); if (notes === null) return;
             const { error } = await supabase.from('positions').update({
@@ -2082,7 +2212,7 @@
                         </label>
                         ${expired ? '<span class="text-red-600 font-medium">¡Vencido!</span>' : (expiring ? '<span class="text-amber-700 font-medium">Por vencer</span>' : '')}
                     </div>
-                    <div class="text-sm text-stone-600 mt-2"><span class="text-stone-400">Responsable:</span> ${escapeHtml(p.responsible || '—')}</div>
+                    <div class="text-sm text-stone-600 mt-2 flex gap-4 flex-wrap"><span><span class="text-stone-400">Costo:</span> ${fmtMoney(p.cost)}</span><span><span class="text-stone-400">Responsable:</span> ${escapeHtml(p.responsible || '—')}</span></div>
                     ${p.notes ? `<p class="text-xs text-stone-500 mt-1">${escapeHtml(p.notes)}</p>` : ''}
                     <div class="mt-3 flex gap-4">
                         <button onclick="window.editPermit('${p.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
@@ -2115,8 +2245,9 @@
             const name = prompt('Permiso:', p.name); if (name === null) return;
             const type = prompt('Tipo / entidad:', p.type || ''); if (type === null) return;
             const responsible = prompt('Responsable:', p.responsible || ''); if (responsible === null) return;
+            const cost = prompt('Costo estimado ($, solo número):', p.cost ?? ''); if (cost === null) return;
             const notes = prompt('Notas:', p.notes || ''); if (notes === null) return;
-            const { error } = await supabase.from('permits').update({ name: name.trim(), type: type.trim(), responsible: responsible.trim(), notes: notes.trim() }).eq('id', id);
+            const { error } = await supabase.from('permits').update({ name: name.trim(), type: type.trim(), responsible: responsible.trim(), cost: cost.trim() === '' ? null : Number(cost), notes: notes.trim() }).eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
             window.renderPermisos();
         };
