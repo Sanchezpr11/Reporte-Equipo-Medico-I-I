@@ -1024,7 +1024,8 @@
         // Estado de sesión
         let appStarted = false;
         let currentUser = null;
-        let currentProfile = null;       // { is_admin, full_name, email }
+        let currentProfile = null;       // { is_admin, is_platform_admin, client_id, full_name, email }
+        let currentClientId = null;      // cliente (inquilino) del usuario actual
         let allowedAreas = new Set();    // claves de áreas permitidas
         let allAreas = [];               // catálogo completo (para el panel admin)
 
@@ -1065,9 +1066,10 @@
             currentUser = user;
 
             const { data: profile } = await supabase
-                .from('profiles').select('is_admin, full_name, email')
+                .from('profiles').select('is_admin, is_platform_admin, client_id, full_name, email')
                 .eq('id', user.id).maybeSingle();
-            currentProfile = profile || { is_admin: false, full_name: '', email: user.email };
+            currentProfile = profile || { is_admin: false, is_platform_admin: false, client_id: null, full_name: '', email: user.email };
+            currentClientId = currentProfile.client_id || null;
 
             const { data: areas } = await supabase
                 .from('areas').select('key, label, sort_order').order('sort_order');
@@ -1315,7 +1317,7 @@
             if(!supabase) return; // Si no hay llaves configuradas, usa los datos por defecto
             
             try {
-                const { data, error } = await supabase.from('app_state').select('*').eq('id', 1).single();
+                const { data, error } = await supabase.from('app_state').select('*').eq('client_id', currentClientId).maybeSingle();
                 
                 if (data) {
                     if(data.suppliers && data.suppliers.length > 0) suppliersData = data.suppliers;
@@ -1332,10 +1334,11 @@
                 return;
             }
             try {
-                await supabase.from('app_state').update({ 
-                    equipment: equipmentData, 
-                    suppliers: suppliersData 
-                }).eq('id', 1);
+                await supabase.from('app_state').upsert({
+                    client_id: currentClientId,
+                    equipment: equipmentData,
+                    suppliers: suppliersData
+                }, { onConflict: 'client_id' });
             } catch (err) {
                 console.error("Error guardando en Supabase:", err);
             }
@@ -2186,7 +2189,7 @@
         window.saveOpeningDate = async function() {
             const v = document.getElementById('opening-date-input').value;
             const { error } = await supabase.from('project_settings')
-                .upsert({ key: 'opening_date', value: v || null, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+                .upsert({ client_id: currentClientId, key: 'opening_date', value: v || null, updated_at: new Date().toISOString() }, { onConflict: 'client_id,key' });
             if (error) { alert('No se pudo guardar: ' + error.message); return; }
             window.loadOpeningDate();
         };
@@ -2325,7 +2328,8 @@
                 notes: document.getElementById('office-notes').value.trim(),
                 updated_at: new Date().toISOString()
             };
-            const { error } = await supabase.from('office_info').upsert(payload, { onConflict: 'area_key' });
+            payload.client_id = currentClientId;
+            const { error } = await supabase.from('office_info').upsert(payload, { onConflict: 'client_id,area_key' });
             if (error) { alert('No se pudo guardar: ' + error.message); return; }
             const btn = e.target.querySelector('button[type=submit]');
             if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
@@ -2773,7 +2777,7 @@
             if (cur.trim() === '') {
                 await supabase.from('finance_estimates').delete().eq('area_key', 'financiamiento').eq('item_key', key);
             } else {
-                await supabase.from('finance_estimates').upsert({ area_key: 'financiamiento', item_key: key, amount: Number(cur) }, { onConflict: 'area_key,item_key' });
+                await supabase.from('finance_estimates').upsert({ client_id: currentClientId, area_key: 'financiamiento', item_key: key, amount: Number(cur) }, { onConflict: 'client_id,area_key,item_key' });
             }
             renderFinBreakdown();
         };
@@ -2799,7 +2803,8 @@
                 notes: document.getElementById('bank-notes').value.trim(),
                 updated_at: new Date().toISOString()
             };
-            const { error } = await supabase.from('bank_product').upsert(payload, { onConflict: 'area_key' });
+            payload.client_id = currentClientId;
+            const { error } = await supabase.from('bank_product').upsert(payload, { onConflict: 'client_id,area_key' });
             if (error) { alert('No se pudo guardar: ' + error.message); return; }
             const btn = e.target.querySelector('button[type=submit]');
             if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
