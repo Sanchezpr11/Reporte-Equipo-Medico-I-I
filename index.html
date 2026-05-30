@@ -2420,15 +2420,16 @@
 
             // Traer los datos de cada área en paralelo (tolerante si una tabla aún no existe)
             const safe = (res) => (res && !res.error && res.data) ? res.data : [];
-            const [tasksR, stagesR, docsR, positionsR, permitsR, officeEqR] = await Promise.all([
+            const [tasksR, stagesR, docsR, positionsR, permitsR, officeEqR, equipItemsR] = await Promise.all([
                 supabase.from('tasks').select('area_key, status'),
                 supabase.from('stages').select('progress').eq('area_key', 'local'),
                 supabase.from('bank_documents').select('status').eq('area_key', 'financiamiento'),
                 supabase.from('positions').select('status').eq('area_key', 'personal'),
                 supabase.from('permits').select('status').eq('area_key', 'permisos'),
-                supabase.from('office_equipment').select('status').eq('area_key', 'equipos_oficina')
+                supabase.from('office_equipment').select('status').eq('area_key', 'equipos_oficina'),
+                supabase.from('equipment_items').select('id, equipment_quotes(selected)').eq('area_key', 'equipos')
             ]);
-            const tasks = safe(tasksR), stages = safe(stagesR), docs = safe(docsR), positions = safe(positionsR), permits = safe(permitsR), officeEq = safe(officeEqR);
+            const tasks = safe(tasksR), stages = safe(stagesR), docs = safe(docsR), positions = safe(positionsR), permits = safe(permitsR), officeEq = safe(officeEqR), equipItems = safe(equipItemsR);
 
             const byArea = {};
             tasks.forEach(t => { const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 }; g.total++; if (t.status === 'hecho') g.done++; });
@@ -2474,7 +2475,8 @@
             }
             const rdData = [];
             areasToShow.forEach(key => {
-                const { pct, sub } = progressFor(key);
+                let pct = 0, sub = '';
+                try { ({ pct, sub } = progressFor(key)); } catch (err) { console.warn('progressFor', key, err); }
                 rdData.push({ label: areaLabel(key), pct });
                 const card = document.createElement('button');
                 card.onclick = () => window.switchTab(key);
