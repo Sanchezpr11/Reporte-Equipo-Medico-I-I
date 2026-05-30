@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adquisición de Equipo Médico - Puerto Rico</title>
+    <title>I&amp;I Realty</title>
     
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     
@@ -69,7 +69,7 @@
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 fade-in">
             <div class="text-center mb-6">
                 <span class="text-5xl block mb-3">⚕️</span>
-                <h1 class="text-2xl font-bold text-stone-800">MedEquip PR Analítica</h1>
+                <h1 class="text-2xl font-bold text-stone-800">I&amp;I Realty</h1>
                 <p class="text-stone-500 text-sm mt-1">Acceso restringido. Inicia sesión para continuar.</p>
             </div>
 
@@ -106,16 +106,14 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <span class="text-2xl mr-2">⚕️</span>
-                    <span class="font-bold text-xl text-stone-800 tracking-tight">MedEquip PR Analítica</span>
+                    <span class="font-bold text-xl text-stone-800 tracking-tight">I&amp;I Realty</span>
                 </div>
                 <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
                     <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
                     <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
                     <button onclick="window.switchTab('remodelacion')" id="tab-remodelacion" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Remodelación</button>
                     <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
-                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Catálogo</button>
-                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis</button>
-                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Suplidores</button>
+                    <button onclick="window.switchTab('equipos')" id="tab-equipos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos Médicos</button>
                     <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
                     <button onclick="window.switchTab('marca')" id="tab-marca" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Marca</button>
                     <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
@@ -174,6 +172,18 @@
                 <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
             </form>
         </section>
+
+        <!-- ÁREA: EQUIPOS MÉDICOS (agrupa catálogo, análisis y suplidores) -->
+        <section id="sec-equipos" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Equipos Médicos</h2>
+                <p class="mt-2 text-stone-600">Todo lo relacionado con la compra de equipo médico: catálogo de equipos, análisis comparativo y directorio de suplidores.</p>
+            </div>
+            <div class="mb-8 flex flex-wrap gap-2">
+                <button onclick="window.switchEquipo('catalogo')" id="subtab-catalogo" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Catálogo</button>
+                <button onclick="window.switchEquipo('analisis')" id="subtab-analisis" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Análisis</button>
+                <button onclick="window.switchEquipo('suplidores')" id="subtab-suplidores" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Suplidores</button>
+            </div>
 
         <!-- SECCIÓN 1: CATÁLOGO -->
         <section id="sec-catalogo" class="fade-in hidden">
@@ -408,6 +418,7 @@
                 </div>
             </div>
         </section>
+        </section><!-- /sec-equipos -->
 
         <!-- SECCIÓN 4: ADMINISTRACIÓN (solo admins) -->
         <section id="sec-admin" class="fade-in hidden">
@@ -587,7 +598,7 @@
             allowedAreas.add('resumen');
 
             // Mostrar/ocultar cada pestaña según el acceso.
-            const allTabKeys = ['resumen', 'local', 'remodelacion', 'financiamiento', 'catalogo', 'analisis', 'suplidores', 'personal', 'marca', 'permisos'];
+            const allTabKeys = ['resumen', 'local', 'remodelacion', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos'];
             allTabKeys.forEach(k => {
                 const tab = document.getElementById('tab-' + k);
                 if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
@@ -1001,13 +1012,13 @@
             const trackerAreas = ['local', 'remodelacion', 'financiamiento', 'personal', 'marca', 'permisos'];
 
             // Ocultar todas las secciones
-            ['catalogo', 'analisis', 'suplidores', 'admin', 'resumen', 'tracker'].forEach(sec => {
+            ['equipos', 'admin', 'resumen', 'tracker'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
 
             // Desactivar el estilo de todas las pestañas
-            ['resumen', 'local', 'remodelacion', 'financiamiento', 'catalogo', 'analisis', 'suplidores', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
+            ['resumen', 'local', 'remodelacion', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
                 const t = document.getElementById('tab-' + k);
                 if (t) { t.classList.remove('tab-active', 'text-teal-600'); t.classList.add('text-stone-500'); }
             });
@@ -1020,6 +1031,9 @@
             if (tabKey === 'resumen') {
                 document.getElementById('sec-resumen').classList.remove('hidden');
                 window.renderResumen();
+            } else if (tabKey === 'equipos') {
+                document.getElementById('sec-equipos').classList.remove('hidden');
+                window.switchEquipo('catalogo');
             } else if (trackerAreas.includes(tabKey)) {
                 document.getElementById('sec-tracker').classList.remove('hidden');
                 window.renderTracker(tabKey);
@@ -1028,15 +1042,31 @@
                 if (secEl) secEl.classList.remove('hidden');
             }
 
-            if (tabKey === 'analisis') {
-                if (costChartInstance) costChartInstance.update();
-                if (radarChartInstance) radarChartInstance.update();
-            }
             if (tabKey === 'admin') {
                 window.setupCreateUserAreas();
                 window.loadUsers();
             }
         }
+
+        // Sub-navegación dentro de "Equipos Médicos"
+        window.switchEquipo = function(sub) {
+            ['catalogo', 'analisis', 'suplidores'].forEach(s => {
+                const sec = document.getElementById('sec-' + s);
+                if (sec) sec.classList.toggle('hidden', s !== sub);
+                const st = document.getElementById('subtab-' + s);
+                if (st) {
+                    const active = s === sub;
+                    st.classList.toggle('bg-teal-700', active);
+                    st.classList.toggle('text-white', active);
+                    st.classList.toggle('bg-stone-100', !active);
+                    st.classList.toggle('text-stone-600', !active);
+                }
+            });
+            if (sub === 'analisis') {
+                if (costChartInstance) costChartInstance.update();
+                if (radarChartInstance) radarChartInstance.update();
+            }
+        };
 
         // ======================================================
         // SEGUIMIENTO DE PROYECTO: MÓDULO DE TAREAS POR ÁREA
