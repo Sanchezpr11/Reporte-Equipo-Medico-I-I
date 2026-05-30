@@ -70,7 +70,7 @@
     body{ background:#f3f6f9 !important; }
 
     .appshell{ display:flex; align-items:flex-start; min-height:100vh; }
-    .maincol{ flex:1; min-width:0; display:flex; flex-direction:column; }
+    .maincol{ flex:1; min-width:0; min-height:100vh; display:flex; flex-direction:column; }
     .maincol > main{ flex:1; }
 
     /* ---- Barra lateral (desktop) ---- */
@@ -1082,7 +1082,7 @@
 
     <footer class="bg-stone-800 text-stone-400 py-8 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center text-sm">
-            <p>Reporte de Inteligencia de Mercado y Adquisición - Puerto Rico &copy; 2026</p>
+            <p id="footer-text">The Properties Hub &copy; 2026 · Gestión de proyectos inmobiliarios</p>
         </div>
     </footer>
 
@@ -3832,6 +3832,7 @@
             set('sb-project-name', name);
             set('resumen-project-name', name);
             set('resumen-project-desc', desc || '');
+            set('footer-text', `${name} · The Properties Hub © ${new Date().getFullYear()}`);
             setImgOrEmoji('login-logo', 'login-logo-emoji', logo, name);
             setImgOrEmoji('sb-logo-img', 'sb-logo-emoji', logo, name);
         }
