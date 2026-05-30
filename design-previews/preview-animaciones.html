@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Preview · Animaciones + Gráficas — I&amp;I Realty</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
 <style>
   :root{ --bg:#f3f6f9; --surface:#fff; --ink:#0f172a; --muted:#64748b; --line:#e7edf2;
     --brand:#0f766e; --brand900:#0f3b38; --tint:#effbf8; --ok:#059669; --warn:#b45309; --pend:#be123c; --sky:#0ea5e9; --slate:#94a3b8;
@@ -108,7 +108,9 @@ const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').m
 if (window.Chart){ Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"; Chart.defaults.color="#475569";
   Chart.defaults.animation = RM?false:{duration:1000,easing:'easeOutQuart'};
   try{Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.boxWidth=8;Chart.defaults.plugins.legend.labels.padding=14;}catch(e){} }
-const C={}; function chart(id,cfg){const c=document.getElementById(id);if(!c)return;if(C[id])C[id].destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options||{});C[id]=new Chart(c.getContext('2d'),cfg);}
+const C={}; function chart(id,cfg){const c=document.getElementById(id);if(!c)return;
+  if(!window.Chart){const p=c.parentElement;if(p)p.innerHTML='<div style="display:flex;height:100%;min-height:120px;align-items:center;justify-content:center;text-align:center;color:#be123c;font-size:13px;font-weight:600;padding:12px">⚠️ No se pudo cargar Chart.js desde el CDN (¿bloqueado por tu red/VPN?). Las gráficas necesitan internet a jsdelivr.net</div>';return;}
+  if(C[id])C[id].destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options||{});C[id]=new Chart(c.getContext('2d'),cfg);}
 function countUp(el,to,suf){el=document.getElementById(el);if(!el)return;suf=suf||'';if(RM){el.textContent=Math.round(to)+suf;return;}
   const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/1000),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e).toLocaleString('en-US')+suf;if(k<1)requestAnimationFrame(s);})(performance.now());}
 function fillBars(){requestAnimationFrame(()=>document.querySelectorAll('#main [data-fill]').forEach(b=>b.style.width=b.dataset.fill+'%'));}
