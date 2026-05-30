@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opción B · Menú lateral — I&amp;I Realty (vista previa)</title>
+<style>
+  /* ===================================================================
+     PROTOTIPO DE DISEÑO — OPCIÓN B: MENÚ LATERAL (☰ DRAWER)
+     Self-contained. No depende de CDNs. No es la app real.
+     =================================================================== */
+  :root{
+    --bg:#eef2f6; --surface:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e6ebf1;
+    --brand:#0f766e; --brand-600:#0d9488; --brand-700:#0f766e; --brand-900:#0f3b38; --brand-tint:#effbf8;
+    --ok:#059669; --ok-tint:#ecfdf5; --warn:#b45309; --warn-tint:#fff7ed;
+    --pend:#be123c; --pend-tint:#fff1f3; --idle:#64748b; --idle-tint:#f1f5f9;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,23,42,.05), 0 12px 30px -16px rgba(15,23,42,.25);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    max-width:480px; margin:0 auto; min-height:100vh; position:relative;
+  }
+  h1,h2,h3,p{margin:0}
+  button{font-family:inherit}
+
+  .ribbon{background:linear-gradient(90deg,#0f3b38,#0f766e);color:#d1faf3;font-size:12px;font-weight:600;
+    letter-spacing:.02em;padding:7px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff}
+  .ribbon .dot{width:7px;height:7px;border-radius:50%;background:#5eead4;flex:none}
+
+  /* App bar con botón de menú + título de sección actual */
+  .appbar{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:12px;padding:11px 14px}
+  .iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;
+    display:grid;place-items:center;color:var(--ink);-webkit-tap-highlight-color:transparent}
+  .iconbtn:active{background:#f3f6f9}
+  .iconbtn svg{width:22px;height:22px}
+  .appbar .title{font-weight:800;font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--brand-tint);color:var(--brand-700);
+    display:grid;place-items:center;font-weight:700;border:1px solid #cdeee8;flex:none}
+
+  main{padding:16px 16px 40px}
+  .screen{animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{background:radial-gradient(120% 140% at 0% 0%, #15827a 0%, #0f766e 45%, #0f3b38 100%);
+    color:#eafffb;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9fe9dd}
+  .hero h1{font-size:22px;line-height:1.2;margin:6px 0 8px;font-weight:800}
+  .hero p{font-size:13.5px;color:#c6f0e8;margin-bottom:16px}
+  .hero .meter{background:rgba(255,255,255,.18);border-radius:999px;height:10px;overflow:hidden}
+  .hero .meter > i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#5eead4,#99f6e4)}
+  .hero .meter-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px}
+  .hero .big{font-size:26px;font-weight:800;color:#fff}
+  .hero .small{font-size:12px;color:#bdeee5}
+
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin:4px 2px 12px}
+  .sec-head h2{font-size:18px;font-weight:800}
+  .sec-head span{font-size:12.5px;color:var(--muted)}
+
+  .cards{display:grid;gap:13px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 15px 14px;
+    box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;
+    cursor:pointer;transition:transform .12s ease;-webkit-tap-highlight-color:transparent}
+  .card:active{transform:scale(.985)}
+  .card .ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:23px;background:var(--brand-tint)}
+  .card .body{min-width:0}
+  .card h3{font-size:15.5px;font-weight:700;margin-bottom:3px}
+  .card .progress{height:7px;border-radius:999px;background:#eef2f6;overflow:hidden;margin-top:8px}
+  .card .progress > i{display:block;height:100%;border-radius:999px}
+  .card .meta{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:12px;color:var(--muted)}
+  .pct{font-weight:800;font-size:17px;line-height:1;flex:none;text-align:right}
+
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .chip .d{width:6px;height:6px;border-radius:50%}
+  .chip.progreso{background:var(--warn-tint);color:var(--warn)} .chip.progreso .d{background:var(--warn)}
+  .chip.pendiente{background:var(--pend-tint);color:var(--pend)} .chip.pendiente .d{background:var(--pend)}
+  .chip.completo{background:var(--ok-tint);color:var(--ok)} .chip.completo .d{background:var(--ok)}
+
+  .back{display:inline-flex;align-items:center;gap:7px;background:none;border:0;color:var(--brand-700);
+    font-weight:700;font-size:14px;padding:6px 2px;margin-bottom:6px;cursor:pointer}
+  .detail-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:18px;margin-bottom:16px;display:flex;gap:14px;align-items:center}
+  .ring{--p:0;width:74px;height:74px;flex:none;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--brand-600) calc(var(--p)*1%), #e8eef3 0)}
+  .ring > div{width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:800;font-size:17px}
+  .detail-hero h2{font-size:19px;font-weight:800;margin-bottom:4px}
+  .detail-hero .sub{font-size:13px;color:var(--muted)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+  .panel > .ph{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+
+  .bars{display:flex;align-items:flex-end;gap:14px;height:120px;padding:0 4px}
+  .bars .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end}
+  .bars .bar{width:100%;max-width:46px;border-radius:9px 9px 4px 4px}
+  .bars .lab{font-size:11px;color:var(--muted);font-weight:600}
+  .bars .val{font-size:12px;font-weight:800}
+
+  .task{display:flex;align-items:center;gap:12px;padding:12px 2px;border-top:1px solid var(--line)}
+  .task:first-child{border-top:0}
+  .task .box{width:22px;height:22px;border-radius:7px;border:2px solid #cbd5e1;flex:none;display:grid;place-items:center;font-size:13px;color:#fff}
+  .task.done .box{background:var(--ok);border-color:var(--ok)}
+  .task.prog .box{border-color:var(--warn);color:var(--warn);background:var(--warn-tint)}
+  .task .t{flex:1;font-size:14.5px}
+  .task.done .t{color:var(--muted);text-decoration:line-through}
+  .task .who{font-size:11.5px;color:var(--muted);background:#f1f5f9;padding:3px 8px;border-radius:999px;white-space:nowrap}
+
+  /* ===== DRAWER LATERAL (lo distintivo de la Opción B) ===== */
+  .drawer-wrap{position:fixed;inset:0;z-index:60;display:none}
+  .drawer-wrap.open{display:block}
+  .drawer-wrap .ov{position:absolute;inset:0;background:rgba(15,23,42,.5);animation:fade .25s}
+  .drawer{position:absolute;left:0;top:0;bottom:0;width:84%;max-width:330px;background:var(--surface);
+    box-shadow:18px 0 50px -20px rgba(15,23,42,.6);transform:translateX(-100%);animation:slidein .28s ease forwards;
+    display:flex;flex-direction:column;overflow:auto}
+  @keyframes slidein{to{transform:translateX(0)}}
+  .drawer .dh{background:linear-gradient(135deg,#0f766e,#0f3b38);color:#fff;padding:20px 18px 18px}
+  .drawer .dh .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px}
+  .drawer .dh .brand .mark{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+  .drawer .dh .user{margin-top:14px;display:flex;align-items:center;gap:10px}
+  .drawer .dh .user .av{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:700}
+  .drawer .dh .user small{display:block;color:#bdeee5;font-size:11.5px}
+  .drawer .grp{padding:14px 12px 2px}
+  .drawer .grp .gl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 10px 6px}
+  .drawer .item{display:flex;align-items:center;gap:13px;padding:12px 12px;margin:2px 6px;border-radius:12px;cursor:pointer;font-weight:600;font-size:15px;color:var(--ink)}
+  .drawer .item .g{width:34px;height:34px;border-radius:10px;background:var(--brand-tint);display:grid;place-items:center;font-size:18px;flex:none}
+  .drawer .item:active{background:#f3f6f9}
+  .drawer .item.active{background:var(--brand-tint);color:var(--brand-900)}
+  .drawer .item.active .g{background:var(--brand-700)}
+  .drawer .item .pct{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}
+  .drawer .item.danger{color:var(--pend)} .drawer .item.danger .g{background:var(--pend-tint)}
+  .drawer .div{height:1px;background:var(--line);margin:8px 16px}
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Opción B</b> · Menú lateral (☰) — vista previa (no es la app real)</div>
+
+  <header class="appbar">
+    <button class="iconbtn" id="open-drawer" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="title" id="bar-title">Resumen</div>
+    <div class="avatar">PS</div>
+  </header>
+
+  <main id="main"></main>
+
+  <!-- Drawer -->
+  <div class="drawer-wrap" id="drawer">
+    <div class="ov" data-close></div>
+    <aside class="drawer">
+      <div class="dh">
+        <div class="brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+        <div class="user"><span class="av">PS</span><div><strong>Pedro Sánchez</strong><small>sanchez.pr@gmail.com</small></div></div>
+      </div>
+      <div class="grp"><div class="gl">Proyecto</div></div>
+      <div class="item" data-go="resumen"><span class="g">📊</span>Resumen</div>
+      <div class="div"></div>
+      <div class="grp"><div class="gl">Áreas</div></div>
+      <div id="drawer-areas"></div>
+      <div class="div"></div>
+      <div class="grp"><div class="gl">Sistema</div></div>
+      <div class="item" data-go="admin"><span class="g">⚙️</span>Admin</div>
+      <div class="item danger" data-close><span class="g">🚪</span>Cerrar sesión</div>
+      <div style="height:18px"></div>
+    </aside>
+  </div>
+
+<script>
+const AREAS = [
+  {id:'financiamiento',  name:'Financiamiento',     icon:'💵', pct:72, done:8, total:11, status:'progreso'},
+  {id:'local',           name:'Local / Oficina',    icon:'🏢', pct:45, done:5, total:11, status:'progreso'},
+  {id:'equipos',         name:'Equipos Médicos',    icon:'🩺', pct:30, done:3, total:10, status:'progreso'},
+  {id:'equipos_oficina', name:'Equipos de Oficina', icon:'🖥️', pct:60, done:6, total:10, status:'progreso'},
+  {id:'personal',        name:'Personal',           icon:'👥', pct:20, done:2, total:10, status:'pendiente'},
+  {id:'permisos',        name:'Permisos',           icon:'📋', pct:15, done:1, total:7,  status:'pendiente'},
+];
+const STATUS_LABEL = {progreso:'En progreso', pendiente:'Pendiente', completo:'Completo'};
+const BARCOLOR = {progreso:'var(--warn)', pendiente:'var(--pend)', completo:'var(--ok)'};
+const TITLES = {resumen:'Resumen', admin:'Admin'};
+AREAS.forEach(a=>TITLES[a.id]=a.name);
+const TASKS = [
+  {t:'Cotizar y comparar suplidores', who:'Pedro', st:'done'},
+  {t:'Negociar términos de pago',     who:'Ana',   st:'prog'},
+  {t:'Reservar fecha de entrega',     who:'—',     st:'todo'},
+  {t:'Validar garantía y servicio',   who:'—',     st:'todo'},
+  {t:'Coordinar instalación',         who:'Luis',  st:'todo'},
+];
+const overall = Math.round(AREAS.reduce((a,b)=>a+b.pct,0)/AREAS.length);
+
+document.getElementById('drawer-areas').innerHTML = AREAS.map(a=>`
+  <div class="item" data-go="${a.id}"><span class="g">${a.icon}</span>${a.name}<span class="pct">${a.pct}%</span></div>`).join('');
+
+function resumenHTML(){
+  return `
+  <section class="screen">
+    <div class="hero">
+      <div class="eyebrow">Centro de control</div>
+      <h1>Clínica de Endocrinología · Santurce</h1>
+      <p>Seguimiento de apertura: financiamiento, local, equipos, personal y permisos.</p>
+      <div class="meter"><i style="width:${overall}%"></i></div>
+      <div class="meter-row"><span class="big">${overall}%</span><span class="small">avance general del proyecto</span></div>
+    </div>
+    <div class="sec-head"><h2>Áreas del proyecto</h2><span>Toca para abrir</span></div>
+    <div class="cards">
+      ${AREAS.map(a=>`
+        <div class="card" data-go="${a.id}">
+          <div class="ico">${a.icon}</div>
+          <div class="body">
+            <h3>${a.name}</h3>
+            <div class="meta"><span class="chip ${a.status}"><span class="d"></span>${STATUS_LABEL[a.status]}</span><span>${a.done}/${a.total} tareas</span></div>
+            <div class="progress"><i style="width:${a.pct}%;background:${BARCOLOR[a.status]}"></i></div>
+          </div>
+          <div class="pct" style="color:${BARCOLOR[a.status]}">${a.pct}%</div>
+        </div>`).join('')}
+    </div>
+  </section>`;
+}
+function detalleHTML(id){
+  const a = AREAS.find(x=>x.id===id) || {name:'Admin',pct:40,done:3,total:8,status:'progreso',icon:'⚙️'};
+  const done = TASKS.filter(t=>t.st==='done').length, prog = TASKS.filter(t=>t.st==='prog').length, todo = TASKS.filter(t=>t.st==='todo').length;
+  const mx = Math.max(done,prog,todo,1);
+  return `
+  <section class="screen">
+    <div class="detail-hero">
+      <div class="ring" style="--p:${a.pct}"><div>${a.pct}%</div></div>
+      <div><h2>${a.icon} ${a.name}</h2>
+        <div class="sub">${a.done} de ${a.total} tareas · <span class="chip ${a.status}" style="vertical-align:middle"><span class="d"></span>${STATUS_LABEL[a.status]}</span></div></div>
+    </div>
+    <div class="panel"><div class="ph">Tareas por estado</div>
+      <div class="bars">
+        <div class="col"><div class="val" style="color:var(--ok)">${done}</div><div class="bar" style="height:${done/mx*100}%;background:linear-gradient(180deg,#34d399,#059669)"></div><div class="lab">Hechas</div></div>
+        <div class="col"><div class="val" style="color:var(--warn)">${prog}</div><div class="bar" style="height:${prog/mx*100}%;background:linear-gradient(180deg,#fbbf24,#b45309)"></div><div class="lab">En curso</div></div>
+        <div class="col"><div class="val" style="color:var(--pend)">${todo}</div><div class="bar" style="height:${todo/mx*100}%;background:linear-gradient(180deg,#fb7185,#be123c)"></div><div class="lab">Pendientes</div></div>
+      </div></div>
+    <div class="panel"><div class="ph">Lista de tareas</div>
+      ${TASKS.map(t=>`<div class="task ${t.st==='done'?'done':t.st==='prog'?'prog':''}"><div class="box">${t.st==='done'?'✓':t.st==='prog'?'•':''}</div><div class="t">${t.t}</div><div class="who">${t.who}</div></div>`).join('')}
+    </div>
+  </section>`;
+}
+function go(id){
+  const main = document.getElementById('main');
+  main.innerHTML = (id==='resumen') ? resumenHTML() : detalleHTML(id);
+  document.getElementById('bar-title').textContent = TITLES[id] || 'Área';
+  document.querySelectorAll('.drawer .item').forEach(it=>it.classList.toggle('active', it.dataset.go===id));
+  document.getElementById('drawer').classList.remove('open');
+  window.scrollTo({top:0});
+}
+document.getElementById('open-drawer').addEventListener('click', ()=>document.getElementById('drawer').classList.add('open'));
+document.addEventListener('click', e=>{
+  const goEl = e.target.closest('[data-go]');
+  const closeEl = e.target.closest('[data-close]');
+  if(goEl) go(goEl.dataset.go);
+  else if(closeEl) document.getElementById('drawer').classList.remove('open');
+});
+go('resumen');
+</script>
+</body>
+</html>

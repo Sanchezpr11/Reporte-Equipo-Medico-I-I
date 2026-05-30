@@ -51,14 +51,79 @@
         /* --- Pantalla de acceso (bloqueo del sitio) --- */
         /* Mientras el body tenga la clase .locked, el contenido del reporte
            permanece oculto y solo se muestra la pantalla de login. */
-        body.locked nav,
-        body.locked main,
-        body.locked footer {
+        body.locked .appshell,
+        body.locked .botbar,
+        body.locked .mtopbar {
             display: none !important;
         }
         body:not(.locked) #login-screen {
             display: none !important;
         }
+    </style>
+    <style>
+    /* =====================================================================
+       REDISEÑO UI/UX — Opción A: barra lateral (desktop) + barra inferior (móvil)
+       Capa sobre el diseño existente. No cambia la lógica; reutiliza los
+       mismos IDs (tab-*, nav-user, logout-btn) y handlers (switchTab, etc.).
+       Breakpoint: 1024px.
+       ===================================================================== */
+    :root{ --rd-brand:#0f766e; --rd-brand-900:#0f3b38; --rd-tint:#effbf8; --rd-line:#e7edf2; }
+    body{ background:#f3f6f9 !important; }
+
+    .appshell{ display:flex; align-items:flex-start; min-height:100vh; }
+    .maincol{ flex:1; min-width:0; display:flex; flex-direction:column; }
+    .maincol > main{ flex:1; }
+
+    /* ---- Barra lateral (desktop) ---- */
+    .sidebar{ width:252px; flex:none; position:sticky; top:0; height:100vh; overflow:auto;
+      background:#fff; border-right:1px solid var(--rd-line); display:flex; flex-direction:column; padding:16px 14px; z-index:40; }
+    .sb-brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; color:var(--rd-brand-900); padding:6px 8px 14px; }
+    .sb-brand .mark{ width:34px;height:34px;border-radius:10px;background:var(--rd-brand);color:#fff;display:grid;place-items:center;font-size:18px; }
+    .sb-nav{ display:flex; flex-direction:column; gap:2px; }
+    .sb-group{ font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#94a3b8; padding:14px 10px 5px; }
+    .navitem{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:11px; font-size:14.5px; font-weight:600; color:#475569; cursor:pointer; text-decoration:none; -webkit-tap-highlight-color:transparent; }
+    .navitem .ni-ic{ width:30px;height:30px;border-radius:8px;background:var(--rd-tint);display:grid;place-items:center;font-size:16px;flex:none; }
+    .navitem:hover{ background:#f1f5f9; }
+    .navitem.nav-active{ background:var(--rd-tint); color:var(--rd-brand-900); }
+    .navitem.nav-active .ni-ic{ background:var(--rd-brand); }
+    .navitem.tab-active{ border-bottom:0 !important; }
+    .navitem.hidden, .mnav.hidden{ display:none !important; }
+    .sb-foot{ margin-top:auto; padding-top:12px; border-top:1px solid var(--rd-line); display:flex; flex-direction:column; gap:6px; }
+    .sb-user{ font-size:11.5px; color:#94a3b8; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sb-logout{ display:flex; align-items:center; gap:9px; padding:9px 12px; border:0; background:none; border-radius:10px; font-size:14px; font-weight:600; color:#be123c; cursor:pointer; text-align:left; }
+    .sb-logout:hover{ background:#fff1f3; }
+
+    /* ---- Barra superior (móvil) ---- */
+    .mtopbar{ display:none; align-items:center; gap:11px; padding:10px 14px; background:#fff; border-bottom:1px solid var(--rd-line); position:sticky; top:0; z-index:35; }
+    .mtopbar .mark{ width:30px;height:30px;border-radius:9px;background:var(--rd-brand);color:#fff;display:grid;place-items:center;font-size:15px;flex:none; }
+    .mtopbar .mt-title{ font-weight:800; font-size:16px; color:#0f172a; }
+    .mtopbar .mt-sp{ flex:1; }
+    .mtopbar .mt-logout{ border:0;background:none;color:#94a3b8;font-size:20px;cursor:pointer;line-height:1; }
+
+    .botbar{ display:none; } .mas-sheet{ display:none; }
+
+    @media (max-width:1023px){
+      .sidebar{ display:none; }
+      .mtopbar{ display:flex; }
+      .maincol > main{ padding-bottom:96px !important; }
+      .botbar{ display:grid; grid-template-columns:repeat(5,1fr); position:fixed; left:0; right:0; bottom:0; z-index:50;
+        background:rgba(255,255,255,.95); backdrop-filter:saturate(180%) blur(12px); border-top:1px solid var(--rd-line);
+        box-shadow:0 -6px 24px -14px rgba(15,23,42,.4); padding:7px 5px calc(7px + env(safe-area-inset-bottom)); }
+      .botbar a{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 2px; border-radius:11px; color:#64748b; font-size:10.5px; font-weight:600; text-decoration:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+      .botbar a i{ font-style:normal; font-size:20px; line-height:1; }
+      .botbar a.nav-active{ color:var(--rd-brand); }
+      .mas-sheet.open{ display:block; position:fixed; inset:0; z-index:60; }
+      .mas-sheet .mas-ov{ position:absolute; inset:0; background:rgba(15,23,42,.45); }
+      .mas-sheet .mas-card{ position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; padding:10px 14px calc(16px + env(safe-area-inset-bottom)); box-shadow:0 -12px 40px -10px rgba(15,23,42,.4); }
+      .mas-sheet .grab{ width:42px;height:5px;border-radius:999px;background:#e2e8f0;margin:6px auto 12px; }
+      .masrow{ display:flex; align-items:center; gap:13px; padding:13px 8px; border-radius:12px; font-size:15px; font-weight:600; color:#334155; text-decoration:none; cursor:pointer; }
+      .masrow i{ font-style:normal; width:40px;height:40px;border-radius:11px;background:var(--rd-tint);display:grid;place-items:center;font-size:19px;flex:none; }
+      .masrow:active{ background:#f3f6f9; }
+      .masrow.danger{ color:#be123c; } .masrow.danger i{ background:#fff1f3; }
+    }
+    @media (min-width:1024px){
+      .mtopbar, .botbar, .mas-sheet{ display:none !important; }
+    }
     </style>
 </head>
 <body class="antialiased locked">
@@ -102,37 +167,41 @@
         </div>
     </div>
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-2xl mr-2">⚕️</span>
-                    <span class="font-bold text-xl text-stone-800 tracking-tight">I&amp;I Realty</span>
-                </div>
-                <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
-                    <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
-                    <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
-                    <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
-                    <button onclick="window.switchTab('equipos')" id="tab-equipos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos Médicos</button>
-                    <button onclick="window.switchTab('equipos_oficina')" id="tab-equipos_oficina" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos de Oficina</button>
-                    <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
-                    <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
-                    <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
-                    <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
-                    <button onclick="window.handleLogout()" id="logout-btn" title="Cerrar sesión" class="px-3 py-2 text-sm font-medium text-stone-400 hover:text-red-600 whitespace-nowrap transition-colors duration-200 flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Salir
-                    </button>
-                </div>
-            </div>
+    <!-- ====== NAVEGACIÓN: barra lateral (desktop) + barra inferior (móvil) ====== -->
+    <div class="appshell">
+      <aside class="sidebar">
+        <div class="sb-brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+        <nav class="sb-nav">
+          <div class="sb-group">Proyecto</div>
+          <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
+          <div class="sb-group">Áreas</div>
+          <a id="tab-financiamiento" data-area="financiamiento" onclick="window.switchTab('financiamiento')" class="navitem hidden"><span class="ni-ic">💵</span><span>Financiamiento</span></a>
+          <a id="tab-local" data-area="local" onclick="window.switchTab('local')" class="navitem hidden"><span class="ni-ic">🏢</span><span>Local / Oficina</span></a>
+          <a id="tab-equipos" data-area="equipos" onclick="window.switchTab('equipos')" class="navitem hidden"><span class="ni-ic">🩺</span><span>Equipos Médicos</span></a>
+          <a id="tab-equipos_oficina" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')" class="navitem hidden"><span class="ni-ic">🖥️</span><span>Equipos de Oficina</span></a>
+          <a id="tab-personal" data-area="personal" onclick="window.switchTab('personal')" class="navitem hidden"><span class="ni-ic">👥</span><span>Personal</span></a>
+          <a id="tab-permisos" data-area="permisos" onclick="window.switchTab('permisos')" class="navitem hidden"><span class="ni-ic">📋</span><span>Permisos</span></a>
+          <div class="sb-group">Sistema</div>
+          <a id="tab-admin" data-area="admin" onclick="window.switchTab('admin')" class="navitem hidden"><span class="ni-ic">⚙️</span><span>Admin</span></a>
+        </nav>
+        <div class="sb-foot">
+          <span id="nav-user" class="sb-user" title="Sesión actual"></span>
+          <button onclick="window.handleLogout()" id="logout-btn" class="sb-logout" title="Cerrar sesión"><span>🚪</span> Salir</button>
         </div>
-    </nav>
+      </aside>
+      <div class="maincol">
+        <header class="mtopbar">
+          <span class="mark">⚕️</span>
+          <span class="mt-title" id="mtitle">Resumen</span>
+          <span class="mt-sp"></span>
+          <button onclick="window.handleLogout()" class="mt-logout" title="Cerrar sesión">⎋</button>
+        </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <div class="mb-8 bg-teal-800 text-stone-50 rounded-xl p-6 sm:p-10 shadow-lg">
             <h1 class="text-3xl sm:text-4xl font-bold mb-4">Centro de Control del Proyecto</h1>
-            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: financiamiento, local, equipos médicos, equipos de oficina, personal y permisos. Usa las pestañas para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
+            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: financiamiento, local, equipos médicos, equipos de oficina, personal y permisos. Usa el menú lateral (o la barra inferior en el móvil) para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
         </div>
 
         <!-- RESUMEN: avance por área -->
@@ -816,6 +885,29 @@
         </div>
     </footer>
 
+      </div><!-- /.maincol -->
+    </div><!-- /.appshell -->
+
+    <!-- Barra inferior (móvil) -->
+    <nav class="botbar">
+      <a class="mnav" data-area="resumen" onclick="window.switchTab('resumen')"><i>📊</i><span>Resumen</span></a>
+      <a class="mnav" data-area="financiamiento" onclick="window.switchTab('financiamiento')"><i>💵</i><span>Finanzas</span></a>
+      <a class="mnav" data-area="local" onclick="window.switchTab('local')"><i>🏢</i><span>Local</span></a>
+      <a class="mnav" data-area="equipos" onclick="window.switchTab('equipos')"><i>🩺</i><span>Equipos</span></a>
+      <a class="more" onclick="window.toggleMas()"><i>☰</i><span>Más</span></a>
+    </nav>
+    <div class="mas-sheet" id="mas-sheet">
+      <div class="mas-ov" onclick="window.toggleMas()"></div>
+      <div class="mas-card">
+        <div class="grab"></div>
+        <a class="masrow mnav" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')"><i>🖥️</i> Equipos de Oficina</a>
+        <a class="masrow mnav" data-area="personal" onclick="window.switchTab('personal')"><i>👥</i> Personal</a>
+        <a class="masrow mnav" data-area="permisos" onclick="window.switchTab('permisos')"><i>📋</i> Permisos</a>
+        <a class="masrow mnav" data-area="admin" onclick="window.switchTab('admin')"><i>⚙️</i> Admin</a>
+        <a class="masrow danger" onclick="window.handleLogout()"><i>🚪</i> Cerrar sesión</a>
+      </div>
+    </div>
+
     <!-- LÓGICA DE JAVASCRIPT Y CONEXIÓN A SUPABASE -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
@@ -922,6 +1014,12 @@
 
             const adminTab = document.getElementById('tab-admin');
             if (adminTab) adminTab.classList.toggle('hidden', !isAdmin);
+
+            // Rediseño: replicar el acceso en la barra inferior móvil y la hoja "Más"
+            allTabKeys.forEach(k => {
+                document.querySelectorAll('.mnav[data-area="' + k + '"]').forEach(el => el.classList.toggle('hidden', !allowedAreas.has(k)));
+            });
+            document.querySelectorAll('.mnav[data-area="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
 
             // Todos aterrizan en el Resumen.
             const noAccess = document.getElementById('no-access');
@@ -1408,7 +1506,23 @@
                 window.setupCreateUserAreas();
                 window.loadUsers();
             }
+
+            // --- Rediseño: estado activo en barra lateral + barra inferior, título móvil y cierre de hoja ---
+            document.querySelectorAll('[data-area]').forEach(el => el.classList.toggle('nav-active', el.dataset.area === tabKey));
+            const _moreBtn = document.querySelector('.botbar .more');
+            if (_moreBtn) _moreBtn.classList.toggle('nav-active', ['equipos_oficina', 'personal', 'permisos', 'admin'].includes(tabKey));
+            const _labels = { resumen: 'Resumen', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Médicos', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin' };
+            const _mt = document.getElementById('mtitle');
+            if (_mt && _labels[tabKey]) _mt.textContent = _labels[tabKey];
+            const _sheet = document.getElementById('mas-sheet');
+            if (_sheet) _sheet.classList.remove('open');
         }
+
+        // Abrir/cerrar la hoja "Más" de la barra inferior (móvil)
+        window.toggleMas = function() {
+            const s = document.getElementById('mas-sheet');
+            if (s) s.classList.toggle('open');
+        };
 
         // Sub-navegación dentro de "Equipos Médicos"
         window.switchEquipo = function(sub) {

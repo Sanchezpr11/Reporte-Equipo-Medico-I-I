@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desktop · Estilo 2 (Oscuro) — I&amp;I Realty</title>
+<style>
+  /* =========================================================
+     OPCIÓN A · DESKTOP · ESTILO 2 — PANEL OSCURO / DASHBOARD
+     ========================================================= */
+  :root{
+    --bg:#0a1120; --surface:#121c31; --surface-2:#0f1830; --ink:#e8eefb; --muted:#8ea2c2; --line:#22304d;
+    --brand:#2dd4bf; --brand-600:#14b8a6; --brand-700:#0d9488; --brand-tint:rgba(45,212,191,.14);
+    --ok:#34d399; --ok-tint:rgba(52,211,153,.14); --warn:#fbbf24; --warn-tint:rgba(251,191,36,.14);
+    --pend:#fb7185; --pend-tint:rgba(251,113,133,.16);
+    --radius:16px; --shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -24px rgba(0,0,0,.9); --sidebar:250px;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p{margin:0} button{font-family:inherit}
+  .ribbon{position:fixed;top:0;left:0;right:0;z-index:80;background:linear-gradient(90deg,#02201d,#0d9488);
+    color:#c8fff4;font-size:12px;font-weight:600;padding:6px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff} .ribbon .dot{width:7px;height:7px;border-radius:50%;background:#5eead4}
+
+  .app{display:flex;min-height:100vh;padding-top:29px}
+  .sidebar{width:var(--sidebar);flex:none;background:var(--surface-2);border-right:1px solid var(--line);
+    position:sticky;top:29px;height:calc(100vh - 29px);display:flex;flex-direction:column;padding:18px 14px}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:#fff;padding:6px 8px 16px}
+  .sidebar .brand .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2dd4bf,#0d9488);color:#06241f;display:grid;place-items:center;font-size:18px}
+  .nav{display:flex;flex-direction:column;gap:2px;overflow:auto}
+  .nav .gl{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px 10px 5px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;color:#c2cfe6;font-weight:600;font-size:14.5px;cursor:pointer;text-decoration:none}
+  .nav a .g{width:30px;height:30px;border-radius:8px;background:var(--brand-tint);display:grid;place-items:center;font-size:16px;flex:none}
+  .nav a:hover{background:rgba(255,255,255,.04)}
+  .nav a.active{background:var(--brand-tint);color:#bff4ec;box-shadow:inset 2px 0 0 var(--brand)}
+  .nav a .pct{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}
+  .sidebar .who{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid var(--line)}
+  .sidebar .who .av{width:36px;height:36px;border-radius:50%;background:var(--brand-tint);color:var(--brand);display:grid;place-items:center;font-weight:700}
+  .sidebar .who small{display:block;color:var(--muted);font-size:11.5px}
+
+  .content{flex:1;min-width:0;padding:26px 30px 40px}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .topbar h1{font-size:23px;font-weight:800} .topbar .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .topbar .right{margin-left:auto;display:flex;gap:10px}
+  .pill{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 13px;font-size:13px;font-weight:600;color:#c2cfe6}
+  .pill b{color:var(--brand)}
+
+  .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+  .kpi{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:var(--brand-tint);filter:blur(8px)}
+  .kpi .lab{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px;position:relative}
+  .kpi .lab .i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px}
+  .kpi .num{font-size:31px;font-weight:800;margin-top:10px;letter-spacing:-.02em;position:relative}
+  .kpi .delta{font-size:12px;font-weight:700;margin-top:2px;position:relative}
+
+  .grid-2{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;margin-bottom:20px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .panel .ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+  .panel .ph h3{font-size:16px;font-weight:800} .panel .ph span{font-size:12.5px;color:var(--muted)}
+
+  /* Tabla/lista densa de áreas */
+  .tbl{width:100%;border-collapse:collapse;margin-top:8px}
+  .tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:10px 8px;border-bottom:1px solid var(--line)}
+  .tbl td{padding:13px 8px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+  .tbl tr{cursor:pointer} .tbl tbody tr:hover{background:rgba(255,255,255,.03)}
+  .tbl .nm{font-weight:700;display:flex;align-items:center;gap:9px}
+  .tbl .nm .e{width:30px;height:30px;border-radius:8px;background:var(--brand-tint);display:grid;place-items:center;font-size:15px}
+  .tbl .tr{height:8px;width:120px;background:#1c2942;border-radius:999px;overflow:hidden}
+  .tbl .tr>i{display:block;height:100%;border-radius:999px}
+  .tbl .vv{font-weight:800}
+
+  .ringwrap{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:6px}
+  .ring{--p:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--brand) calc(var(--p)*1%), #1c2942 0);box-shadow:0 0 0 1px #1c2942, 0 0 40px -6px rgba(45,212,191,.5)}
+  .ring > div{width:116px;height:116px;border-radius:50%;background:var(--surface);display:grid;place-items:center;flex-direction:column}
+  .ring .big{font-size:34px;font-weight:800;line-height:1;color:#fff} .ring .cap{font-size:11.5px;color:var(--muted)}
+  .legend{display:flex;flex-direction:column;gap:9px;margin-top:18px;width:100%}
+  .legend .row{display:flex;align-items:center;gap:9px;font-size:13px} .legend .row .d{width:9px;height:9px;border-radius:3px} .legend .row .n{margin-left:auto;font-weight:800}
+
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .chip .d{width:6px;height:6px;border-radius:50%}
+  .chip.progreso{background:var(--warn-tint);color:var(--warn)} .chip.progreso .d{background:var(--warn)}
+  .chip.pendiente{background:var(--pend-tint);color:var(--pend)} .chip.pendiente .d{background:var(--pend)}
+
+  .task{display:flex;align-items:center;gap:13px;padding:13px 2px;border-top:1px solid var(--line)}
+  .task:first-child{border-top:0}
+  .task .box{width:22px;height:22px;border-radius:7px;border:2px solid #33425f;flex:none;display:grid;place-items:center;font-size:13px;color:#06241f}
+  .task.done .box{background:var(--ok);border-color:var(--ok)} .task.prog .box{border-color:var(--warn);color:var(--warn);background:var(--warn-tint)}
+  .task .t{flex:1;font-size:14.5px} .task.done .t{color:var(--muted);text-decoration:line-through}
+  .task .who{font-size:11.5px;color:var(--muted);background:#1c2942;padding:3px 9px;border-radius:999px}
+
+  .tabbar{display:none}
+  @media(max-width:1023px){
+    .sidebar{display:none}
+    .content{padding:18px 16px calc(86px + env(safe-area-inset-bottom))}
+    .grid-kpi{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr}
+    .tbl .tr{width:80px} .topbar h1{font-size:20px}
+    .tabbar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,1fr);
+      background:rgba(15,24,48,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+      padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+    .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none}
+    .tabbar a .gl{font-size:20px} .tabbar a.active{color:var(--brand)}
+  }
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Opción A · Desktop · Estilo 2 — Oscuro</b> · vista previa (achica la ventana para ver el móvil)</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+      <nav class="nav" id="nav"></nav>
+      <div class="who"><span class="av">PS</span><div><strong>Pedro Sánchez</strong><small>Administrador</small></div></div>
+    </aside>
+    <main class="content" id="content"></main>
+  </div>
+  <nav class="tabbar" id="tabbar"></nav>
+
+<script>
+const AREAS=[
+  {id:'financiamiento',name:'Financiamiento',icon:'💵',pct:72,done:8,total:11,status:'progreso'},
+  {id:'local',name:'Local / Oficina',icon:'🏢',pct:45,done:5,total:11,status:'progreso'},
+  {id:'equipos',name:'Equipos Médicos',icon:'🩺',pct:30,done:3,total:10,status:'progreso'},
+  {id:'equipos_oficina',name:'Equipos de Oficina',icon:'🖥️',pct:60,done:6,total:10,status:'progreso'},
+  {id:'personal',name:'Personal',icon:'👥',pct:20,done:2,total:10,status:'pendiente'},
+  {id:'permisos',name:'Permisos',icon:'📋',pct:15,done:1,total:7,status:'pendiente'},
+];
+const SL={progreso:'En progreso',pendiente:'Pendiente',completo:'Completo'};
+const BC={progreso:'var(--warn)',pendiente:'var(--pend)',completo:'var(--ok)'};
+const META={resumen:{name:'Resumen',icon:'📊'},admin:{name:'Admin',icon:'⚙️'}}; AREAS.forEach(a=>META[a.id]={name:a.name,icon:a.icon});
+const TASKS=[{t:'Cotizar y comparar suplidores',who:'Pedro',st:'done'},{t:'Negociar términos de pago',who:'Ana',st:'prog'},{t:'Reservar fecha de entrega',who:'—',st:'todo'},{t:'Validar garantía y servicio',who:'—',st:'todo'},{t:'Coordinar instalación',who:'Luis',st:'todo'}];
+const totalT=AREAS.reduce((a,b)=>a+b.total,0), doneT=AREAS.reduce((a,b)=>a+b.done,0);
+const overall=Math.round(AREAS.reduce((a,b)=>a+b.pct,0)/AREAS.length);
+const inProg=AREAS.filter(a=>a.status==='progreso').length, pend=AREAS.filter(a=>a.status==='pendiente').length;
+
+document.getElementById('nav').innerHTML=
+  `<div class="gl">Proyecto</div><a data-go="resumen"><span class="g">📊</span>Resumen</a>`+
+  `<div class="gl">Áreas</div>`+AREAS.map(a=>`<a data-go="${a.id}"><span class="g">${a.icon}</span>${a.name}<span class="pct">${a.pct}%</span></a>`).join('')+
+  `<div class="gl">Sistema</div><a data-go="admin"><span class="g">⚙️</span>Admin</a>`;
+document.getElementById('tabbar').innerHTML=
+  [['resumen','📊','Resumen'],['financiamiento','💵','Finanzas'],['local','🏢','Local'],['equipos','🩺','Equipos'],['admin','⚙️','Más']]
+  .map(([id,g,n])=>`<a data-go="${id}"><span class="gl">${g}</span>${n}</a>`).join('');
+
+function resumen(){
+  return `
+  <div class="topbar"><div><h1>Centro de control del proyecto</h1><div class="sub">Clínica de Endocrinología · Santurce, P.R.</div></div>
+    <div class="right"><span class="pill">Apertura objetivo · <b>Q3 2026</b></span><span class="pill">● En vivo</span></div></div>
+  <div class="grid-kpi">
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--brand-tint)">📈</span>Avance general</div><div class="num">${overall}%</div><div class="delta" style="color:var(--ok)">▲ 6% esta semana</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--ok-tint)">✅</span>Tareas completadas</div><div class="num">${doneT}<span style="font-size:16px;color:var(--muted)">/${totalT}</span></div><div class="delta" style="color:var(--muted)">${Math.round(doneT/totalT*100)}% del total</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--warn-tint)">⏳</span>Áreas en progreso</div><div class="num">${inProg}</div><div class="delta" style="color:var(--muted)">de ${AREAS.length} áreas</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--pend-tint)">⚠️</span>Áreas pendientes</div><div class="num">${pend}</div><div class="delta" style="color:var(--pend)">requieren atención</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>Áreas del proyecto</h3><span>clic para abrir</span></div>
+      <table class="tbl"><thead><tr><th>Área</th><th>Estado</th><th>Tareas</th><th>Avance</th></tr></thead><tbody>
+        ${AREAS.map(a=>`<tr data-go="${a.id}"><td><div class="nm"><span class="e">${a.icon}</span>${a.name}</div></td>
+          <td><span class="chip ${a.status}"><span class="d"></span>${SL[a.status]}</span></td>
+          <td style="color:var(--muted)">${a.done}/${a.total}</td>
+          <td><div style="display:flex;align-items:center;gap:10px"><span class="tr"><i style="width:${a.pct}%;background:${BC[a.status]}"></i></span><span class="vv" style="color:${BC[a.status]}">${a.pct}%</span></div></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="panel"><div class="ph"><h3>Resumen general</h3></div>
+      <div class="ringwrap"><div class="ring" style="--p:${overall}"><div><span class="big">${overall}%</span><span class="cap">completado</span></div></div>
+        <div class="legend">
+          <div class="row"><span class="d" style="background:var(--warn)"></span>En progreso<span class="n">${inProg}</span></div>
+          <div class="row"><span class="d" style="background:var(--pend)"></span>Pendiente<span class="n">${pend}</span></div>
+          <div class="row"><span class="d" style="background:var(--ok)"></span>Tareas hechas<span class="n">${doneT}/${totalT}</span></div>
+        </div></div>
+    </div>
+  </div>`;
+}
+function detalle(id){
+  const a=AREAS.find(x=>x.id===id)||{name:'Admin',icon:'⚙️',pct:40,done:3,total:8,status:'progreso'};
+  const d=TASKS.filter(t=>t.st==='done').length,p=TASKS.filter(t=>t.st==='prog').length,td=TASKS.filter(t=>t.st==='todo').length;
+  return `
+  <div class="topbar"><div><h1>${a.icon} ${a.name}</h1><div class="sub">${a.done} de ${a.total} tareas · ${SL[a.status]}</div></div>
+    <div class="right"><span class="pill" data-go="resumen" style="cursor:pointer">‹ Volver</span></div></div>
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>Lista de tareas</h3><span>${a.done}/${a.total}</span></div>
+      ${TASKS.map(t=>`<div class="task ${t.st==='done'?'done':t.st==='prog'?'prog':''}"><div class="box">${t.st==='done'?'✓':t.st==='prog'?'•':''}</div><div class="t">${t.t}</div><div class="who">${t.who}</div></div>`).join('')}
+    </div>
+    <div class="panel"><div class="ph"><h3>Progreso</h3></div>
+      <div class="ringwrap"><div class="ring" style="--p:${a.pct}"><div><span class="big">${a.pct}%</span><span class="cap">del área</span></div></div>
+        <div class="legend"><div class="row"><span class="d" style="background:var(--ok)"></span>Hechas<span class="n">${d}</span></div>
+          <div class="row"><span class="d" style="background:var(--warn)"></span>En curso<span class="n">${p}</span></div>
+          <div class="row"><span class="d" style="background:var(--pend)"></span>Pendientes<span class="n">${td}</span></div></div></div>
+    </div>
+  </div>`;
+}
+function go(id){
+  document.getElementById('content').innerHTML=(id==='resumen')?resumen():detalle(id);
+  document.querySelectorAll('[data-go]').forEach(el=>el.classList.toggle('active',el.dataset.go===id));
+  window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-go]');if(el)go(el.dataset.go)});
+go('resumen');
+</script>
+</body>
+</html>
