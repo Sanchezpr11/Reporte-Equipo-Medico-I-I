@@ -154,8 +154,7 @@
                 <img id="login-logo" alt="" class="hidden mx-auto mb-3 w-16 h-16 rounded-xl object-cover">
                 <span id="login-logo-emoji" class="text-5xl block mb-3">🏢</span>
                 <h1 id="login-project-name" class="text-2xl font-bold text-stone-800">The Properties Hub</h1>
-                <p id="login-project-desc" class="text-stone-500 text-sm mt-1">Gestión y seguimiento de proyectos inmobiliarios</p>
-                <p class="text-stone-300 text-xs mt-2">by The Properties Hub</p>
+                <p class="text-stone-400 text-xs mt-1">by The Properties Hub</p>
                 <p class="text-stone-400 text-xs mt-3">Acceso restringido. Inicia sesión para continuar.</p>
             </div>
 
@@ -190,7 +189,7 @@
     <!-- ====== NAVEGACIÓN: barra lateral (desktop) + barra inferior (móvil) ====== -->
     <div class="appshell">
       <aside class="sidebar">
-        <div class="sb-brand"><span class="mark" id="sb-logo"><img id="sb-logo-img" alt="" class="hidden w-full h-full object-cover rounded-[inherit]"><span id="sb-logo-emoji">🏢</span></span> <span style="line-height:1.15"><span id="sb-project-name" style="display:block">The Properties Hub</span><span style="display:block;font-size:11px;font-weight:500;color:#94a3b8">by The Properties Hub</span></span></div>
+        <div class="sb-brand"><span class="mark" id="sb-logo"><img id="sb-logo-img" alt="" class="hidden w-full h-full object-cover rounded-[inherit]"><span id="sb-logo-emoji">🏢</span></span> <span style="line-height:1.2"><span id="sb-project-name" style="display:block;font-size:18px;font-weight:800">The Properties Hub</span><span style="display:block;font-size:11px;font-weight:500;color:#94a3b8">by The Properties Hub</span></span></div>
         <nav class="sb-nav">
           <div class="sb-group">Proyecto</div>
           <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
@@ -3598,7 +3597,6 @@
             if (fav) fav.href = logo || initialsSvg(name);
             const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
             set('login-project-name', name);
-            set('login-project-desc', desc || 'Gestión y seguimiento de proyectos inmobiliarios');
             set('sb-project-name', name);
             set('resumen-project-name', name);
             set('resumen-project-desc', desc || '');
