@@ -1433,6 +1433,47 @@
         };
 
         // --- Equipos médicos: lista de compra con alternativas de suplidores ---
+        // --- Adjuntos genéricos (cotizaciones) en Storage: <prefix>/<archivo> ---
+        async function renderAttachments(prefix, containerId) {
+            const box = document.getElementById(containerId);
+            if (!box) return;
+            const { data: files, error } = await supabase.storage.from(MEDIA_BUCKET)
+                .list(prefix, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+            if (error) { box.innerHTML = ''; return; }
+            const items = (files || []).filter(f => f.name && f.id);
+            if (!items.length) { box.innerHTML = ''; return; }
+            const paths = items.map(f => `${prefix}/${f.name}`);
+            const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 3600);
+            const urlByPath = {}; (signed || []).forEach(s => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
+            box.innerHTML = items.map(f => {
+                const url = urlByPath[`${prefix}/${f.name}`] || '#';
+                const display = f.name.replace(/^\d+-[a-z0-9]{1,6}-/i, '');
+                return `<div class="flex items-center gap-2 text-xs py-0.5">
+                    <a href="${url}" target="_blank" rel="noopener" class="flex-1 text-teal-700 hover:underline truncate" title="Ver">📄 ${escapeHtml(display)}</a>
+                    <button onclick="window.removeAttachment('${prefix}','${escapeHtml(f.name)}','${containerId}')" class="text-stone-400 hover:text-red-600">✕</button>
+                </div>`;
+            }).join('');
+        }
+        window.uploadAttachment = async function(e, prefix, containerId) {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            const errors = [];
+            for (const file of files) {
+                const safe = file.name.replace(/[^\w.\-]+/g, '_');
+                const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+                const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, { upsert: false, contentType: file.type || undefined });
+                if (error) errors.push(`${file.name}: ${error.message}`);
+            }
+            e.target.value = '';
+            await renderAttachments(prefix, containerId);
+            if (errors.length) alert('No se pudieron subir algunos archivos:\n\n' + errors.join('\n') + '\n\n(Máx. 50 MB por archivo.)');
+        };
+        window.removeAttachment = async function(prefix, name, containerId) {
+            if (!confirm('¿Eliminar este archivo?')) return;
+            await supabase.storage.from(MEDIA_BUCKET).remove([`${prefix}/${name}`]);
+            renderAttachments(prefix, containerId);
+        };
+
         window.renderCompra = async function() {
             const list = document.getElementById('compra-list');
             const { data, error } = await supabase.from('equipment_items')
@@ -1449,11 +1490,15 @@
                 total += itemCost;
                 const quotesHtml = quotes.length ? quotes.map(q => {
                     const on = q.selected;
-                    return `<div class="flex items-center gap-2 py-1 text-sm">
-                        <button onclick="window.selectQuote('${it.id}','${q.id}')" title="Elegir esta alternativa" class="shrink-0 w-5 h-5 rounded-full border flex items-center justify-center text-xs ${on ? 'bg-teal-600 border-teal-600 text-white' : 'border-stone-300 text-transparent hover:border-teal-400'}">✓</button>
-                        <span class="flex-1 ${on ? 'font-medium text-stone-800' : 'text-stone-600'}">${escapeHtml(q.supplier || 'Suplidor')}</span>
-                        <span class="${on ? 'font-semibold text-teal-700' : 'text-stone-500'}">${fmtMoney(q.price)}</span>
-                        <button onclick="window.deleteQuote('${q.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                    return `<div class="py-1">
+                        <div class="flex items-center gap-2 text-sm">
+                            <button onclick="window.selectQuote('${it.id}','${q.id}')" title="Elegir esta alternativa" class="shrink-0 w-5 h-5 rounded-full border flex items-center justify-center text-xs ${on ? 'bg-teal-600 border-teal-600 text-white' : 'border-stone-300 text-transparent hover:border-teal-400'}">✓</button>
+                            <span class="flex-1 ${on ? 'font-medium text-stone-800' : 'text-stone-600'}">${escapeHtml(q.supplier || 'Suplidor')}</span>
+                            <span class="${on ? 'font-semibold text-teal-700' : 'text-stone-500'}">${fmtMoney(q.price)}</span>
+                            <label title="Subir cotización" class="cursor-pointer text-stone-400 hover:text-teal-700">📎<input type="file" class="hidden" onchange="window.uploadAttachment(event,'equipos/quotes/${q.id}','att-q-${q.id}')"></label>
+                            <button onclick="window.deleteQuote('${q.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                        </div>
+                        <div id="att-q-${q.id}" class="pl-7 mt-0.5"></div>
                     </div>`;
                 }).join('') : '<p class="text-xs text-amber-600 py-1">Añade al menos 2-3 alternativas de suplidores 👇</p>';
                 const card = document.createElement('div');
@@ -1478,6 +1523,7 @@
                 list.appendChild(card);
             });
             document.getElementById('compra-total').textContent = fmtMoney(total);
+            items.forEach(it => (it.equipment_quotes || []).forEach(q => renderAttachments(`equipos/quotes/${q.id}`, `att-q-${q.id}`)));
         };
         window.handleAddEquipo = async function(e) {
             e.preventDefault();
@@ -1593,14 +1639,18 @@
                     const sub = (Number(x.unit_price) || 0) * qty;
                     subtotal += sub;
                     const bought = x.status === 'comprado';
-                    return `<div class="flex items-center gap-2 py-2 border-b border-stone-100 last:border-0 text-sm flex-wrap">
-                        <span class="flex-1 min-w-[7rem] font-medium text-stone-800 ${bought ? 'line-through text-stone-400' : ''}">${escapeHtml(x.name)}</span>
-                        <label class="text-xs text-stone-400 flex items-center gap-1">$<input type="number" step="any" value="${x.unit_price ?? ''}" placeholder="0" onchange="window.updateOffice('${x.id}','unit_price',this.value)" class="w-20 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
-                        <label class="text-xs text-stone-400 flex items-center gap-1">×<input type="number" min="1" value="${qty}" onchange="window.updateOffice('${x.id}','quantity',this.value)" class="w-12 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
-                        <span class="font-semibold text-stone-800 w-20 text-right">${fmtMoney(sub)}</span>
-                        <select onchange="window.updateOffice('${x.id}','status',this.value)" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500"><option value="pendiente" ${!bought ? 'selected' : ''}>Pendiente</option><option value="comprado" ${bought ? 'selected' : ''}>Comprado</option></select>
-                        <select onchange="window.moveOffice('${x.id}',this.value)" title="Mover a otro cuarto" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500">${roomOptions(x.room_id)}</select>
-                        <button onclick="window.deleteOffice('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                    return `<div class="py-2 border-b border-stone-100 last:border-0">
+                        <div class="flex items-center gap-2 text-sm flex-wrap">
+                            <span class="flex-1 min-w-[7rem] font-medium text-stone-800 ${bought ? 'line-through text-stone-400' : ''}">${escapeHtml(x.name)}</span>
+                            <label class="text-xs text-stone-400 flex items-center gap-1">$<input type="number" step="any" value="${x.unit_price ?? ''}" placeholder="0" onchange="window.updateOffice('${x.id}','unit_price',this.value)" class="w-20 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
+                            <label class="text-xs text-stone-400 flex items-center gap-1">×<input type="number" min="1" value="${qty}" onchange="window.updateOffice('${x.id}','quantity',this.value)" class="w-12 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
+                            <span class="font-semibold text-stone-800 w-20 text-right">${fmtMoney(sub)}</span>
+                            <select onchange="window.updateOffice('${x.id}','status',this.value)" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500"><option value="pendiente" ${!bought ? 'selected' : ''}>Pendiente</option><option value="comprado" ${bought ? 'selected' : ''}>Comprado</option></select>
+                            <select onchange="window.moveOffice('${x.id}',this.value)" title="Mover a otro cuarto" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500">${roomOptions(x.room_id)}</select>
+                            <label title="Subir cotización" class="cursor-pointer text-stone-400 hover:text-teal-700">📎<input type="file" class="hidden" onchange="window.uploadAttachment(event,'equipos_oficina/items/${x.id}','att-o-${x.id}')"></label>
+                            <button onclick="window.deleteOffice('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                        </div>
+                        <div id="att-o-${x.id}" class="pl-1 mt-0.5"></div>
                     </div>`;
                 }).join('');
                 grand += subtotal;
@@ -1622,6 +1672,7 @@
                 wrap.appendChild(card);
             });
             document.getElementById('oficina-total').textContent = fmtMoney(grand);
+            eq.forEach(x => renderAttachments(`equipos_oficina/items/${x.id}`, `att-o-${x.id}`));
         };
 
         window.addRoom = async function(e) {
