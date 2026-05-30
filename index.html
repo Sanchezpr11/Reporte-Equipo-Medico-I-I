@@ -152,9 +152,10 @@
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-teal-900 px-4">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 fade-in">
             <div class="text-center mb-6">
-                <span class="text-5xl block mb-3">⚕️</span>
-                <h1 class="text-2xl font-bold text-stone-800">I&amp;I Realty</h1>
-                <p class="text-stone-500 text-sm mt-1">Acceso restringido. Inicia sesión para continuar.</p>
+                <span class="text-5xl block mb-3">🏢</span>
+                <h1 class="text-2xl font-bold text-stone-800">The Properties Hub</h1>
+                <p class="text-stone-500 text-sm mt-1">Gestión y seguimiento de proyectos inmobiliarios</p>
+                <p class="text-stone-400 text-xs mt-2">Acceso restringido. Inicia sesión para continuar.</p>
             </div>
 
             <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-4">
@@ -188,7 +189,7 @@
     <!-- ====== NAVEGACIÓN: barra lateral (desktop) + barra inferior (móvil) ====== -->
     <div class="appshell">
       <aside class="sidebar">
-        <div class="sb-brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+        <div class="sb-brand"><span class="mark">🏢</span> <span style="line-height:1.15"><span style="display:block">The Properties Hub</span><span style="display:block;font-size:11px;font-weight:500;color:#94a3b8">Cliente: I&amp;I Realty</span></span></div>
         <nav class="sb-nav">
           <div class="sb-group">Proyecto</div>
           <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
@@ -221,6 +222,7 @@
         <!-- RESUMEN: avance por área -->
         <section id="sec-resumen" class="fade-in hidden">
             <div class="mb-6">
+                <p class="text-xs font-semibold uppercase tracking-widest text-teal-700 mb-1">I&amp;I Realty</p>
                 <h2 class="text-2xl font-bold text-stone-800">Centro de Control del Proyecto</h2>
                 <p class="mt-1 text-stone-500">Clínica de Endocrinología · Santurce, Puerto Rico</p>
             </div>
