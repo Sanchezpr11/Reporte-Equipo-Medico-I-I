@@ -1,10 +1,10 @@
 # Configuración mínima del proyecto para la CLI de Supabase.
 # project_id = "reference ID" de tu proyecto (está en tu URL de Supabase:
 #   https://<project_id>.supabase.co)
-project_id = "rqqwrbmrzgxgyijzytc"
+project_id = "rqqwrbmrzgxgcyijzytc"
 
 # La función admin-users verifica el JWT y el rol de admin POR DENTRO.
 # Por eso desactivamos la verificación automática del gateway: así el
 # preflight CORS (OPTIONS, que no lleva token) no es rechazado.
-[functions.admin-users]
+[functions.smooth-responder]
 verify_jwt = false
