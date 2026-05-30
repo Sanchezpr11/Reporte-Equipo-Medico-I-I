@@ -1967,6 +1967,7 @@
             } else {
                 list.innerHTML = '';
                 cs.forEach(c => list.appendChild(renderContractorCard(c)));
+                cs.forEach(c => renderContractorFiles(c.id));
             }
             const selected = cs.find(c => c.status === 'seleccionado');
             document.getElementById('local-f1-summary').textContent = selected
@@ -2001,9 +2002,70 @@
                     <button onclick="window.editContractor('${c.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
                     <button onclick="window.deleteContractor('${c.id}')" class="text-xs font-medium text-stone-400 hover:text-red-600">Eliminar</button>
                 </div>
+                <div class="mt-3 pt-3 border-t border-stone-100">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="text-xs font-medium text-stone-500">📄 Cotización (archivo)</span>
+                        <label class="text-xs font-medium text-teal-700 hover:text-teal-800 cursor-pointer">+ Subir
+                            <input type="file" multiple class="hidden" onchange="window.uploadContractorFile(event, '${c.id}')">
+                        </label>
+                    </div>
+                    <div id="contractor-files-${c.id}"></div>
+                </div>
             `;
             return div;
         }
+
+        // --- Cotizaciones del contratista (archivos en Storage: local/contractors/<id>/) ---
+        async function renderContractorFiles(contractorId) {
+            const box = document.getElementById('contractor-files-' + contractorId);
+            if (!box) return;
+            const prefix = `local/contractors/${contractorId}`;
+            const { data: files, error } = await supabase.storage.from(MEDIA_BUCKET)
+                .list(prefix, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+            if (error) { box.innerHTML = `<p class="text-xs text-red-600">${escapeHtml(error.message)}</p>`; return; }
+            const items = (files || []).filter(f => f.name && f.id);
+            if (!items.length) { box.innerHTML = '<p class="text-xs text-stone-400">Sin archivo de cotización.</p>'; return; }
+            const paths = items.map(f => `${prefix}/${f.name}`);
+            const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 3600);
+            const urlByPath = {}; (signed || []).forEach(s => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
+            box.innerHTML = '';
+            items.forEach(f => {
+                const url = urlByPath[`${prefix}/${f.name}`];
+                const display = f.name.replace(/^\d+-[a-z0-9]{1,6}-/i, '');
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 text-sm py-1';
+                row.innerHTML = `
+                    <span>📄</span>
+                    <a href="${url || '#'}" target="_blank" rel="noopener" class="flex-1 text-teal-700 hover:underline truncate" title="Ver en pantalla">${escapeHtml(display)}</a>
+                    <button onclick="window.downloadContractorFile('${contractorId}','${escapeHtml(f.name)}')" title="Descargar" class="text-xs text-stone-400 hover:text-teal-700">⬇</button>
+                    <button onclick="window.deleteContractorFile('${contractorId}','${escapeHtml(f.name)}')" title="Eliminar" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+                box.appendChild(row);
+            });
+        }
+        window.uploadContractorFile = async function(e, contractorId) {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            for (const file of files) {
+                const safe = file.name.replace(/[^\w.\-]+/g, '_');
+                const path = `local/contractors/${contractorId}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+                const { error } = await supabase.storage.from(MEDIA_BUCKET)
+                    .upload(path, file, { upsert: false, contentType: file.type || undefined });
+                if (error) { console.error('cotización', error); alert('No se pudo subir ' + file.name + ': ' + error.message); }
+            }
+            e.target.value = '';
+            renderContractorFiles(contractorId);
+        };
+        window.downloadContractorFile = async function(contractorId, name) {
+            const path = `local/contractors/${contractorId}/${name}`;
+            const { data, error } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrl(path, 120, { download: true });
+            if (error || !data || !data.signedUrl) { alert('No se pudo descargar.'); return; }
+            window.open(data.signedUrl, '_blank');
+        };
+        window.deleteContractorFile = async function(contractorId, name) {
+            if (!confirm('¿Eliminar este archivo de cotización?')) return;
+            await supabase.storage.from(MEDIA_BUCKET).remove([`local/contractors/${contractorId}/${name}`]);
+            renderContractorFiles(contractorId);
+        };
 
         window.handleAddContractor = async function(e) {
             e.preventDefault();
