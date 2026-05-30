@@ -192,7 +192,6 @@
         <nav class="sb-nav">
           <div class="sb-group">Proyecto</div>
           <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
-          <a id="tab-pendientes" data-area="pendientes" onclick="window.switchTab('pendientes')" class="navitem hidden"><span class="ni-ic">✅</span><span>Pendientes</span></a>
           <div class="sb-group">Áreas</div>
           <a id="tab-financiamiento" data-area="financiamiento" onclick="window.switchTab('financiamiento')" class="navitem hidden"><span class="ni-ic">💵</span><span>Financiamiento</span></a>
           <a id="tab-local" data-area="local" onclick="window.switchTab('local')" class="navitem hidden"><span class="ni-ic">🏢</span><span>Local / Oficina</span></a>
@@ -200,6 +199,7 @@
           <a id="tab-equipos_oficina" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')" class="navitem hidden"><span class="ni-ic">🖥️</span><span>Equipos de Oficina</span></a>
           <a id="tab-personal" data-area="personal" onclick="window.switchTab('personal')" class="navitem hidden"><span class="ni-ic">👥</span><span>Personal</span></a>
           <a id="tab-permisos" data-area="permisos" onclick="window.switchTab('permisos')" class="navitem hidden"><span class="ni-ic">📋</span><span>Permisos</span></a>
+          <a id="tab-pendientes" data-area="pendientes" onclick="window.switchTab('pendientes')" class="navitem hidden"><span class="ni-ic">✅</span><span>Pendientes</span></a>
           <div class="sb-group">Sistema</div>
           <a id="tab-admin" data-area="admin" onclick="window.switchTab('admin')" class="navitem hidden"><span class="ni-ic">⚙️</span><span>Admin</span></a>
         </nav>
@@ -216,7 +216,7 @@
           <button onclick="window.handleLogout()" class="mt-logout" title="Cerrar sesión">⎋</button>
         </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-[1760px] mx-auto px-5 sm:px-8 lg:px-12 py-8">
 
         <!-- RESUMEN: avance por área -->
         <section id="sec-resumen" class="fade-in hidden">
@@ -991,10 +991,10 @@
       <div class="mas-ov" onclick="window.toggleMas()"></div>
       <div class="mas-card">
         <div class="grab"></div>
-        <a class="masrow mnav" data-area="pendientes" onclick="window.switchTab('pendientes')"><i>✅</i> Pendientes</a>
         <a class="masrow mnav" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')"><i>🖥️</i> Equipos de Oficina</a>
         <a class="masrow mnav" data-area="personal" onclick="window.switchTab('personal')"><i>👥</i> Personal</a>
         <a class="masrow mnav" data-area="permisos" onclick="window.switchTab('permisos')"><i>📋</i> Permisos</a>
+        <a class="masrow mnav" data-area="pendientes" onclick="window.switchTab('pendientes')"><i>✅</i> Pendientes</a>
         <a class="masrow mnav" data-area="admin" onclick="window.switchTab('admin')"><i>⚙️</i> Admin</a>
         <a class="masrow danger" onclick="window.handleLogout()"><i>🚪</i> Cerrar sesión</a>
       </div>
