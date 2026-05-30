@@ -140,6 +140,23 @@
                 <h2 class="text-2xl font-semibold text-stone-800">Resumen del Proyecto</h2>
                 <p class="mt-2 text-stone-600">Avance general de cada área. Haz clic en una tarjeta para ir a esa sección.</p>
             </div>
+            <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-stone-50 rounded-xl p-6 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <p class="text-teal-100 text-sm">🎯 Apertura deseada</p>
+                        <p id="opening-date-label" class="text-xl font-bold">Sin fecha definida</p>
+                    </div>
+                    <div class="text-right">
+                        <p id="opening-countdown" class="text-4xl font-extrabold leading-none">—</p>
+                        <p id="opening-countdown-sub" class="text-teal-100 text-xs mt-1">para la apertura</p>
+                    </div>
+                </div>
+                <div id="opening-edit" class="mt-4 hidden flex-wrap items-center gap-2 border-t border-teal-500/40 pt-3">
+                    <label class="text-sm text-teal-50">Fecha:</label>
+                    <input type="date" id="opening-date-input" class="rounded-md text-stone-800 p-1.5 text-sm">
+                    <button onclick="window.saveOpeningDate()" class="bg-white text-teal-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-teal-50 transition-colors">Guardar</button>
+                </div>
+            </div>
             <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
 
@@ -327,8 +344,9 @@
                 <div id="bank-contacts-list"></div>
             </div>
             <form onsubmit="window.handleAddBankContact(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-8">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input id="nbc-name" required placeholder="Nombre *" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <input id="nbc-position" placeholder="Posición / cargo (ej. Oficial de préstamos)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     <input id="nbc-phone" placeholder="Teléfono" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     <input id="nbc-email" type="email" placeholder="Email" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 </div>
@@ -685,23 +703,35 @@
         <section id="sec-equipos_oficina" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Equipos de Oficina</h2>
-                <p class="mt-2 text-stone-600">Mobiliario y enseres de la oficina: escritorios, sillas, sala de espera, nevera, lockers, supplies y más. El total alimenta el estimado de financiamiento.</p>
+                <p class="mt-2 text-stone-600">Sube el plano, divídelo en cuartos y asígnale a cada uno los equipos a comprar. El total alimenta el estimado de financiamiento.</p>
             </div>
+
+            <!-- Plano de la oficina -->
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-1 flex-wrap gap-2">
+                    <h3 class="font-semibold text-stone-800">📐 Plano de la oficina</h3>
+                    <label class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors cursor-pointer">
+                        + Subir plano
+                        <input type="file" id="media-input-equipos_oficina" accept="image/*" multiple class="hidden" onchange="window.handleUploadMedia(event, 'equipos_oficina')">
+                    </label>
+                </div>
+                <p id="media-hint-equipos_oficina" class="text-xs text-stone-400 mb-4">Imagen del plano (máx. 50 MB por archivo).</p>
+                <div id="media-grid-equipos_oficina" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+            </div>
+
+            <!-- Total -->
             <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 flex justify-between items-center">
                 <span class="text-sm font-medium text-teal-800">Total equipo de oficina</span>
                 <span id="oficina-total" class="text-xl font-bold text-teal-800">$0</span>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <div id="oficina-list"></div>
-            </div>
-            <form onsubmit="window.handleAddOffice(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
-                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                    <input id="no-name" required placeholder="Artículo * (ej. Escritorio)" class="sm:col-span-2 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="no-category" placeholder="Categoría" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="no-price" type="number" step="any" placeholder="Precio unit. ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                    <input id="no-qty" type="number" min="1" value="1" placeholder="Cant." class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                </div>
-                <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir artículo</button>
+
+            <!-- Cuartos con su equipo -->
+            <div id="oficina-rooms"></div>
+
+            <!-- Añadir cuarto -->
+            <form onsubmit="window.addRoom(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
+                <input id="new-room-name" required placeholder="Nuevo cuarto… (ej. Recepción, Consultorio 1, Sala de espera)" class="flex-1 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir cuarto</button>
             </form>
         </section>
 
@@ -1529,54 +1559,104 @@
 
         // --- Equipo de oficina ---
         window.renderOficina = async function() {
-            const list = document.getElementById('oficina-list');
-            const { data, error } = await supabase.from('office_equipment').select('*').eq('area_key', 'equipos_oficina').order('created_at');
-            if (error) { list.innerHTML = sqlErr(error, 'equipos-alternativas.sql'); document.getElementById('oficina-total').textContent = '$0'; return; }
-            const eq = data || [];
-            list.innerHTML = eq.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay equipo de oficina. Añade el primero abajo 👇</p>';
-            let total = 0;
-            eq.forEach(x => {
-                const qty = Number(x.quantity) || 1;
-                const sub = (Number(x.unit_price) || 0) * qty;
-                total += sub;
-                const bought = x.status === 'comprado';
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 py-2 border-b border-stone-100 last:border-0 text-sm flex-wrap';
-                row.innerHTML = `
-                    <div class="flex-1 min-w-[8rem]">
-                        <span class="font-medium text-stone-800 ${bought ? 'line-through text-stone-400' : ''}">${escapeHtml(x.name)}</span>
-                        ${x.category ? `<span class="text-xs text-stone-400">· ${escapeHtml(x.category)}</span>` : ''}
+            renderMedia('equipos_oficina'); // plano
+            const wrap = document.getElementById('oficina-rooms');
+            const [roomsR, eqR] = await Promise.all([
+                supabase.from('office_rooms').select('*').eq('area_key', 'equipos_oficina').order('sort_order').order('created_at'),
+                supabase.from('office_equipment').select('*').eq('area_key', 'equipos_oficina').order('created_at')
+            ]);
+            if (roomsR.error || eqR.error) {
+                wrap.innerHTML = sqlErr(roomsR.error || eqR.error, 'office-rooms.sql');
+                document.getElementById('oficina-total').textContent = '$0';
+                return;
+            }
+            const rooms = roomsR.data || [], eq = eqR.data || [];
+            const byRoom = {};
+            eq.forEach(x => { const k = x.room_id || '__none__'; (byRoom[k] = byRoom[k] || []).push(x); });
+            const roomOptions = (sel) => ['<option value="">Sin asignar</option>']
+                .concat(rooms.map(r => `<option value="${r.id}" ${sel === r.id ? 'selected' : ''}>${escapeHtml(r.name)}</option>`)).join('');
+
+            const groups = rooms.map(r => ({ id: r.id, name: r.name, isRoom: true }));
+            groups.push({ id: '__none__', name: 'Sin asignar a un cuarto', isRoom: false });
+
+            let grand = 0;
+            wrap.innerHTML = '';
+            if (rooms.length === 0 && eq.length === 0) {
+                wrap.innerHTML = '<p class="text-stone-400 text-sm mb-4">Sube el plano arriba, crea tu primer cuarto abajo (Recepción, Consultorio 1…) y asígnale equipos 👇</p>';
+            }
+            groups.forEach(g => {
+                const items = byRoom[g.id] || [];
+                if (!g.isRoom && items.length === 0) return; // ocultar "sin asignar" si está vacío
+                let subtotal = 0;
+                const rowsHtml = items.map(x => {
+                    const qty = Number(x.quantity) || 1;
+                    const sub = (Number(x.unit_price) || 0) * qty;
+                    subtotal += sub;
+                    const bought = x.status === 'comprado';
+                    return `<div class="flex items-center gap-2 py-2 border-b border-stone-100 last:border-0 text-sm flex-wrap">
+                        <span class="flex-1 min-w-[7rem] font-medium text-stone-800 ${bought ? 'line-through text-stone-400' : ''}">${escapeHtml(x.name)}</span>
+                        <label class="text-xs text-stone-400 flex items-center gap-1">$<input type="number" step="any" value="${x.unit_price ?? ''}" placeholder="0" onchange="window.updateOffice('${x.id}','unit_price',this.value)" class="w-20 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
+                        <label class="text-xs text-stone-400 flex items-center gap-1">×<input type="number" min="1" value="${qty}" onchange="window.updateOffice('${x.id}','quantity',this.value)" class="w-12 rounded border border-stone-300 p-1 text-right outline-none focus:ring-1 focus:ring-teal-500"></label>
+                        <span class="font-semibold text-stone-800 w-20 text-right">${fmtMoney(sub)}</span>
+                        <select onchange="window.updateOffice('${x.id}','status',this.value)" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500"><option value="pendiente" ${!bought ? 'selected' : ''}>Pendiente</option><option value="comprado" ${bought ? 'selected' : ''}>Comprado</option></select>
+                        <select onchange="window.moveOffice('${x.id}',this.value)" title="Mover a otro cuarto" class="text-xs rounded border border-stone-300 bg-white py-1 outline-none focus:ring-1 focus:ring-teal-500">${roomOptions(x.room_id)}</select>
+                        <button onclick="window.deleteOffice('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>
+                    </div>`;
+                }).join('');
+                grand += subtotal;
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4';
+                const delBtn = g.isRoom ? `<button onclick="window.deleteRoom('${g.id}')" class="text-xs text-stone-400 hover:text-red-600">Eliminar cuarto</button>` : '';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2 gap-2">
+                        <h3 class="font-semibold text-stone-800">${g.isRoom ? '🚪 ' : '🗂️ '}${escapeHtml(g.name)}</h3>
+                        <div class="flex items-center gap-3"><span class="text-sm font-bold text-teal-700">${fmtMoney(subtotal)}</span>${delBtn}</div>
                     </div>
-                    <label class="text-xs text-stone-400 flex items-center gap-1">P. unit.
-                        <input type="number" step="any" value="${x.unit_price ?? ''}" placeholder="$" onchange="window.updateOffice('${x.id}','unit_price',this.value)" class="w-24 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
-                    </label>
-                    <label class="text-xs text-stone-400 flex items-center gap-1">Cant.
-                        <input type="number" min="1" value="${qty}" onchange="window.updateOffice('${x.id}','quantity',this.value)" class="w-14 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
-                    </label>
-                    <span class="font-semibold text-stone-800 w-24 text-right">${fmtMoney(sub)}</span>
-                    <select onchange="window.updateOffice('${x.id}','status',this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 outline-none focus:ring-1 focus:ring-teal-500">
-                        <option value="pendiente" ${!bought ? 'selected' : ''}>Pendiente</option>
-                        <option value="comprado" ${bought ? 'selected' : ''}>Comprado</option>
-                    </select>
-                    <button onclick="window.deleteOffice('${x.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
-                list.appendChild(row);
+                    <div>${rowsHtml || '<p class="text-xs text-stone-400 py-2">Sin equipos en este cuarto.</p>'}</div>
+                    <form onsubmit="window.handleAddOffice(event,'${g.id}')" class="flex gap-2 mt-3 flex-wrap">
+                        <input id="no-name-${g.id}" required placeholder="Equipo / artículo" class="flex-1 min-w-[8rem] rounded-md border border-stone-300 p-1.5 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        <input id="no-price-${g.id}" type="number" step="any" placeholder="Precio $" class="w-24 rounded-md border border-stone-300 p-1.5 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        <input id="no-qty-${g.id}" type="number" min="1" value="1" class="w-14 rounded-md border border-stone-300 p-1.5 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                        <button type="submit" class="bg-stone-200 hover:bg-stone-300 text-stone-700 px-3 rounded-md text-sm whitespace-nowrap">+ Añadir</button>
+                    </form>`;
+                wrap.appendChild(card);
             });
-            document.getElementById('oficina-total').textContent = fmtMoney(total);
+            document.getElementById('oficina-total').textContent = fmtMoney(grand);
         };
-        window.handleAddOffice = async function(e) {
+
+        window.addRoom = async function(e) {
             e.preventDefault();
-            const name = document.getElementById('no-name').value.trim();
+            const input = document.getElementById('new-room-name');
+            const name = input.value.trim();
             if (!name) return;
-            const price = document.getElementById('no-price').value;
-            const qty = document.getElementById('no-qty').value;
+            const { error } = await supabase.from('office_rooms').insert({ area_key: 'equipos_oficina', name, sort_order: Date.now() % 100000 });
+            if (error) { alert('Error: ' + error.message); return; }
+            input.value = ''; window.renderOficina();
+        };
+        window.deleteRoom = async function(id) {
+            if (!confirm('¿Eliminar este cuarto? Sus equipos quedarán «Sin asignar».')) return;
+            const { error } = await supabase.from('office_rooms').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderOficina();
+        };
+        window.moveOffice = async function(id, roomId) {
+            await supabase.from('office_equipment').update({ room_id: roomId || null }).eq('id', id);
+            window.renderOficina();
+        };
+        window.handleAddOffice = async function(e, groupId) {
+            e.preventDefault();
+            const name = document.getElementById('no-name-' + groupId).value.trim();
+            if (!name) return;
+            const price = document.getElementById('no-price-' + groupId).value;
+            const qty = document.getElementById('no-qty-' + groupId).value;
             const { error } = await supabase.from('office_equipment').insert({
                 area_key: 'equipos_oficina', name,
-                category: document.getElementById('no-category').value.trim(),
+                room_id: groupId === '__none__' ? null : groupId,
                 unit_price: price === '' ? null : Number(price),
                 quantity: qty === '' ? 1 : parseInt(qty, 10)
             });
             if (error) { alert('Error: ' + error.message); return; }
-            e.target.reset(); document.getElementById('no-qty').value = '1'; window.renderOficina();
+            window.renderOficina();
         };
         window.updateOffice = async function(id, field, value) {
             const patch = {};
@@ -1709,7 +1789,45 @@
         // ======================================================
         // RESUMEN: avance por área (rollup)
         // ======================================================
+        // --- Fecha de apertura + countdown (Resumen) ---
+        window.loadOpeningDate = async function() {
+            const label = document.getElementById('opening-date-label');
+            const cd = document.getElementById('opening-countdown');
+            const cdSub = document.getElementById('opening-countdown-sub');
+            const editRow = document.getElementById('opening-edit');
+            const input = document.getElementById('opening-date-input');
+            if (!label) return;
+            let dateStr = '';
+            const { data } = await supabase.from('project_settings').select('value').eq('key', 'opening_date').maybeSingle();
+            if (data && data.value) dateStr = data.value;
+
+            if (dateStr) {
+                const target = new Date(dateStr + 'T00:00:00');
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                const diff = Math.round((target - today) / 86400000);
+                label.textContent = target.toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' });
+                if (diff > 0) { cd.textContent = diff; cdSub.textContent = diff === 1 ? 'día restante' : 'días restantes'; }
+                else if (diff === 0) { cd.textContent = '¡Hoy!'; cdSub.textContent = '🎉 es el día'; }
+                else { cd.textContent = Math.abs(diff); cdSub.textContent = Math.abs(diff) === 1 ? 'día desde la apertura' : 'días desde la apertura'; }
+                if (input) input.value = dateStr;
+            } else {
+                label.textContent = 'Sin fecha definida';
+                cd.textContent = '—';
+                cdSub.textContent = currentProfile?.is_admin ? 'defínela abajo' : 'para la apertura';
+                if (input) input.value = '';
+            }
+            if (editRow) editRow.classList.toggle('hidden', !currentProfile?.is_admin);
+        };
+        window.saveOpeningDate = async function() {
+            const v = document.getElementById('opening-date-input').value;
+            const { error } = await supabase.from('project_settings')
+                .upsert({ key: 'opening_date', value: v || null, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+            if (error) { alert('No se pudo guardar: ' + error.message); return; }
+            window.loadOpeningDate();
+        };
+
         window.renderResumen = async function() {
+            window.loadOpeningDate();
             const container = document.getElementById('resumen-cards');
             container.innerHTML = '<p class="text-stone-400 text-sm">Cargando…</p>';
 
@@ -2261,7 +2379,8 @@
                 row.innerHTML = `
                     <div class="flex-1 min-w-0">
                         <span class="font-medium text-stone-800">${escapeHtml(c.name)}</span>
-                        ${c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="text-teal-700 hover:underline ml-2">${escapeHtml(c.email)}</a>` : ''}
+                        ${c.position ? `<span class="text-xs text-stone-400">· ${escapeHtml(c.position)}</span>` : ''}
+                        ${c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="text-teal-700 hover:underline block sm:inline sm:ml-2">${escapeHtml(c.email)}</a>` : ''}
                     </div>
                     ${c.phone ? `<a href="tel:${escapeHtml(c.phone)}" class="text-stone-600 whitespace-nowrap">${escapeHtml(c.phone)}</a>` : ''}
                     <button onclick="window.deleteBankContact('${c.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
@@ -2274,6 +2393,7 @@
             if (!name) return;
             const { error } = await supabase.from('bank_contacts').insert({
                 area_key: 'financiamiento', name,
+                position: document.getElementById('nbc-position').value.trim(),
                 phone: document.getElementById('nbc-phone').value.trim(),
                 email: document.getElementById('nbc-email').value.trim()
             });
