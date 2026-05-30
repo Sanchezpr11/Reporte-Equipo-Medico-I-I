@@ -141,8 +141,13 @@
       .fade-in, .rd-stagger > *{ animation:none !important; }
       #resumen-cards button:hover{ transform:none; }
     }
-    .rd-locked{ border-color:transparent !important; background:transparent !important; padding-left:0 !important; box-shadow:none !important; cursor:default; resize:none; }
+    .rd-locked{ border-color:transparent !important; background:transparent !important; padding:0 !important; box-shadow:none !important; cursor:default; resize:none; outline:none !important; font-weight:500; color:#1c1917; }
     .rd-locked::placeholder{ color:transparent !important; }
+    /* Ficha en modo vista: compacta el espaciado (menos aire entre renglones) */
+    .rd-view .grid{ row-gap:.6rem !important; column-gap:2rem !important; }
+    .rd-view label > span{ font-size:11px; }
+    .rd-view input.rd-locked, .rd-view textarea.rd-locked{ margin-top:0 !important; min-height:0 !important; height:auto; line-height:1.35; }
+    .rd-view textarea.rd-locked{ overflow:hidden; }
     </style>
 </head>
 <body class="antialiased locked">
@@ -2911,10 +2916,13 @@
         function lockCard(formId, locked) {
             const form = document.getElementById(formId);
             if (!form) return;
+            form.classList.toggle('rd-view', locked);
             form.querySelectorAll('input, textarea, select').forEach(el => {
                 if (el.type === 'submit' || el.type === 'button' || el.type === 'file') return;
                 if (el.tagName === 'SELECT') el.disabled = locked; else el.readOnly = locked;
                 el.classList.toggle('rd-locked', locked);
+                if (el.tagName === 'TEXTAREA' && locked) { el.rows = 1; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+                else if (el.tagName === 'TEXTAREA' && !locked) { el.rows = 2; el.style.height = ''; }
             });
             const save = form.querySelector('[data-role=save]');
             const edit = form.querySelector('[data-role=edit]');
