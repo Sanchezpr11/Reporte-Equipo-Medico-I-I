@@ -3568,12 +3568,119 @@
             document.getElementById('detail-content').classList.add('hidden');
         }
 
+        // ---------- Identidad del proyecto (nombre, descripción, logo) ----------
+        const PROJECT_DEFAULTS = { name: 'The Properties Hub', desc: '', logo: '' };
+        let projectBranding = { ...PROJECT_DEFAULTS };
+        let pendingLogoData = null; // logo nuevo en el formulario de admin (data URL) o '' para quitar
+
+        function projectInitials(name) {
+            const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+            if (!words.length) return 'PH';
+            return words.map(w => w[0]).join('').slice(0, 3).toUpperCase();
+        }
+        function initialsSvg(name) {
+            const t = projectInitials(name);
+            const size = t.length >= 3 ? 34 : 42;
+            return "data:image/svg+xml," + encodeURIComponent(
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='#0f766e'/><text x='50' y='50' dy='.35em' font-size='${size}' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif'>${t}</text></svg>`
+            );
+        }
+        function setImgOrEmoji(imgId, emojiId, logo, name) {
+            const img = document.getElementById(imgId), em = document.getElementById(emojiId);
+            const src = logo || initialsSvg(name);
+            if (img) { img.src = src; img.classList.remove('hidden'); }
+            if (em) em.classList.add('hidden');
+        }
+        function applyBrandingToDom() {
+            const { name, desc, logo } = projectBranding;
+            document.title = name + ' · The Properties Hub';
+            const fav = document.getElementById('favicon');
+            if (fav) fav.href = logo || initialsSvg(name);
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            set('login-project-name', name);
+            set('login-project-desc', desc || 'Gestión y seguimiento de proyectos inmobiliarios');
+            set('sb-project-name', name);
+            set('resumen-project-name', name);
+            set('resumen-project-desc', desc || '');
+            setImgOrEmoji('login-logo', 'login-logo-emoji', logo, name);
+            setImgOrEmoji('sb-logo-img', 'sb-logo-emoji', logo, name);
+        }
+        async function applyProjectBranding() {
+            try {
+                const { data } = await supabase.from('project_settings').select('key, value')
+                    .in('key', ['project_name', 'project_desc', 'project_logo']);
+                const map = {}; (data || []).forEach(r => { map[r.key] = r.value; });
+                projectBranding = {
+                    name: map.project_name || PROJECT_DEFAULTS.name,
+                    desc: map.project_desc || '',
+                    logo: map.project_logo || ''
+                };
+            } catch (_) { projectBranding = { ...PROJECT_DEFAULTS }; }
+            applyBrandingToDom();
+        }
+
+        // --- Admin: formulario de identidad del proyecto ---
+        window.loadProjectBrandingForm = function() {
+            pendingLogoData = null;
+            const n = document.getElementById('proj-name'); if (n) n.value = projectBranding.name === PROJECT_DEFAULTS.name ? '' : projectBranding.name;
+            const d = document.getElementById('proj-desc'); if (d) d.value = projectBranding.desc || '';
+            updateLogoPreview(projectBranding.logo, projectBranding.name || 'Proyecto');
+        };
+        function updateLogoPreview(logo, name) {
+            const box = document.getElementById('proj-logo-preview');
+            if (!box) return;
+            if (logo) box.innerHTML = `<img src="${logo}" alt="" class="w-full h-full object-cover">`;
+            else box.textContent = projectInitials(name);
+        }
+        window.uploadProjectLogo = function(e) {
+            const file = (e.target.files || [])[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+                    const ctx = c.getContext('2d');
+                    const s = Math.min(img.width, img.height); // recorte cuadrado centrado
+                    ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 128, 128);
+                    pendingLogoData = c.toDataURL('image/png');
+                    updateLogoPreview(pendingLogoData, document.getElementById('proj-name').value || 'Proyecto');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        };
+        window.clearProjectLogo = function() {
+            pendingLogoData = '';
+            updateLogoPreview('', document.getElementById('proj-name').value || 'Proyecto');
+        };
+        window.saveProjectBranding = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('proj-name').value.trim();
+            const desc = document.getElementById('proj-desc').value.trim();
+            if (!name) { alert('Ponle un nombre al proyecto.'); return; }
+            const now = new Date().toISOString();
+            const rows = [
+                { key: 'project_name', value: name, updated_at: now },
+                { key: 'project_desc', value: desc, updated_at: now }
+            ];
+            if (pendingLogoData !== null) rows.push({ key: 'project_logo', value: pendingLogoData, updated_at: now });
+            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'key' });
+            const msg = document.getElementById('proj-branding-msg');
+            if (error) { if (msg) { msg.textContent = 'Error: ' + error.message; msg.className = 'text-sm text-red-600'; } return; }
+            if (msg) { msg.textContent = 'Guardado ✓'; msg.className = 'text-sm text-teal-700'; setTimeout(() => { msg.textContent = ''; }, 2000); }
+            pendingLogoData = null;
+            await applyProjectBranding();
+        };
+
         // Arrancar: primero comprueba el acceso; la app solo se inicia tras el login.
         // Usamos DOMContentLoaded (no onload) para no esperar a que carguen las imágenes.
+        function boot() { applyProjectBranding(); checkAuth(); }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkAuth);
+            document.addEventListener('DOMContentLoaded', boot);
         } else {
-            checkAuth();
+            boot();
         }
     </script>
 </body>
