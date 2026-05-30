@@ -199,9 +199,17 @@
                 </div>
             </form>
 
-            <!-- Fotos y videos: próximo paso -->
-            <div class="bg-stone-50 border border-dashed border-stone-300 rounded-xl p-4 mb-6 text-sm text-stone-500">
-                📷 <strong>Fotos y videos de la oficina</strong> — lo añadimos en el próximo paso (requiere activar el almacenamiento de Supabase).
+            <!-- Fotos y videos de la oficina -->
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-1 flex-wrap gap-2">
+                    <h3 class="font-semibold text-stone-800">📷 Fotos y videos de la oficina</h3>
+                    <label class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors cursor-pointer">
+                        + Subir
+                        <input type="file" id="office-media-input" accept="image/*,video/*" multiple class="hidden" onchange="window.handleUploadMedia(event)">
+                    </label>
+                </div>
+                <p id="office-media-hint" class="text-xs text-stone-400 mb-4">Imágenes y videos (máx. 50 MB por archivo).</p>
+                <div id="office-media-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
             </div>
 
             <!-- Cómo va todo: resumen de fases -->
@@ -1363,7 +1371,7 @@
 
         window.renderLocal = async function() {
             window.switchFase('f1');
-            await Promise.all([loadOfficeInfo(), renderContractors(), renderStages()]);
+            await Promise.all([loadOfficeInfo(), renderContractors(), renderStages(), renderMedia()]);
         };
 
         // --- Información de la oficina ---
@@ -1599,6 +1607,73 @@
             const { error } = await supabase.from('stages').delete().eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
             renderStages();
+        };
+
+        // --- Fotos y videos de la oficina (Supabase Storage) ---
+        const MEDIA_BUCKET = 'office-media';
+        const MEDIA_PREFIX = 'local';
+
+        function isVideoName(n) { return /\.(mp4|mov|webm|m4v|ogg|ogv)$/i.test(n); }
+
+        async function renderMedia() {
+            const grid = document.getElementById('office-media-grid');
+            if (!grid) return;
+            grid.innerHTML = '<p class="text-stone-400 text-sm col-span-full">Cargando…</p>';
+            const { data: files, error } = await supabase.storage.from(MEDIA_BUCKET)
+                .list(MEDIA_PREFIX, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+            if (error) {
+                grid.innerHTML = `<p class="text-red-600 text-sm col-span-full">No se pudo cargar la galería: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/area-local-media.sql</code>?</p>`;
+                return;
+            }
+            const items = (files || []).filter(f => f.name && f.id);
+            if (items.length === 0) {
+                grid.innerHTML = '<p class="text-stone-400 text-sm col-span-full py-4">Aún no hay fotos ni videos. Usa «+ Subir» 📷</p>';
+                return;
+            }
+            const paths = items.map(f => `${MEDIA_PREFIX}/${f.name}`);
+            const { data: signed } = await supabase.storage.from(MEDIA_BUCKET).createSignedUrls(paths, 3600);
+            const urlByPath = {};
+            (signed || []).forEach(s => { if (s.signedUrl) urlByPath[s.path] = s.signedUrl; });
+
+            grid.innerHTML = '';
+            items.forEach(f => {
+                const url = urlByPath[`${MEDIA_PREFIX}/${f.name}`];
+                const cell = document.createElement('div');
+                cell.className = 'relative group rounded-lg overflow-hidden border border-stone-200 bg-stone-50 aspect-square';
+                const inner = !url
+                    ? '<div class="flex items-center justify-center h-full text-xs text-stone-400">no disponible</div>'
+                    : (isVideoName(f.name)
+                        ? `<video src="${url}" controls class="w-full h-full object-cover"></video>`
+                        : `<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(f.name)}" loading="lazy" class="w-full h-full object-cover"></a>`);
+                cell.innerHTML = `${inner}
+                    <button onclick="window.deleteMedia('${escapeHtml(f.name)}')" title="Eliminar" class="absolute top-1 right-1 bg-black/50 hover:bg-red-600 text-white rounded-full w-6 h-6 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity">✕</button>`;
+                grid.appendChild(cell);
+            });
+        }
+
+        window.handleUploadMedia = async function(e) {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            const hint = document.getElementById('office-media-hint');
+            let fail = 0;
+            for (const file of files) {
+                hint.textContent = `Subiendo ${file.name}…`;
+                const safe = file.name.replace(/[^\w.\-]+/g, '_');
+                const path = `${MEDIA_PREFIX}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+                const { error } = await supabase.storage.from(MEDIA_BUCKET)
+                    .upload(path, file, { upsert: false, contentType: file.type || undefined });
+                if (error) { fail++; console.error('upload', file.name, error); }
+            }
+            e.target.value = '';
+            hint.textContent = 'Imágenes y videos (máx. 50 MB por archivo).' + (fail ? ` — ${fail} no se pudieron subir (revisa tamaño/tipo).` : '');
+            renderMedia();
+        };
+
+        window.deleteMedia = async function(name) {
+            if (!confirm('¿Eliminar este archivo?')) return;
+            const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([`${MEDIA_PREFIX}/${name}`]);
+            if (error) { alert('Error: ' + error.message); return; }
+            renderMedia();
         };
 
         window.setupAddSupplierForm = function() {
