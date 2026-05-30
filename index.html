@@ -109,9 +109,16 @@
                     <span class="font-bold text-xl text-stone-800 tracking-tight">MedEquip PR Analítica</span>
                 </div>
                 <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
-                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Catálogo General</button>
-                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis FibroScan vs iLivTouch</button>
-                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Directorio de Suplidores</button>
+                    <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
+                    <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
+                    <button onclick="window.switchTab('remodelacion')" id="tab-remodelacion" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Remodelación</button>
+                    <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
+                    <button onclick="window.switchTab('catalogo')" id="tab-catalogo" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Catálogo</button>
+                    <button onclick="window.switchTab('analisis')" id="tab-analisis" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Análisis</button>
+                    <button onclick="window.switchTab('suplidores')" id="tab-suplidores" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Suplidores</button>
+                    <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
+                    <button onclick="window.switchTab('marca')" id="tab-marca" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Marca</button>
+                    <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
                     <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
                     <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
                     <button onclick="window.handleLogout()" id="logout-btn" title="Cerrar sesión" class="px-3 py-2 text-sm font-medium text-stone-400 hover:text-red-600 whitespace-nowrap transition-colors duration-200 flex items-center gap-1">
@@ -126,12 +133,50 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <div class="mb-8 bg-teal-800 text-stone-50 rounded-xl p-6 sm:p-10 shadow-lg">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-4">Investigación de Adquisición de Equipo Médico</h1>
-            <p class="text-lg text-teal-100 max-w-3xl">Reporte interactivo para la evaluación, costeo y localización de suplidores en Puerto Rico para equipo médico especializado y de cuidado primario. Seleccione las pestañas superiores para navegar entre los equipos requeridos, el análisis comparativo de elastografía hepática y los contactos locales.</p>
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4">Centro de Control del Proyecto</h1>
+            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: local, remodelación, financiamiento, equipos, personal, marca y permisos. Usa las pestañas para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
         </div>
 
+        <!-- RESUMEN: avance por área -->
+        <section id="sec-resumen" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Resumen del Proyecto</h2>
+                <p class="mt-2 text-stone-600">Avance general de cada área. Haz clic en una tarjeta para ir a esa sección.</p>
+            </div>
+            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- MÓDULO DE TAREAS REUTILIZABLE (compartido por las áreas de proyecto) -->
+        <section id="sec-tracker" class="fade-in hidden">
+            <input type="hidden" id="tracker-area" value="">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 id="tracker-title" class="text-2xl font-semibold text-stone-800">Área</h2>
+                <p class="mt-2 text-stone-600">Lista de tareas de esta área. Cambia el estado, asigna responsables y deja notas.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-stone-700">Progreso</span>
+                    <span id="tracker-progress-text" class="text-sm text-stone-500">0/0 · 0%</span>
+                </div>
+                <div class="w-full bg-stone-100 rounded-full h-3">
+                    <div id="tracker-progress-bar" class="bg-teal-600 h-3 rounded-full transition-all" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div id="tracker-list"></div>
+            </div>
+
+            <form onsubmit="window.handleAddTask(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
+                <input type="text" id="new-task-title" required placeholder="Nueva tarea…" class="flex-1 rounded-md border border-stone-300 bg-white p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <input type="text" id="new-task-assignee" placeholder="Responsable (opcional)" class="sm:w-48 rounded-md border border-stone-300 bg-white p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
+            </form>
+        </section>
+
         <!-- SECCIÓN 1: CATÁLOGO -->
-        <section id="sec-catalogo" class="fade-in block">
+        <section id="sec-catalogo" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
                 <h2 class="text-2xl font-semibold text-stone-800">Catálogo de Equipos Requeridos</h2>
                 <p class="mt-2 text-stone-600">Esta sección detalla los equipos de uso general e inventario primario solicitados. Seleccione cualquier tarjeta en la cuadrícula para ver una imagen referencial, el rango de precio estimado en el mercado actual y una breve descripción de las especificaciones a buscar al momento de la compra.</p>
@@ -538,28 +583,23 @@
         function applyAccess() {
             const isAdmin = !!currentProfile?.is_admin;
 
-            allAreas.forEach(a => {
-                const tab = document.getElementById(tabId(a.key));
-                if (tab) tab.classList.toggle('hidden', !allowedAreas.has(a.key));
+            // El Resumen está disponible para cualquier usuario con sesión.
+            allowedAreas.add('resumen');
+
+            // Mostrar/ocultar cada pestaña según el acceso.
+            const allTabKeys = ['resumen', 'local', 'remodelacion', 'financiamiento', 'catalogo', 'analisis', 'suplidores', 'personal', 'marca', 'permisos'];
+            allTabKeys.forEach(k => {
+                const tab = document.getElementById('tab-' + k);
+                if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
             });
 
             const adminTab = document.getElementById('tab-admin');
             if (adminTab) adminTab.classList.toggle('hidden', !isAdmin);
 
-            const order = allAreas.map(a => a.key).filter(k => allowedAreas.has(k));
-            if (isAdmin) order.push('admin');
-            const first = order[0];
-
+            // Todos aterrizan en el Resumen.
             const noAccess = document.getElementById('no-access');
-            if (first) {
-                if (noAccess) noAccess.classList.add('hidden');
-                window.switchTab(first);
-            } else {
-                ['catalogo', 'analisis', 'suplidores', 'admin'].forEach(k => {
-                    const s = document.getElementById(secId(k)); if (s) s.classList.add('hidden');
-                });
-                if (noAccess) noAccess.classList.remove('hidden');
-            }
+            if (noAccess) noAccess.classList.add('hidden');
+            window.switchTab('resumen');
         }
 
         // --- Comprobar la sesión al cargar la página ---
@@ -596,7 +636,7 @@
             const box = document.getElementById('new-user-areas');
             if (!box) return;
             box.innerHTML = '';
-            allAreas.forEach(a => {
+            allAreas.filter(a => a.key !== 'resumen').forEach(a => {
                 const label = document.createElement('label');
                 label.className = 'flex items-center space-x-2 text-sm text-stone-700 cursor-pointer';
                 label.innerHTML = `<input type="checkbox" value="${a.key}" class="new-area-cb rounded text-teal-600 focus:ring-teal-500 w-4 h-4"><span>${a.label}</span>`;
@@ -625,7 +665,7 @@
                 const areaSet = byUser[u.id] || new Set();
                 const isSelf = u.id === currentUser.id;
                 const safeEmail = (u.email || '').replace(/'/g, "\\'");
-                const areaChecks = allAreas.map(a => `
+                const areaChecks = allAreas.filter(a => a.key !== 'resumen').map(a => `
                     <label class="inline-flex items-center gap-1 mr-3 text-xs text-stone-600 whitespace-nowrap">
                         <input type="checkbox" ${areaSet.has(a.key) ? 'checked' : ''} ${u.is_admin ? 'disabled' : ''}
                             onchange="window.toggleUserArea('${u.id}', '${a.key}', this.checked)"
@@ -958,18 +998,35 @@
         }
 
         window.switchTab = function(tabKey) {
-            const sections = ['catalogo', 'analisis', 'suplidores', 'admin'];
-            sections.forEach(sec => {
-                const secEl = document.getElementById('sec-' + sec);
-                const tabEl = document.getElementById('tab-' + sec);
-                if (secEl) secEl.classList.add('hidden');
-                if (tabEl) { tabEl.classList.remove('tab-active', 'text-teal-600'); tabEl.classList.add('text-stone-500'); }
+            const trackerAreas = ['local', 'remodelacion', 'financiamiento', 'personal', 'marca', 'permisos'];
+
+            // Ocultar todas las secciones
+            ['catalogo', 'analisis', 'suplidores', 'admin', 'resumen', 'tracker'].forEach(sec => {
+                const el = document.getElementById('sec-' + sec);
+                if (el) el.classList.add('hidden');
             });
 
-            const secEl = document.getElementById('sec-' + tabKey);
+            // Desactivar el estilo de todas las pestañas
+            ['resumen', 'local', 'remodelacion', 'financiamiento', 'catalogo', 'analisis', 'suplidores', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
+                const t = document.getElementById('tab-' + k);
+                if (t) { t.classList.remove('tab-active', 'text-teal-600'); t.classList.add('text-stone-500'); }
+            });
+
+            // Activar la pestaña actual
             const tabEl = document.getElementById('tab-' + tabKey);
-            if (secEl) secEl.classList.remove('hidden');
             if (tabEl) { tabEl.classList.add('tab-active'); tabEl.classList.remove('text-stone-500'); }
+
+            // Mostrar la sección correcta
+            if (tabKey === 'resumen') {
+                document.getElementById('sec-resumen').classList.remove('hidden');
+                window.renderResumen();
+            } else if (trackerAreas.includes(tabKey)) {
+                document.getElementById('sec-tracker').classList.remove('hidden');
+                window.renderTracker(tabKey);
+            } else {
+                const secEl = document.getElementById('sec-' + tabKey);
+                if (secEl) secEl.classList.remove('hidden');
+            }
 
             if (tabKey === 'analisis') {
                 if (costChartInstance) costChartInstance.update();
@@ -980,6 +1037,168 @@
                 window.loadUsers();
             }
         }
+
+        // ======================================================
+        // SEGUIMIENTO DE PROYECTO: MÓDULO DE TAREAS POR ÁREA
+        // ======================================================
+        const TRACKER_AREAS = ['local', 'remodelacion', 'financiamiento', 'personal', 'marca', 'permisos'];
+
+        function areaLabel(key) {
+            const a = allAreas.find(x => x.key === key);
+            return a ? a.label : key;
+        }
+
+        function escapeHtml(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        // Render del módulo de tareas para un área
+        window.renderTracker = async function(areaKey) {
+            document.getElementById('tracker-title').textContent = areaLabel(areaKey);
+            document.getElementById('tracker-area').value = areaKey;
+            const list = document.getElementById('tracker-list');
+            list.innerHTML = '<p class="text-stone-400 text-sm">Cargando…</p>';
+
+            const { data: tasks, error } = await supabase
+                .from('tasks').select('*').eq('area_key', areaKey)
+                .order('sort_order').order('created_at');
+
+            if (error) {
+                list.innerHTML = `<p class="text-red-600 text-sm">No se pudieron cargar las tareas: ${escapeHtml(error.message)}.<br>¿Ya corriste el script <code>supabase/phase1-tracker.sql</code>?</p>`;
+                updateTrackerProgress([]);
+                return;
+            }
+            if (!tasks || tasks.length === 0) {
+                list.innerHTML = '<p class="text-stone-400 text-sm py-4">No hay tareas todavía. Añade la primera abajo 👇</p>';
+                updateTrackerProgress([]);
+                return;
+            }
+            list.innerHTML = '';
+            tasks.forEach(t => list.appendChild(renderTaskRow(t)));
+            updateTrackerProgress(tasks);
+        };
+
+        function updateTrackerProgress(tasks) {
+            const total = tasks.length;
+            const done = tasks.filter(t => t.status === 'hecho').length;
+            const pct = total ? Math.round(done / total * 100) : 0;
+            document.getElementById('tracker-progress-bar').style.width = pct + '%';
+            document.getElementById('tracker-progress-text').textContent = `${done}/${total} completadas · ${pct}%`;
+        }
+
+        function renderTaskRow(t) {
+            const row = document.createElement('div');
+            const done = t.status === 'hecho';
+            row.className = 'flex items-start gap-3 py-3 border-b border-stone-100 last:border-0';
+            const statusColor = done ? 'text-teal-600' : (t.status === 'en_progreso' ? 'text-amber-600' : 'text-stone-500');
+            row.innerHTML = `
+                <select onchange="window.updateTaskStatus('${t.id}', this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 ${statusColor} font-medium focus:ring-1 focus:ring-teal-500 outline-none">
+                    <option value="pendiente" ${t.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                    <option value="en_progreso" ${t.status === 'en_progreso' ? 'selected' : ''}>En progreso</option>
+                    <option value="hecho" ${t.status === 'hecho' ? 'selected' : ''}>Hecho</option>
+                </select>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm text-stone-800 ${done ? 'line-through text-stone-400' : ''}">${escapeHtml(t.title)}</p>
+                    ${t.assignee ? `<span class="text-xs text-teal-700">👤 ${escapeHtml(t.assignee)}</span>` : ''}
+                    ${t.notes ? `<p class="text-xs text-stone-500 mt-0.5">${escapeHtml(t.notes)}</p>` : ''}
+                </div>
+                <button onclick="window.editTask('${t.id}')" class="text-stone-400 hover:text-amber-600 text-xs font-medium">Editar</button>
+                <button onclick="window.deleteTask('${t.id}')" class="text-stone-400 hover:text-red-600 text-xs font-medium">Eliminar</button>
+            `;
+            return row;
+        }
+
+        window.handleAddTask = async function(e) {
+            e.preventDefault();
+            const areaKey = document.getElementById('tracker-area').value;
+            const titleEl = document.getElementById('new-task-title');
+            const assigneeEl = document.getElementById('new-task-assignee');
+            const title = titleEl.value.trim();
+            if (!title) return;
+
+            const { error } = await supabase.from('tasks').insert({
+                area_key: areaKey, title, assignee: assigneeEl.value.trim()
+            });
+            if (error) { alert('No se pudo añadir la tarea: ' + error.message); return; }
+            titleEl.value = ''; assigneeEl.value = '';
+            window.renderTracker(areaKey);
+        };
+
+        window.updateTaskStatus = async function(id, status) {
+            const areaKey = document.getElementById('tracker-area').value;
+            const { error } = await supabase.from('tasks').update({ status }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); }
+            window.renderTracker(areaKey);
+        };
+
+        window.editTask = async function(id) {
+            const { data: t } = await supabase.from('tasks').select('*').eq('id', id).single();
+            if (!t) return;
+            const title = prompt('Título de la tarea:', t.title);
+            if (title === null) return;
+            const assignee = prompt('Responsable (opcional):', t.assignee || '');
+            if (assignee === null) return;
+            const notes = prompt('Notas (opcional):', t.notes || '');
+            if (notes === null) return;
+            const { error } = await supabase.from('tasks')
+                .update({ title: title.trim(), assignee: assignee.trim(), notes: notes.trim() }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderTracker(t.area_key);
+        };
+
+        window.deleteTask = async function(id) {
+            if (!confirm('¿Eliminar esta tarea?')) return;
+            const areaKey = document.getElementById('tracker-area').value;
+            const { error } = await supabase.from('tasks').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderTracker(areaKey);
+        };
+
+        // ======================================================
+        // RESUMEN: avance por área (rollup)
+        // ======================================================
+        window.renderResumen = async function() {
+            const container = document.getElementById('resumen-cards');
+            container.innerHTML = '<p class="text-stone-400 text-sm">Cargando…</p>';
+
+            const { data: tasks, error } = await supabase.from('tasks').select('area_key, status');
+            if (error) {
+                container.innerHTML = `<p class="text-red-600 text-sm col-span-full">No se pudo cargar el resumen: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/phase1-tracker.sql</code>?</p>`;
+                return;
+            }
+
+            const byArea = {};
+            (tasks || []).forEach(t => {
+                const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 };
+                g.total++; if (t.status === 'hecho') g.done++;
+            });
+
+            const areasToShow = TRACKER_AREAS.filter(k => allowedAreas.has(k));
+            container.innerHTML = '';
+            if (areasToShow.length === 0) {
+                container.innerHTML = '<p class="text-stone-500 text-sm col-span-full">Aún no tienes áreas de proyecto asignadas. Pídele acceso a un administrador.</p>';
+                return;
+            }
+
+            areasToShow.forEach(key => {
+                const g = byArea[key] || { total: 0, done: 0 };
+                const pct = g.total ? Math.round(g.done / g.total * 100) : 0;
+                const card = document.createElement('button');
+                card.onclick = () => window.switchTab(key);
+                card.className = 'text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md hover:border-teal-400 transition-all';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-stone-800">${escapeHtml(areaLabel(key))}</h3>
+                        <span class="text-sm font-bold text-teal-700">${pct}%</span>
+                    </div>
+                    <div class="w-full bg-stone-100 rounded-full h-2.5 mb-2">
+                        <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:${pct}%"></div>
+                    </div>
+                    <p class="text-xs text-stone-500">${g.done}/${g.total} tareas completadas</p>
+                `;
+                container.appendChild(card);
+            });
+        };
 
         window.setupAddSupplierForm = function() {
             const container = document.getElementById('equipment-checkboxes');
