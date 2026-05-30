@@ -207,12 +207,8 @@
                         <input id="office-address" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Dirección de la oficina"></label>
                     <label class="text-sm"><span class="text-stone-600">Tamaño</span>
                         <input id="office-size" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 1,200 pies²"></label>
-                    <label class="text-sm"><span class="text-stone-600">Precio / opción</span>
-                        <input id="office-price" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. $250,000"></label>
-                    <label class="text-sm"><span class="text-stone-600">Precio del local ($) <span class="text-teal-600">· financiamiento</span></span>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Precio del local ($) <span class="text-teal-600">· va al financiamiento</span></span>
                         <input id="office-purchase-price" type="number" step="any" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 250000"></label>
-                    <label class="text-sm"><span class="text-stone-600">Estatus</span>
-                        <input id="office-status" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Opción de compra realizada"></label>
                     <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
                         <textarea id="office-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Detalles, fechas clave, etc."></textarea></label>
                 </div>
@@ -263,6 +259,7 @@
                         <input id="nc-quote" type="number" step="any" placeholder="Cotización ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                         <input id="nc-contact" placeholder="Contacto (tel/email)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                         <input id="nc-lead" placeholder="Tiempo estimado (ej. 6 semanas)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <input id="nc-instagram" placeholder="Instagram (@usuario o link)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                     </div>
                     <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir contratista</button>
                 </form>
@@ -1928,9 +1925,7 @@
             const o = data || {};
             document.getElementById('office-address').value = o.address || '';
             document.getElementById('office-size').value = o.size || '';
-            document.getElementById('office-price').value = o.price || '';
             document.getElementById('office-purchase-price').value = (o.purchase_price ?? '');
-            document.getElementById('office-status').value = o.status || '';
             document.getElementById('office-notes').value = o.notes || '';
         }
 
@@ -1940,9 +1935,7 @@
                 area_key: 'local',
                 address: document.getElementById('office-address').value.trim(),
                 size: document.getElementById('office-size').value.trim(),
-                price: document.getElementById('office-price').value.trim(),
                 purchase_price: document.getElementById('office-purchase-price').value === '' ? null : Number(document.getElementById('office-purchase-price').value),
-                status: document.getElementById('office-status').value.trim(),
                 notes: document.getElementById('office-notes').value.trim(),
                 updated_at: new Date().toISOString()
             };
@@ -1975,6 +1968,8 @@
                 : (cs.length ? `${cs.length} contratista(s) · pendiente de elegir` : 'Sin contratistas todavía');
         }
 
+        function instaUrl(v) { v = String(v || '').trim(); if (!v) return ''; return /^https?:\/\//i.test(v) ? v : 'https://instagram.com/' + v.replace(/^@/, ''); }
+        function instaLabel(v) { v = String(v || '').trim(); if (!v) return ''; if (/^https?:\/\//i.test(v)) { const m = v.match(/instagram\.com\/([^/?#]+)/i); return m ? '@' + m[1] : v; } return v.startsWith('@') ? v : '@' + v; }
         function renderContractorCard(c) {
             const div = document.createElement('div');
             const sel = c.status === 'seleccionado';
@@ -1996,6 +1991,7 @@
                     <div><span class="text-stone-400">Cotización:</span> <span class="font-medium text-stone-800">${quote}</span></div>
                     <div><span class="text-stone-400">Contacto:</span> ${escapeHtml(c.contact || '—')}</div>
                     <div><span class="text-stone-400">Tiempo:</span> ${escapeHtml(c.lead_time || '—')}</div>
+                    <div><span class="text-stone-400">Instagram:</span> ${c.instagram ? `<a href="${instaUrl(c.instagram)}" target="_blank" rel="noopener" class="text-teal-700 hover:underline">${escapeHtml(instaLabel(c.instagram))}</a>` : '—'}</div>
                 </div>
                 ${c.notes ? `<p class="text-xs text-stone-500 mt-2">${escapeHtml(c.notes)}</p>` : ''}
                 <div class="mt-3 flex gap-4">
@@ -2076,7 +2072,8 @@
                 area_key: 'local', name,
                 quote_amount: quoteRaw === '' ? null : Number(quoteRaw),
                 contact: document.getElementById('nc-contact').value.trim(),
-                lead_time: document.getElementById('nc-lead').value.trim()
+                lead_time: document.getElementById('nc-lead').value.trim(),
+                instagram: document.getElementById('nc-instagram').value.trim()
             });
             if (error) { alert('No se pudo añadir: ' + error.message); return; }
             e.target.reset();
@@ -2096,11 +2093,12 @@
             const quote = prompt('Cotización ($, solo número):', c.quote_amount ?? ''); if (quote === null) return;
             const contact = prompt('Contacto (tel/email):', c.contact || ''); if (contact === null) return;
             const lead = prompt('Tiempo estimado:', c.lead_time || ''); if (lead === null) return;
+            const insta = prompt('Instagram (@usuario o link):', c.instagram || ''); if (insta === null) return;
             const notes = prompt('Notas / alcance:', c.notes || ''); if (notes === null) return;
             const { error } = await supabase.from('contractors').update({
                 name: name.trim(),
                 quote_amount: quote.trim() === '' ? null : Number(quote),
-                contact: contact.trim(), lead_time: lead.trim(), notes: notes.trim()
+                contact: contact.trim(), lead_time: lead.trim(), instagram: insta.trim(), notes: notes.trim()
             }).eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
             renderContractors();
@@ -2267,18 +2265,20 @@
             const files = Array.from(e.target.files || []);
             if (!files.length) return;
             const hint = document.getElementById('media-hint-' + area);
-            let fail = 0;
+            const errors = [];
             for (const file of files) {
                 if (hint) hint.textContent = `Subiendo ${file.name}…`;
                 const safe = file.name.replace(/[^\w.\-]+/g, '_');
                 const path = `${area}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
                 const { error } = await supabase.storage.from(MEDIA_BUCKET)
                     .upload(path, file, { upsert: false, contentType: file.type || undefined });
-                if (error) { fail++; console.error('upload', file.name, error); }
+                if (error) { errors.push(`${file.name}: ${error.message}`); console.error('upload', file.name, error); }
             }
             e.target.value = '';
-            if (hint) hint.textContent = 'Archivos (máx. 50 MB por archivo).' + (fail ? ` — ${fail} no se pudieron subir (revisa tamaño/tipo).` : '');
-            renderMedia(area);
+            if (hint) hint.textContent = 'Archivos (máx. 50 MB por archivo).';
+            await renderMedia(area);
+            if (errors.length) alert('No se pudieron subir algunos archivos:\n\n' + errors.join('\n') + '\n\n(Revisa el tamaño: máx. 50 MB por archivo.)');
+            else setTimeout(() => renderMedia(area), 1200); // red de seguridad por si el listado tarda
         };
 
         window.deleteMedia = async function(area, name) {
