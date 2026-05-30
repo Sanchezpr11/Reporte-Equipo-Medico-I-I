@@ -1166,10 +1166,10 @@
             currentUser = user;
 
             const { data: profile } = await supabase
-                .from('profiles').select('is_admin, is_platform_admin, client_id, full_name, email')
+                .from('profiles').select('is_admin, is_platform_admin, client_id, active_client_id, full_name, email')
                 .eq('id', user.id).maybeSingle();
-            currentProfile = profile || { is_admin: false, is_platform_admin: false, client_id: null, full_name: '', email: user.email };
-            currentClientId = currentProfile.client_id || null;
+            currentProfile = profile || { is_admin: false, is_platform_admin: false, client_id: null, active_client_id: null, full_name: '', email: user.email };
+            currentClientId = currentProfile.active_client_id || currentProfile.client_id || null;
 
             const { data: areas } = await supabase
                 .from('areas').select('key, label, sort_order').order('sort_order');
@@ -1185,8 +1185,18 @@
 
             applyAccess();
 
+            // Re-aplicar el branding del cliente activo (ahora que ya conocemos currentClientId)
+            await applyProjectBranding();
+
             const who = document.getElementById('nav-user');
-            if (who) who.textContent = currentProfile.email || user.email;
+            if (who) {
+                who.textContent = currentProfile.email || user.email;
+                // Mostrar el cliente activo si es admin de plataforma
+                if (currentProfile.is_platform_admin && currentClientId) {
+                    const { data: cli } = await supabase.from('clients').select('name').eq('id', currentClientId).maybeSingle();
+                    if (cli) who.textContent = `${currentProfile.email} · ${cli.name}`;
+                }
+            }
 
             document.body.classList.remove('locked');
             if (!appStarted) { appStarted = true; window.initApp(); }
@@ -1419,10 +1429,11 @@
             tbody.innerHTML = '';
             (clients || []).forEach(c => {
                 const suspended = c.status === 'suspended';
+                const isActive = c.id === currentClientId;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="px-4 py-3 align-top">
-                        <div class="font-medium text-stone-800 text-sm">${escapeHtml(c.name)}</div>
+                        <div class="font-medium text-stone-800 text-sm">${escapeHtml(c.name)}${isActive ? ' <span class="text-xs text-teal-700">● activo</span>' : ''}</div>
                         ${c.is_demo ? '<span class="inline-block mt-1 text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Demo</span>' : ''}
                     </td>
                     <td class="px-4 py-3 align-top text-sm text-stone-600">${counts[c.id] || 0}</td>
@@ -1430,6 +1441,7 @@
                         <span class="inline-block text-xs px-2 py-0.5 rounded-full ${suspended ? 'bg-red-100 text-red-700' : 'bg-teal-100 text-teal-800'}">${suspended ? 'Suspendido' : 'Activo'}</span>
                     </td>
                     <td class="px-4 py-3 align-top text-right whitespace-nowrap">
+                        ${isActive ? '<span class="text-xs text-stone-400 mr-3">Estás aquí</span>' : `<button onclick="window.switchToClient('${c.id}')" class="text-teal-700 hover:text-teal-900 text-sm font-medium mr-3">Entrar</button>`}
                         <button onclick="window.toggleClientStatus('${c.id}', '${suspended ? 'active' : 'suspended'}')" class="text-amber-600 hover:text-amber-800 text-sm font-medium">${suspended ? 'Reactivar' : 'Suspender'}</button>
                     </td>`;
                 tbody.appendChild(tr);
@@ -1470,6 +1482,13 @@
             const { error } = await supabase.from('clients').update({ status: newStatus }).eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
             window.renderPlataforma();
+        };
+
+        // Conmutador: entrar a un cliente (cambia el cliente activo del super-admin)
+        window.switchToClient = async function(id) {
+            const { error } = await supabase.rpc('set_active_client', { target: id });
+            if (error) { alert('Error: ' + error.message); return; }
+            location.reload();
         };
 
         // Datos Iniciales (Por defecto, la primera vez)
@@ -3764,7 +3783,12 @@
         }
         async function applyProjectBranding() {
             try {
+                // Cliente cuyo branding mostramos: el activo si ya hay sesión; si no
+                // (pantalla de login), el cliente base I&I como bienvenida por defecto.
+                const II = '00000000-0000-0000-0000-000000000001';
+                const cid = currentClientId || II;
                 const { data } = await supabase.from('project_settings').select('key, value')
+                    .eq('client_id', cid)
                     .in('key', ['project_name', 'project_desc', 'project_logo']);
                 const map = {}; (data || []).forEach(r => { map[r.key] = r.value; });
                 projectBranding = {
@@ -3823,7 +3847,8 @@
                 { key: 'project_desc', value: desc, updated_at: now }
             ];
             if (pendingLogoData !== null) rows.push({ key: 'project_logo', value: pendingLogoData, updated_at: now });
-            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'key' });
+            rows.forEach(r => { r.client_id = currentClientId; });
+            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'client_id,key' });
             const msg = document.getElementById('proj-branding-msg');
             if (error) { if (msg) { msg.textContent = 'Error: ' + error.message; msg.className = 'text-sm text-red-600'; } return; }
             if (msg) { msg.textContent = 'Guardado ✓'; msg.className = 'text-sm text-teal-700'; setTimeout(() => { msg.textContent = ''; }, 2000); }
