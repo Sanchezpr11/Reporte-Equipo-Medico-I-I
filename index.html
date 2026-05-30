@@ -141,6 +141,8 @@
       .fade-in, .rd-stagger > *{ animation:none !important; }
       #resumen-cards button:hover{ transform:none; }
     }
+    .rd-locked{ border-color:transparent !important; background:transparent !important; padding-left:0 !important; box-shadow:none !important; cursor:default; resize:none; }
+    .rd-locked::placeholder{ color:transparent !important; }
     </style>
 </head>
 <body class="antialiased locked">
@@ -320,10 +322,13 @@
             </div>
 
             <!-- Información de la oficina -->
-            <form onsubmit="window.saveOfficeInfo(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+            <form id="office-form" onsubmit="window.saveOfficeInfo(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-stone-800">🏢 Información de la oficina</h3>
-                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                    <div class="flex gap-2">
+                        <button type="button" data-role="edit" onclick="window.editCard('office-form')" class="hidden border border-stone-300 text-stone-700 px-4 py-1.5 rounded-md text-sm font-medium hover:bg-stone-50 transition-colors">Editar</button>
+                        <button type="submit" data-role="save" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label class="text-sm"><span class="text-stone-600">Dirección</span>
@@ -446,10 +451,13 @@
             </div>
 
             <!-- Producto financiero -->
-            <form onsubmit="window.saveBankProduct(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+            <form id="bank-form" onsubmit="window.saveBankProduct(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-semibold text-stone-800">Producto financiero</h3>
-                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                    <div class="flex gap-2">
+                        <button type="button" data-role="edit" onclick="window.editCard('bank-form')" class="hidden border border-stone-300 text-stone-700 px-4 py-1.5 rounded-md text-sm font-medium hover:bg-stone-50 transition-colors">Editar</button>
+                        <button type="submit" data-role="save" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label class="text-sm"><span class="text-stone-600">Banco</span>
@@ -469,7 +477,9 @@
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
                 <h3 class="font-semibold text-stone-800 mb-3">Contactos del banco</h3>
                 <div id="bank-contacts-list"></div>
+                <button type="button" id="bank-contact-add-btn" onclick="window.showBankContactForm()" class="hidden mt-3 text-sm font-medium text-teal-700 hover:text-teal-900">+ Añadir otro contacto</button>
             </div>
+            <div id="bank-contact-form-wrap">
             <form onsubmit="window.handleAddBankContact(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input id="nbc-name" required placeholder="Nombre *" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
@@ -479,6 +489,7 @@
                 </div>
                 <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir contacto</button>
             </form>
+            </div>
 
             <!-- Documentos solicitados -->
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
@@ -908,7 +919,7 @@
             <!-- Configuración del proyecto -->
             <div class="bg-white shadow-md rounded-xl p-6 mb-8 border border-stone-200">
                 <h3 class="text-lg font-bold text-teal-800 mb-4 flex items-center"><span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">🏷️</span> Identidad del proyecto</h3>
-                <form onsubmit="window.saveProjectBranding(event)" class="space-y-5">
+                <form id="proj-form" onsubmit="window.saveProjectBranding(event)" class="space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-stone-700 mb-1">Nombre del proyecto <span class="text-red-500">*</span></label>
@@ -932,7 +943,8 @@
                     </div>
                     <div class="flex items-center justify-end gap-4">
                         <span id="proj-branding-msg" class="text-sm"></span>
-                        <button type="submit" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm">Guardar identidad</button>
+                        <button type="button" data-role="edit" onclick="window.editCard('proj-form')" class="hidden border border-stone-300 text-stone-700 px-5 py-2 rounded-lg font-medium hover:bg-stone-50 transition-colors">Editar</button>
+                        <button type="submit" data-role="save" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm">Guardar identidad</button>
                     </div>
                 </form>
             </div>
@@ -2526,6 +2538,7 @@
             document.getElementById('office-purchase-price').value = (o.purchase_price ?? '');
             document.getElementById('office-status').value = o.status || '';
             document.getElementById('office-notes').value = o.notes || '';
+            lockCard('office-form', cardHasValue('office-form'));
         }
 
         window.saveOfficeInfo = async function(e) {
@@ -2543,8 +2556,7 @@
             payload.client_id = currentClientId;
             const { error } = await supabase.from('office_info').upsert(payload, { onConflict: 'client_id,area_key' });
             if (error) { alert('No se pudo guardar: ' + error.message); return; }
-            const btn = e.target.querySelector('button[type=submit]');
-            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
+            lockCard('office-form', true);
         };
 
         // --- Fase 1: contratistas ---
@@ -2893,6 +2905,33 @@
             return `<p class="text-red-600 text-sm">Error: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/${file}</code>?</p>`;
         }
 
+        // --- Fichas de un solo registro: modo vista (guardado) / edición ---
+        function lockCard(formId, locked) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+            form.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'submit' || el.type === 'button' || el.type === 'file') return;
+                if (el.tagName === 'SELECT') el.disabled = locked; else el.readOnly = locked;
+                el.classList.toggle('rd-locked', locked);
+            });
+            const save = form.querySelector('[data-role=save]');
+            const edit = form.querySelector('[data-role=edit]');
+            if (save) save.classList.toggle('hidden', locked);
+            if (edit) edit.classList.toggle('hidden', !locked);
+        }
+        function cardHasValue(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return false;
+            return Array.from(form.querySelectorAll('input, textarea')).some(el =>
+                el.type !== 'submit' && el.type !== 'button' && el.type !== 'file' && (el.value || '').trim());
+        }
+        window.editCard = function(formId) {
+            lockCard(formId, false);
+            const form = document.getElementById(formId);
+            const first = form && form.querySelector('input:not([type=file]), textarea');
+            if (first) first.focus();
+        };
+
         // ======================================================
         // ÁREA FINANCIAMIENTO (préstamo del banco)
         // ======================================================
@@ -3003,6 +3042,7 @@
             document.getElementById('bank-rate').value = b.rate || '';
             document.getElementById('bank-term').value = b.term || '';
             document.getElementById('bank-notes').value = b.notes || '';
+            lockCard('bank-form', cardHasValue('bank-form'));
         }
         window.saveBankProduct = async function(e) {
             e.preventDefault();
@@ -3018,8 +3058,7 @@
             payload.client_id = currentClientId;
             const { error } = await supabase.from('bank_product').upsert(payload, { onConflict: 'client_id,area_key' });
             if (error) { alert('No se pudo guardar: ' + error.message); return; }
-            const btn = e.target.querySelector('button[type=submit]');
-            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
+            lockCard('bank-form', true);
         };
 
         // --- Contactos del banco ---
@@ -3028,6 +3067,10 @@
             const { data, error } = await supabase.from('bank_contacts').select('*').eq('area_key', 'financiamiento').order('created_at');
             if (error) { list.innerHTML = sqlErr(error, 'areas-fase2.sql'); return; }
             const cs = data || [];
+            const wrap = document.getElementById('bank-contact-form-wrap');
+            const addBtn = document.getElementById('bank-contact-add-btn');
+            if (wrap) wrap.classList.toggle('hidden', cs.length > 0);
+            if (addBtn) addBtn.classList.toggle('hidden', cs.length === 0);
             list.innerHTML = cs.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay contactos.</p>';
             cs.forEach(c => {
                 const row = document.createElement('div');
@@ -3043,6 +3086,13 @@
                 list.appendChild(row);
             });
         }
+        window.showBankContactForm = function() {
+            const wrap = document.getElementById('bank-contact-form-wrap');
+            const addBtn = document.getElementById('bank-contact-add-btn');
+            if (wrap) wrap.classList.remove('hidden');
+            if (addBtn) addBtn.classList.add('hidden');
+            const n = document.getElementById('nbc-name'); if (n) n.focus();
+        };
         window.handleAddBankContact = async function(e) {
             e.preventDefault();
             const name = document.getElementById('nbc-name').value.trim();
@@ -3810,6 +3860,7 @@
             const n = document.getElementById('proj-name'); if (n) n.value = projectBranding.name === PROJECT_DEFAULTS.name ? '' : projectBranding.name;
             const d = document.getElementById('proj-desc'); if (d) d.value = projectBranding.desc || '';
             updateLogoPreview(projectBranding.logo, projectBranding.name || 'Proyecto');
+            lockCard('proj-form', cardHasValue('proj-form'));
         };
         function updateLogoPreview(logo, name) {
             const box = document.getElementById('proj-logo-preview');
@@ -3857,6 +3908,7 @@
             if (error) { if (msg) { msg.textContent = 'Error: ' + error.message; msg.className = 'text-sm text-red-600'; } return; }
             if (msg) { msg.textContent = 'Guardado ✓'; msg.className = 'text-sm text-teal-700'; setTimeout(() => { msg.textContent = ''; }, 2000); }
             pendingLogoData = null;
+            lockCard('proj-form', true);
             await applyProjectBranding();
         };
 
