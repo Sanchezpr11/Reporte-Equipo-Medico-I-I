@@ -202,6 +202,7 @@
           <a id="tab-pendientes" data-area="pendientes" onclick="window.switchTab('pendientes')" class="navitem hidden"><span class="ni-ic">✅</span><span>Pendientes</span></a>
           <div class="sb-group">Sistema</div>
           <a id="tab-admin" data-area="admin" onclick="window.switchTab('admin')" class="navitem hidden"><span class="ni-ic">⚙️</span><span>Admin</span></a>
+          <a id="tab-plataforma" data-area="plataforma" onclick="window.switchTab('plataforma')" class="navitem hidden"><span class="ni-ic">🛡️</span><span>Plataforma</span></a>
         </nav>
         <div class="sb-foot">
           <span id="nav-user" class="sb-user" title="Sesión actual"></span>
@@ -996,6 +997,7 @@
         <a class="masrow mnav" data-area="permisos" onclick="window.switchTab('permisos')"><i>📋</i> Permisos</a>
         <a class="masrow mnav" data-area="pendientes" onclick="window.switchTab('pendientes')"><i>✅</i> Pendientes</a>
         <a class="masrow mnav" data-area="admin" onclick="window.switchTab('admin')"><i>⚙️</i> Admin</a>
+        <a class="masrow mnav" data-area="plataforma" onclick="window.switchTab('plataforma')"><i>🛡️</i> Plataforma</a>
         <a class="masrow danger" onclick="window.handleLogout()"><i>🚪</i> Cerrar sesión</a>
       </div>
     </div>
@@ -1107,14 +1109,18 @@
                 if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
             });
 
+            const isPlatform = !!currentProfile?.is_platform_admin;
             const adminTab = document.getElementById('tab-admin');
             if (adminTab) adminTab.classList.toggle('hidden', !isAdmin);
+            const platformTab = document.getElementById('tab-plataforma');
+            if (platformTab) platformTab.classList.toggle('hidden', !isPlatform);
 
             // Rediseño: replicar el acceso en la barra inferior móvil y la hoja "Más"
             allTabKeys.forEach(k => {
                 document.querySelectorAll('.mnav[data-area="' + k + '"]').forEach(el => el.classList.toggle('hidden', !allowedAreas.has(k)));
             });
             document.querySelectorAll('.mnav[data-area="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
+            document.querySelectorAll('.mnav[data-area="plataforma"]').forEach(el => el.classList.toggle('hidden', !isPlatform));
 
             // Todos aterrizan en el Resumen.
             const noAccess = document.getElementById('no-access');
@@ -1666,7 +1672,7 @@
 
         window.switchTab = function(tabKey) {
             // Ocultar todas las secciones
-            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'pendientes', 'admin', 'tracker'].forEach(sec => {
+            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'pendientes', 'admin', 'plataforma', 'tracker'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
@@ -1707,12 +1713,15 @@
                 window.setupCreateUserAreas();
                 window.loadUsers();
             }
+            if (tabKey === 'plataforma') {
+                window.renderPlataforma();
+            }
 
             // --- Rediseño: estado activo en barra lateral + barra inferior, título móvil y cierre de hoja ---
             document.querySelectorAll('[data-area]').forEach(el => el.classList.toggle('nav-active', el.dataset.area === tabKey));
             const _moreBtn = document.querySelector('.botbar .more');
             if (_moreBtn) _moreBtn.classList.toggle('nav-active', ['pendientes', 'equipos_oficina', 'personal', 'permisos', 'admin'].includes(tabKey));
-            const _labels = { resumen: 'Resumen', pendientes: 'Pendientes', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Médicos', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin' };
+            const _labels = { resumen: 'Resumen', pendientes: 'Pendientes', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Médicos', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin', plataforma: 'Plataforma' };
             const _mt = document.getElementById('mtitle');
             if (_mt && _labels[tabKey]) _mt.textContent = _labels[tabKey];
             const _sheet = document.getElementById('mas-sheet');
