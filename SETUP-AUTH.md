@@ -22,8 +22,8 @@ Esta pequeña función es la que permite crear usuarios con contraseña temporal
 
 ### Opción A — Desde el navegador (sin terminal) — recomendada
 1. En Supabase, ve a **Edge Functions** → **Deploy a new function** (o **Create function**).
-2. Nombre exacto: **`admin-users`**.
-3. Borra el contenido de ejemplo y pega **todo** el archivo [`supabase/functions/admin-users/index.ts`](supabase/functions/admin-users/index.ts).
+2. Nombre de la función: **`smooth-responder`** *(debe coincidir con la constante `EDGE_FUNCTION` en `index.html`)*.
+3. Borra el contenido de ejemplo y pega **todo** el archivo [`supabase/functions/smooth-responder/index.ts`](supabase/functions/smooth-responder/index.ts).
 4. **IMPORTANTE:** desactiva la opción **"Verify JWT"** / **"Enforce JWT verification"** (la verificación la hace la función por dentro; si la dejas activada, el navegador no podrá llamarla por CORS).
 5. Pulsa **Deploy**.
 
@@ -31,7 +31,7 @@ Esta pequeña función es la que permite crear usuarios con contraseña temporal
 ```bash
 npm i -g supabase            # si no la tienes
 supabase login
-supabase functions deploy admin-users --project-ref rqqwrbmrzgxgyijzytc --no-verify-jwt
+supabase functions deploy smooth-responder --project-ref rqqwrbmrzgxgcyijzytc --no-verify-jwt
 ```
 > No necesitas configurar secretos: `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` ya existen en el entorno de la función.
 
