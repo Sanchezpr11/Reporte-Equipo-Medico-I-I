@@ -9,7 +9,7 @@
 
 -- 1) Crear el área agrupada
 insert into public.areas (key, label, sort_order)
-values ('equipos', 'Equipos Médicos', 40)
+values ('equipos', 'Equipos Especializados', 40)
 on conflict (key) do update set label = excluded.label, sort_order = excluded.sort_order;
 
 -- 2) Migrar accesos: quien tuviera acceso a cualquiera de las 3 áreas viejas

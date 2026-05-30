@@ -196,7 +196,7 @@
           <div class="sb-group">Áreas</div>
           <a id="tab-financiamiento" data-area="financiamiento" onclick="window.switchTab('financiamiento')" class="navitem hidden"><span class="ni-ic">💵</span><span>Financiamiento</span></a>
           <a id="tab-local" data-area="local" onclick="window.switchTab('local')" class="navitem hidden"><span class="ni-ic">🏢</span><span>Local / Oficina</span></a>
-          <a id="tab-equipos" data-area="equipos" onclick="window.switchTab('equipos')" class="navitem hidden"><span class="ni-ic">🩺</span><span>Equipos Médicos</span></a>
+          <a id="tab-equipos" data-area="equipos" onclick="window.switchTab('equipos')" class="navitem hidden"><span class="ni-ic">🩺</span><span>Equipos Especializados</span></a>
           <a id="tab-equipos_oficina" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')" class="navitem hidden"><span class="ni-ic">🖥️</span><span>Equipos de Oficina</span></a>
           <a id="tab-personal" data-area="personal" onclick="window.switchTab('personal')" class="navitem hidden"><span class="ni-ic">👥</span><span>Personal</span></a>
           <a id="tab-permisos" data-area="permisos" onclick="window.switchTab('permisos')" class="navitem hidden"><span class="ni-ic">📋</span><span>Permisos</span></a>
@@ -548,7 +548,7 @@
         <!-- ÁREA: EQUIPOS MÉDICOS (agrupa catálogo, análisis y suplidores) -->
         <section id="sec-equipos" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
-                <h2 class="text-2xl font-semibold text-stone-800">Equipos Médicos</h2>
+                <h2 class="text-2xl font-semibold text-stone-800">Equipos Especializados</h2>
                 <p class="mt-2 text-stone-600">Todo lo relacionado con la compra de equipo médico: catálogo de equipos, análisis comparativo y directorio de suplidores.</p>
             </div>
             <div class="mb-8 flex flex-wrap gap-2">
@@ -1919,7 +1919,7 @@
             document.querySelectorAll('[data-area]').forEach(el => el.classList.toggle('nav-active', el.dataset.area === tabKey));
             const _moreBtn = document.querySelector('.botbar .more');
             if (_moreBtn) _moreBtn.classList.toggle('nav-active', ['pendientes', 'equipos_oficina', 'personal', 'permisos', 'admin'].includes(tabKey));
-            const _labels = { resumen: 'Resumen', pendientes: 'Pendientes', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Médicos', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin', plataforma: 'Plataforma' };
+            const _labels = { resumen: 'Resumen', pendientes: 'Pendientes', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Especializados', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin', plataforma: 'Plataforma' };
             const _mt = document.getElementById('mtitle');
             if (_mt && _labels[tabKey]) _mt.textContent = _labels[tabKey];
             const _sheet = document.getElementById('mas-sheet');
@@ -1932,7 +1932,7 @@
             if (s) s.classList.toggle('open');
         };
 
-        // Sub-navegación dentro de "Equipos Médicos"
+        // Sub-navegación dentro de "Equipos Especializados"
         window.switchEquipo = function(sub) {
             ['catalogo', 'analisis', 'suplidores', 'compra'].forEach(s => {
                 const sec = document.getElementById('sec-' + s);
@@ -2440,6 +2440,11 @@
                     const total = permits.length, ok = permits.filter(p => p.status === 'obtenido').length;
                     return { pct: total ? Math.round(ok / total * 100) : 0, sub: total ? `${ok}/${total} obtenidos` : 'Sin permisos aún' };
                 }
+                if (key === 'equipos') {
+                    const total = equipItems.length;
+                    const chosen = equipItems.filter(it => (it.equipment_quotes || []).some(q => q.selected)).length;
+                    return { pct: total ? Math.round(chosen / total * 100) : 0, sub: total ? `${chosen}/${total} con cotización elegida` : 'Sin equipos aún' };
+                }
                 if (key === 'equipos_oficina') {
                     const total = officeEq.length, bought = officeEq.filter(o => o.status === 'comprado').length;
                     return { pct: total ? Math.round(bought / total * 100) : 0, sub: total ? `${bought}/${total} comprados` : 'Sin artículos aún' };
@@ -2448,7 +2453,7 @@
                 return { pct: g.total ? Math.round(g.done / g.total * 100) : 0, sub: g.total ? `${g.done}/${g.total} tareas` : 'Sin tareas aún' };
             }
 
-            const PROJECT_AREAS = ['financiamiento', 'local', 'equipos_oficina', 'personal', 'permisos'];
+            const PROJECT_AREAS = ['financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos'];
             const areasToShow = PROJECT_AREAS.filter(k => allowedAreas.has(k));
             container.innerHTML = '';
             if (areasToShow.length === 0) {
