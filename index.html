@@ -124,6 +124,24 @@
     @media (min-width:1024px){
       .mtopbar, .botbar, .mas-sheet{ display:none !important; }
     }
+
+    /* ---- Animaciones fluidas + visualizaciones ---- */
+    .fade-in{ animation: rdIn .5s cubic-bezier(.22,.61,.36,1) both; }
+    @keyframes rdIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+    .rd-stagger > *{ animation: rdIn .45s cubic-bezier(.22,.61,.36,1) both; }
+    .rd-stagger > *:nth-child(1){ animation-delay:.03s } .rd-stagger > *:nth-child(2){ animation-delay:.07s }
+    .rd-stagger > *:nth-child(3){ animation-delay:.11s } .rd-stagger > *:nth-child(4){ animation-delay:.15s }
+    .rd-stagger > *:nth-child(5){ animation-delay:.19s } .rd-stagger > *:nth-child(6){ animation-delay:.23s }
+    .rd-stagger > *:nth-child(7){ animation-delay:.27s } .rd-stagger > *:nth-child(8){ animation-delay:.31s }
+    .rd-stagger > *:nth-child(n+9){ animation-delay:.35s }
+    #resumen-cards button{ transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    #resumen-cards button:hover{ transform: translateY(-3px); }
+    .rd-viz{ background:#fff; border:1px solid var(--rd-line); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,.04); padding:16px; margin-bottom:16px; }
+    .rd-viz .rd-vtitle{ font-size:13px; font-weight:700; color:#475569; margin-bottom:10px; }
+    @media (prefers-reduced-motion: reduce){
+      .fade-in, .rd-stagger > *{ animation:none !important; }
+      #resumen-cards button:hover{ transform:none; }
+    }
     </style>
 </head>
 <body class="antialiased locked">
@@ -227,7 +245,22 @@
                     <button onclick="window.saveOpeningDate()" class="bg-white text-teal-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-teal-50 transition-colors">Guardar</button>
                 </div>
             </div>
-            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div class="rd-viz">
+                <div class="grid grid-cols-1 sm:grid-cols-[170px_1fr] gap-6 items-center">
+                    <div class="relative mx-auto" style="width:160px;height:160px">
+                        <canvas id="resumen-ring"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span id="resumen-overall" class="text-3xl font-extrabold text-teal-800">0%</span>
+                            <span class="text-xs text-stone-500">avance general</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="rd-vtitle">Avance por área</p>
+                        <div class="relative" style="height:200px"><canvas id="resumen-bars"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 rd-stagger"></div>
         </section>
 
         <!-- MÓDULO DE TAREAS REUTILIZABLE (compartido por las áreas de proyecto) -->
@@ -349,6 +382,10 @@
                         <div id="local-f2-progress-bar" class="bg-teal-600 h-3 rounded-full transition-all" style="width:0%"></div>
                     </div>
                 </div>
+                <div id="local-chart-wrap" class="rd-viz" style="display:none">
+                    <p class="rd-vtitle">Avance por etapa</p>
+                    <div class="relative" style="height:200px"><canvas id="local-chart"></canvas></div>
+                </div>
                 <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
                     <div id="stages-list"></div>
                 </div>
@@ -446,8 +483,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
                 <p id="personal-summary" class="text-sm text-stone-600">—</p>
             </div>
+            <div id="personal-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Puestos por estado</p>
+                <div class="relative" style="height:200px"><canvas id="personal-chart"></canvas></div>
+            </div>
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <div id="positions-list"></div>
+                <div id="positions-list" class="rd-stagger"></div>
             </div>
             <form onsubmit="window.handleAddPosition(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -467,8 +508,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
                 <p id="permisos-summary" class="text-sm text-stone-600">—</p>
             </div>
+            <div id="permisos-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Permisos por estado</p>
+                <div class="relative" style="height:200px"><canvas id="permisos-chart"></canvas></div>
+            </div>
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <div id="permits-list"></div>
+                <div id="permits-list" class="rd-stagger"></div>
             </div>
             <form onsubmit="window.handleAddPermit(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -795,8 +840,13 @@
                 <span id="oficina-total" class="text-xl font-bold text-teal-800">$0</span>
             </div>
 
+            <div id="oficina-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Gasto por cuarto</p>
+                <div class="relative" style="height:220px"><canvas id="oficina-chart"></canvas></div>
+            </div>
+
             <!-- Cuartos con su equipo -->
-            <div id="oficina-rooms"></div>
+            <div id="oficina-rooms" class="rd-stagger"></div>
 
             <!-- Añadir cuarto -->
             <form onsubmit="window.addRoom(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
@@ -1464,6 +1514,110 @@
             document.getElementById('roi-months').innerText = monthlyRevenue > 0 ? monthsToBreakEven.toFixed(1) : "∞";
         }
 
+        // ===== Rediseño: animaciones + gráficas (Chart.js) =====
+        const RD_REDUCE = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (window.Chart) {
+            Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+            Chart.defaults.color = '#475569';
+            Chart.defaults.animation = RD_REDUCE ? false : { duration: 900, easing: 'easeOutQuart' };
+            try {
+                Chart.defaults.plugins.legend.labels.usePointStyle = true;
+                Chart.defaults.plugins.legend.labels.boxWidth = 8;
+                Chart.defaults.plugins.legend.labels.padding = 14;
+            } catch (_) {}
+        }
+        window._rdCharts = window._rdCharts || {};
+        window.rdChart = function(id, cfg) {
+            const c = document.getElementById(id);
+            if (!c || !window.Chart) return null;
+            try { if (window._rdCharts[id]) window._rdCharts[id].destroy(); } catch (_) {}
+            try { window._rdCharts[id] = new Chart(c.getContext('2d'), cfg); } catch (e) { console.warn('rdChart', id, e); return null; }
+            return window._rdCharts[id];
+        };
+        window.rdCountUp = function(el, to, opts) {
+            el = (typeof el === 'string') ? document.getElementById(el) : el;
+            if (!el) return;
+            opts = opts || {};
+            const pre = opts.prefix || '', suf = opts.suffix || '';
+            if (RD_REDUCE) { el.textContent = pre + Math.round(to).toLocaleString('en-US') + suf; return; }
+            const dur = opts.dur || 900, t0 = performance.now(), from = opts.from || 0;
+            function step(t) {
+                const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+                el.textContent = pre + Math.round(from + (to - from) * e).toLocaleString('en-US') + suf;
+                if (k < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        };
+        // Dona por estado (Personal, Permisos…)
+        window.rdStatusChart = function(id, items, statusMap, colorMap) {
+            try {
+                const labels = [], data = [], colors = [];
+                Object.keys(statusMap).forEach(k => {
+                    const n = items.filter(p => p.status === k).length;
+                    if (n > 0) { labels.push(statusMap[k]); data.push(n); colors.push(colorMap[k]); }
+                });
+                const wrap = document.getElementById(id + '-wrap');
+                if (!data.length) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart(id, {
+                    type: 'doughnut',
+                    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Gasto por cuarto (Equipos de Oficina)
+        window.rdOficinaChart = function(rooms, eq) {
+            try {
+                const byRoom = {};
+                (eq || []).forEach(x => { const k = x.room_id || '__none__'; byRoom[k] = (byRoom[k] || 0) + (Number(x.unit_price) || 0) * (Number(x.quantity) || 1); });
+                const labels = [], data = [];
+                (rooms || []).forEach(r => { labels.push(r.name); data.push(byRoom[r.id] || 0); });
+                if (byRoom['__none__']) { labels.push('Sin asignar'); data.push(byRoom['__none__']); }
+                const wrap = document.getElementById('oficina-chart-wrap');
+                if (!data.length || data.every(v => !v)) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart('oficina-chart', {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Gasto', data, backgroundColor: '#0f766e', borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => '$' + Number(v).toLocaleString('en-US') } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Avance por etapa de obra (Local)
+        window.rdLocalChart = async function() {
+            try {
+                const { data } = await supabase.from('stages').select('name, progress, sort_order').eq('area_key', 'local').order('sort_order');
+                const st = data || [];
+                const wrap = document.getElementById('local-chart-wrap');
+                if (!st.length) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart('local-chart', {
+                    type: 'bar',
+                    data: { labels: st.map(s => s.name), datasets: [{ label: 'Avance', data: st.map(s => s.progress || 0), backgroundColor: st.map(s => (s.progress >= 100 ? '#059669' : '#0f766e')), borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { min: 0, max: 100, ticks: { callback: v => v + '%' } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Panel visual del Resumen (anillo global + barras por área)
+        window.rdResumenViz = function(arr) {
+            try {
+                if (!arr || !arr.length) return;
+                const overall = Math.round(arr.reduce((a, b) => a + b.pct, 0) / arr.length);
+                window.rdCountUp('resumen-overall', overall, { suffix: '%' });
+                window.rdChart('resumen-ring', {
+                    type: 'doughnut',
+                    data: { datasets: [{ data: [overall, 100 - overall], backgroundColor: ['#0f766e', '#e7edf2'], borderWidth: 0 }] },
+                    options: { cutout: '74%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+                window.rdChart('resumen-bars', {
+                    type: 'bar',
+                    data: { labels: arr.map(a => a.label), datasets: [{ data: arr.map(a => a.pct), backgroundColor: arr.map(a => a.pct >= 100 ? '#059669' : (a.pct > 0 ? '#0f766e' : '#cbd5e1')), borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } }, scales: { x: { min: 0, max: 100, ticks: { callback: v => v + '%' } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+
         window.switchTab = function(tabKey) {
             // Ocultar todas las secciones
             ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'admin', 'tracker'].forEach(sec => {
@@ -1788,6 +1942,7 @@
             });
             document.getElementById('oficina-total').textContent = fmtMoney(grand);
             eq.forEach(x => renderAttachments(`equipos_oficina/items/${x.id}`, `att-o-${x.id}`));
+            window.rdOficinaChart(rooms, eq);
         };
 
         window.addRoom = async function(e) {
@@ -2046,8 +2201,10 @@
                 container.innerHTML = '<p class="text-stone-500 text-sm col-span-full">Aún no tienes áreas de proyecto asignadas. Pídele acceso a un administrador.</p>';
                 return;
             }
+            const rdData = [];
             areasToShow.forEach(key => {
                 const { pct, sub } = progressFor(key);
+                rdData.push({ label: areaLabel(key), pct });
                 const card = document.createElement('button');
                 card.onclick = () => window.switchTab(key);
                 card.className = 'text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md hover:border-teal-400 transition-all';
@@ -2057,12 +2214,14 @@
                         <span class="text-sm font-bold text-teal-700">${pct}%</span>
                     </div>
                     <div class="w-full bg-stone-100 rounded-full h-2.5 mb-2">
-                        <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:${pct}%"></div>
+                        <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:0%" data-pct="${pct}"></div>
                     </div>
                     <p class="text-xs text-stone-500">${sub}</p>
                 `;
                 container.appendChild(card);
             });
+            requestAnimationFrame(() => container.querySelectorAll('[data-pct]').forEach(b => { b.style.width = b.dataset.pct + '%'; }));
+            window.rdResumenViz(rdData);
         };
 
         // ======================================================
@@ -2086,6 +2245,7 @@
         window.renderLocal = async function() {
             window.switchFase('f1');
             await Promise.all([loadOfficeInfo(), renderContractors(), renderStages(), renderMedia('local')]);
+            window.rdLocalChart();
         };
 
         // --- Información de la oficina ---
@@ -2930,6 +3090,7 @@
             });
             const hired = ps.filter(p => p.status === 'contratado').length;
             document.getElementById('personal-summary').textContent = ps.length ? `${ps.length} puesto(s) · ${hired} contratado(s)` : 'Sin puestos todavía';
+            window.rdStatusChart('personal-chart', ps, POSITION_STATUS, { por_abrir: '#94a3b8', abierto: '#0ea5e9', entrevistando: '#d97706', contratado: '#059669' });
         };
 
         window.handleAddPosition = async function(e) {
@@ -3014,6 +3175,7 @@
             const ok = ps.filter(p => p.status === 'obtenido').length;
             const exp = ps.filter(p => p.expiry_date && p.expiry_date < today).length;
             document.getElementById('permisos-summary').textContent = ps.length ? `${ps.length} permiso(s) · ${ok} obtenido(s)${exp ? ` · ${exp} vencido(s)` : ''}` : 'Sin permisos todavía';
+            window.rdStatusChart('permisos-chart', ps, PERMIT_STATUS, { pendiente: '#94a3b8', en_tramite: '#d97706', obtenido: '#059669', vencido: '#e11d48' });
         };
 
         window.handleAddPermit = async function(e) {
