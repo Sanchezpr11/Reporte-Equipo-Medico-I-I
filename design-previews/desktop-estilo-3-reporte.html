@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desktop · Estilo 3 (Reporte) — I&amp;I Realty</title>
+<style>
+  /* =========================================================
+     OPCIÓN A · DESKTOP · ESTILO 3 — REPORTE EJECUTIVO
+     Editorial, serif, para presentar. Sidebar ↔ barra inferior.
+     ========================================================= */
+  :root{
+    --bg:#f6f3ec; --surface:#ffffff; --ink:#262420; --muted:#807868; --line:#e6dfd1;
+    --brand:#0f766e; --brand-700:#0d5e57; --brand-900:#0c3b37; --brand-tint:#eef6f4;
+    --gold:#b08d3a; --gold-tint:#f7f0df;
+    --ok:#2f7d5b; --ok-tint:#eaf3ee; --warn:#a9772a; --warn-tint:#f8f1e2; --pend:#a8483a; --pend-tint:#f7eae7;
+    --radius:8px; --shadow:0 1px 2px rgba(38,36,32,.05),0 16px 36px -24px rgba(38,36,32,.3);
+    --serif:"Iowan Old Style",Georgia,"Times New Roman",serif; --sidebar:252px;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p{margin:0} button{font-family:inherit}
+  .ribbon{position:fixed;top:0;left:0;right:0;z-index:80;background:#26241f;color:#e9e2d2;font-size:12px;font-weight:600;padding:6px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff} .ribbon .dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+
+  .app{display:flex;min-height:100vh;padding-top:29px}
+  .sidebar{width:var(--sidebar);flex:none;background:var(--surface);border-right:1px solid var(--line);
+    position:sticky;top:29px;height:calc(100vh - 29px);display:flex;flex-direction:column;padding:22px 16px}
+  .sidebar .brand{display:flex;align-items:center;gap:11px;padding:4px 6px 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .sidebar .brand .mark{width:36px;height:36px;border-radius:8px;background:var(--brand-900);color:#fff;display:grid;place-items:center;font-size:18px}
+  .sidebar .brand b{font-family:var(--serif);font-weight:700;font-size:19px;letter-spacing:.01em;display:block;line-height:1.1}
+  .sidebar .brand small{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .nav{display:flex;flex-direction:column;gap:1px;overflow:auto}
+  .nav .gl{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:16px 10px 6px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:6px;color:#46423a;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none}
+  .nav a .g{width:26px;text-align:center;font-size:15px;flex:none}
+  .nav a:hover{background:#f3efe7}
+  .nav a.active{background:var(--brand-900);color:#fff} .nav a.active .pct{color:#bfe9e2}
+  .nav a .pct{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted);font-family:var(--serif)}
+  .sidebar .who{margin-top:auto;display:flex;align-items:center;gap:10px;padding:13px 8px 4px;border-top:1px solid var(--line)}
+  .sidebar .who .av{width:36px;height:36px;border-radius:50%;background:var(--gold-tint);color:var(--gold);display:grid;place-items:center;font-weight:700}
+  .sidebar .who small{display:block;color:var(--muted);font-size:11.5px}
+
+  .content{flex:1;min-width:0;padding:34px 44px 56px;max-width:1080px}
+  /* Cabecera de reporte */
+  .rep-head{border-bottom:2px solid var(--brand-900);padding-bottom:18px;margin-bottom:26px}
+  .rep-head .kick{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  .rep-head h1{font-family:var(--serif);font-size:34px;font-weight:700;line-height:1.1;margin:8px 0 6px}
+  .rep-head .meta{display:flex;gap:26px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-top:10px}
+  .rep-head .meta b{color:var(--ink)}
+
+  .statband{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface);margin-bottom:34px;box-shadow:var(--shadow)}
+  .statband .s{padding:18px 20px;border-right:1px solid var(--line)} .statband .s:last-child{border-right:0}
+  .statband .s .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .statband .s .v{font-family:var(--serif);font-size:30px;font-weight:700;margin-top:6px;line-height:1}
+  .statband .s .v small{font-size:15px;color:var(--muted)}
+  .statband .s .d{font-size:12px;font-weight:700;margin-top:4px}
+
+  .sec{margin-bottom:34px}
+  .sec-h{display:flex;align-items:baseline;gap:13px;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:18px}
+  .sec-h .no{font-family:var(--serif);font-size:15px;font-weight:700;color:var(--gold)}
+  .sec-h h2{font-family:var(--serif);font-size:21px;font-weight:700} .sec-h .note{margin-left:auto;font-size:12.5px;color:var(--muted)}
+
+  table.rep{width:100%;border-collapse:collapse}
+  table.rep th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;padding:9px 10px;border-bottom:2px solid var(--ink)}
+  table.rep th.r,table.rep td.r{text-align:right}
+  table.rep td{padding:13px 10px;border-bottom:1px solid var(--line);font-size:14.5px}
+  table.rep tbody tr{cursor:pointer} table.rep tbody tr:hover{background:#faf7f1}
+  table.rep .nm{font-weight:700;display:flex;align-items:center;gap:10px}
+  table.rep .nm .e{font-size:17px}
+  table.rep .tr{height:7px;width:130px;background:#ece5d8;border-radius:999px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:10px}
+  table.rep .tr>i{display:block;height:100%}
+  table.rep .vv{font-family:var(--serif);font-weight:700;font-size:15px}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:4px;white-space:nowrap;border:1px solid}
+  .chip.progreso{background:var(--warn-tint);color:var(--warn);border-color:#e7d4ad}
+  .chip.pendiente{background:var(--pend-tint);color:var(--pend);border-color:#ecc9c1}
+  .chip.completo{background:var(--ok-tint);color:var(--ok);border-color:#c4ddcc}
+
+  .two{display:grid;grid-template-columns:1fr 300px;gap:30px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .ringwrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+  .ring{--p:0;width:158px;height:158px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand-900) calc(var(--p)*1%), #e6dfd1 0)}
+  .ring>div{width:122px;height:122px;border-radius:50%;background:var(--surface);display:grid;place-items:center;flex-direction:column}
+  .ring .big{font-family:var(--serif);font-size:38px;font-weight:700;line-height:1} .ring .cap{font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+  .legend{margin-top:18px;width:100%} .legend .row{display:flex;align-items:center;gap:9px;font-size:13px;padding:5px 0;border-top:1px solid var(--line)}
+  .legend .row:first-child{border-top:0} .legend .row .d{width:10px;height:10px;border-radius:2px} .legend .row .n{margin-left:auto;font-weight:700;font-family:var(--serif)}
+
+  .task{display:flex;align-items:center;gap:13px;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .task .box{width:21px;height:21px;border-radius:4px;border:2px solid #cfc6b4;flex:none;display:grid;place-items:center;font-size:12px;color:#fff}
+  .task.done .box{background:var(--ok);border-color:var(--ok)} .task.prog .box{border-color:var(--warn);color:var(--warn);background:var(--warn-tint)}
+  .task .t{flex:1;font-size:14.5px} .task.done .t{color:var(--muted);text-decoration:line-through}
+  .task .who{font-size:11.5px;color:var(--muted);font-style:italic}
+
+  .tabbar{display:none}
+  @media(max-width:1023px){
+    .sidebar{display:none}
+    .content{padding:22px 18px calc(86px + env(safe-area-inset-bottom));max-width:none}
+    .statband{grid-template-columns:repeat(2,1fr)} .statband .s:nth-child(2){border-right:0}
+    .two{grid-template-columns:1fr} .rep-head h1{font-size:27px}
+    table.rep .tr{width:80px}
+    .tabbar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,1fr);
+      background:rgba(255,253,248,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+      padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+    .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none}
+    .tabbar a .gl{font-size:20px} .tabbar a.active{color:var(--brand-900)}
+  }
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Opción A · Desktop · Estilo 3 — Reporte Ejecutivo</b> · vista previa (achica la ventana para ver el móvil)</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">⚕️</span><span><b>I&amp;I Realty</b><small>Reporte de proyecto</small></span></div>
+      <nav class="nav" id="nav"></nav>
+      <div class="who"><span class="av">PS</span><div><strong>Pedro Sánchez</strong><small>Administrador</small></div></div>
+    </aside>
+    <main class="content" id="content"></main>
+  </div>
+  <nav class="tabbar" id="tabbar"></nav>
+
+<script>
+const AREAS=[
+  {id:'financiamiento',name:'Financiamiento',icon:'💵',pct:72,done:8,total:11,status:'progreso'},
+  {id:'local',name:'Local / Oficina',icon:'🏢',pct:45,done:5,total:11,status:'progreso'},
+  {id:'equipos',name:'Equipos Médicos',icon:'🩺',pct:30,done:3,total:10,status:'progreso'},
+  {id:'equipos_oficina',name:'Equipos de Oficina',icon:'🖥️',pct:60,done:6,total:10,status:'progreso'},
+  {id:'personal',name:'Personal',icon:'👥',pct:20,done:2,total:10,status:'pendiente'},
+  {id:'permisos',name:'Permisos',icon:'📋',pct:15,done:1,total:7,status:'pendiente'},
+];
+const SL={progreso:'En progreso',pendiente:'Pendiente',completo:'Completo'};
+const BC={progreso:'var(--warn)',pendiente:'var(--pend)',completo:'var(--ok)'};
+const META={resumen:{name:'Resumen',icon:'📊'},admin:{name:'Admin',icon:'⚙️'}}; AREAS.forEach(a=>META[a.id]={name:a.name,icon:a.icon});
+const TASKS=[{t:'Cotizar y comparar suplidores',who:'Pedro',st:'done'},{t:'Negociar términos de pago',who:'Ana',st:'prog'},{t:'Reservar fecha de entrega',who:'Sin asignar',st:'todo'},{t:'Validar garantía y servicio',who:'Sin asignar',st:'todo'},{t:'Coordinar instalación',who:'Luis',st:'todo'}];
+const totalT=AREAS.reduce((a,b)=>a+b.total,0), doneT=AREAS.reduce((a,b)=>a+b.done,0);
+const overall=Math.round(AREAS.reduce((a,b)=>a+b.pct,0)/AREAS.length);
+const inProg=AREAS.filter(a=>a.status==='progreso').length, pend=AREAS.filter(a=>a.status==='pendiente').length;
+
+document.getElementById('nav').innerHTML=
+  `<div class="gl">Proyecto</div><a data-go="resumen"><span class="g">📊</span>Resumen</a>`+
+  `<div class="gl">Áreas</div>`+AREAS.map(a=>`<a data-go="${a.id}"><span class="g">${a.icon}</span>${a.name}<span class="pct">${a.pct}%</span></a>`).join('')+
+  `<div class="gl">Sistema</div><a data-go="admin"><span class="g">⚙️</span>Admin</a>`;
+document.getElementById('tabbar').innerHTML=
+  [['resumen','📊','Resumen'],['financiamiento','💵','Finanzas'],['local','🏢','Local'],['equipos','🩺','Equipos'],['admin','⚙️','Más']]
+  .map(([id,g,n])=>`<a data-go="${id}"><span class="gl">${g}</span>${n}</a>`).join('');
+
+function resumen(){
+  return `
+  <div class="rep-head"><div class="kick">Centro de control · Resumen ejecutivo</div>
+    <h1>Apertura — Clínica de Endocrinología</h1>
+    <div class="meta"><span>Ubicación: <b>Santurce, Puerto Rico</b></span><span>Apertura objetivo: <b>Q3 2026</b></span><span>Actualizado: <b>30 may 2026</b></span></div></div>
+
+  <div class="statband">
+    <div class="s"><div class="l">Avance general</div><div class="v">${overall}%</div><div class="d" style="color:var(--ok)">▲ 6% esta semana</div></div>
+    <div class="s"><div class="l">Tareas completadas</div><div class="v">${doneT}<small> / ${totalT}</small></div><div class="d" style="color:var(--muted)">${Math.round(doneT/totalT*100)}% del total</div></div>
+    <div class="s"><div class="l">Áreas en progreso</div><div class="v">${inProg}</div><div class="d" style="color:var(--muted)">de ${AREAS.length} áreas</div></div>
+    <div class="s"><div class="l">Áreas pendientes</div><div class="v">${pend}</div><div class="d" style="color:var(--pend)">requieren atención</div></div>
+  </div>
+
+  <div class="sec"><div class="sec-h"><span class="no">01</span><h2>Avance por área</h2><span class="note">Haz clic en una fila para ver el detalle</span></div>
+    <table class="rep"><thead><tr><th>Área</th><th>Estado</th><th class="r">Tareas</th><th>Avance</th><th class="r">%</th></tr></thead><tbody>
+      ${AREAS.map(a=>`<tr data-go="${a.id}"><td><div class="nm"><span class="e">${a.icon}</span>${a.name}</div></td>
+        <td><span class="chip ${a.status}">${SL[a.status]}</span></td>
+        <td class="r" style="color:var(--muted)">${a.done}/${a.total}</td>
+        <td><span class="tr"><i style="width:${a.pct}%;background:${BC[a.status]}"></i></span></td>
+        <td class="r"><span class="vv" style="color:${BC[a.status]}">${a.pct}%</span></td></tr>`).join('')}
+    </tbody></table>
+  </div>
+
+  <div class="sec"><div class="sec-h"><span class="no">02</span><h2>Estado consolidado</h2></div>
+    <div class="two">
+      <div class="panel"><p style="color:var(--muted);font-size:14.5px;margin-bottom:14px">El proyecto avanza a <b style="color:var(--ink)">${overall}%</b>. El financiamiento lidera (72%) mientras que <b style="color:var(--ink)">Personal</b> y <b style="color:var(--ink)">Permisos</b> son los focos de atención del próximo periodo.</p>
+        <div class="task done"><div class="box">✓</div><div class="t">Estructura de financiamiento aprobada</div><div class="who">Finanzas</div></div>
+        <div class="task prog"><div class="box">•</div><div class="t">Adecuación del local en curso</div><div class="who">Operaciones</div></div>
+        <div class="task"><div class="box"></div><div class="t">Reclutamiento de personal clínico</div><div class="who">RR.HH.</div></div>
+        <div class="task"><div class="box"></div><div class="t">Tramitación de permisos sanitarios</div><div class="who">Legal</div></div>
+      </div>
+      <div class="panel"><div class="ringwrap"><div class="ring" style="--p:${overall}"><div><span class="big">${overall}%</span><span class="cap">COMPLETADO</span></div></div>
+        <div class="legend">
+          <div class="row"><span class="d" style="background:var(--warn)"></span>En progreso<span class="n">${inProg}</span></div>
+          <div class="row"><span class="d" style="background:var(--pend)"></span>Pendiente<span class="n">${pend}</span></div>
+          <div class="row"><span class="d" style="background:var(--ok)"></span>Tareas hechas<span class="n">${doneT}/${totalT}</span></div>
+        </div></div>
+      </div>
+    </div>
+  </div>`;
+}
+function detalle(id){
+  const a=AREAS.find(x=>x.id===id)||{name:'Admin',icon:'⚙️',pct:40,done:3,total:8,status:'progreso'};
+  const d=TASKS.filter(t=>t.st==='done').length,p=TASKS.filter(t=>t.st==='prog').length,td=TASKS.filter(t=>t.st==='todo').length;
+  return `
+  <div class="rep-head"><div class="kick">Detalle de área</div><h1>${a.icon} ${a.name}</h1>
+    <div class="meta"><span>Avance: <b>${a.pct}%</b></span><span>Tareas: <b>${a.done}/${a.total}</b></span><span><span class="chip ${a.status}">${SL[a.status]}</span></span>
+    <span style="margin-left:auto"><a data-go="resumen" style="color:var(--brand);font-weight:700;cursor:pointer;text-decoration:none">‹ Volver al resumen</a></span></div></div>
+  <div class="two">
+    <div class="sec" style="margin:0"><div class="sec-h"><span class="no">01</span><h2>Tareas</h2><span class="note">${a.done}/${a.total}</span></div>
+      ${TASKS.map(t=>`<div class="task ${t.st==='done'?'done':t.st==='prog'?'prog':''}"><div class="box">${t.st==='done'?'✓':t.st==='prog'?'•':''}</div><div class="t">${t.t}</div><div class="who">${t.who}</div></div>`).join('')}
+    </div>
+    <div class="panel"><div class="ringwrap"><div class="ring" style="--p:${a.pct}"><div><span class="big">${a.pct}%</span><span class="cap">DEL ÁREA</span></div></div>
+      <div class="legend"><div class="row"><span class="d" style="background:var(--ok)"></span>Hechas<span class="n">${d}</span></div>
+        <div class="row"><span class="d" style="background:var(--warn)"></span>En curso<span class="n">${p}</span></div>
+        <div class="row"><span class="d" style="background:var(--pend)"></span>Pendientes<span class="n">${td}</span></div></div></div>
+    </div>
+  </div>`;
+}
+function go(id){
+  document.getElementById('content').innerHTML=(id==='resumen')?resumen():detalle(id);
+  document.querySelectorAll('[data-go]').forEach(el=>el.classList.toggle('active',el.dataset.go===id));
+  window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-go]');if(el)go(el.dataset.go)});
+go('resumen');
+</script>
+</body>
+</html>

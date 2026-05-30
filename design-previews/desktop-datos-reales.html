@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Datos reales · Desktop (Opción A) — I&amp;I Realty</title>
+<style>
+  /* =========================================================
+     OPCIÓN A · DESKTOP · ESTILO 1 (CLARO) · CON DATOS REALES
+     Reproduce la organización e información real del app.
+     Lo vacío = se carga en vivo en Supabase. Self-contained.
+     ========================================================= */
+  :root{
+    --bg:#f4f7f9; --surface:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e7edf2;
+    --brand:#0f766e; --brand-600:#0d9488; --brand-700:#0f766e; --brand-900:#0f3b38; --brand-tint:#effbf8;
+    --ok:#059669; --ok-tint:#ecfdf5; --warn:#b45309; --warn-tint:#fff7ed; --pend:#be123c; --pend-tint:#fff1f3;
+    --info:#0369a1; --info-tint:#eff6ff;
+    --radius:16px; --shadow:0 1px 2px rgba(15,23,42,.05),0 14px 34px -20px rgba(15,23,42,.28); --sidebar:252px;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p{margin:0} button{font-family:inherit} img{max-width:100%;display:block}
+  .ribbon{position:fixed;top:0;left:0;right:0;z-index:80;background:linear-gradient(90deg,#0f3b38,#0f766e);
+    color:#d1faf3;font-size:12px;font-weight:600;padding:6px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff} .ribbon .dot{width:7px;height:7px;border-radius:50%;background:#5eead4}
+
+  .app{display:flex;min-height:100vh;padding-top:29px}
+  .sidebar{width:var(--sidebar);flex:none;background:var(--surface);border-right:1px solid var(--line);
+    position:sticky;top:29px;height:calc(100vh - 29px);display:flex;flex-direction:column;padding:18px 14px}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:var(--brand-900);padding:6px 8px 16px}
+  .sidebar .brand .mark{width:34px;height:34px;border-radius:10px;background:var(--brand-700);color:#fff;display:grid;place-items:center;font-size:18px}
+  .nav{display:flex;flex-direction:column;gap:2px;overflow:auto}
+  .nav .gl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 10px 5px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;color:#334155;font-weight:600;font-size:14.5px;cursor:pointer;text-decoration:none}
+  .nav a .g{width:30px;height:30px;border-radius:8px;background:var(--brand-tint);display:grid;place-items:center;font-size:16px;flex:none}
+  .nav a:hover{background:#f1f5f9}
+  .nav a.active{background:var(--brand-tint);color:var(--brand-900)} .nav a.active .g{background:var(--brand-700)}
+  .nav a .pct{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}
+  .sidebar .who{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid var(--line)}
+  .sidebar .who .av{width:36px;height:36px;border-radius:50%;background:var(--brand-tint);color:var(--brand-700);display:grid;place-items:center;font-weight:700}
+  .sidebar .who small{display:block;color:var(--muted);font-size:11.5px}
+
+  .content{flex:1;min-width:0;padding:24px 30px 48px;max-width:1180px}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .topbar h1{font-size:23px;font-weight:800} .topbar .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .topbar .right{margin-left:auto;display:flex;gap:10px}
+  .pill{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 13px;font-size:13px;font-weight:600;color:#334155;box-shadow:var(--shadow);cursor:default}
+  .pill b{color:var(--brand-700)}
+
+  .banner{display:flex;gap:12px;background:var(--info-tint);border:1px solid #dbeafe;border-radius:14px;padding:13px 16px;margin-bottom:20px;font-size:13px;color:#1e3a5f}
+  .banner b{color:#0c2a47} .banner .em{font-size:20px}
+
+  .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .lab{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+  .kpi .lab .i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;background:var(--brand-tint)}
+  .kpi .num{font-size:28px;font-weight:800;margin-top:9px;letter-spacing:-.02em}
+  .kpi .num small{font-size:15px;color:var(--muted);font-weight:700}
+  .kpi .delta{font-size:12px;font-weight:600;margin-top:2px;color:var(--muted)}
+
+  .sec-title{display:flex;align-items:baseline;justify-content:space-between;margin:8px 2px 14px}
+  .sec-title h2{font-size:18px;font-weight:800} .sec-title span{font-size:12.5px;color:var(--muted)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .card:hover{transform:translateY(-2px)}
+  .card .top{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+  .card .ico{width:44px;height:44px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;font-size:22px}
+  .card h3{font-size:15.5px;font-weight:700} .card .top .pct{margin-left:auto;font-size:20px;font-weight:800;color:var(--muted)}
+  .card .tr{height:8px;background:#eef2f6;border-radius:999px;overflow:hidden} .card .tr>i{display:block;height:100%;border-radius:999px;background:var(--brand-600)}
+  .card .meta{margin-top:11px;font-size:12.5px;color:var(--muted)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:18px}
+  .panel .ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  .panel .ph h3{font-size:16px;font-weight:800} .panel .ph span{font-size:12.5px;color:var(--muted)}
+  .grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px} .grid-2.even{grid-template-columns:1fr 1fr}
+
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .chip .d{width:6px;height:6px;border-radius:50%}
+  .chip.pend{background:var(--pend-tint);color:var(--pend)} .chip.pend .d{background:var(--pend)}
+  .chip.warn{background:var(--warn-tint);color:var(--warn)} .chip.warn .d{background:var(--warn)}
+  .chip.ok{background:var(--ok-tint);color:var(--ok)} .chip.ok .d{background:var(--ok)}
+  .chip.idle{background:#f1f5f9;color:var(--muted)} .chip.idle .d{background:var(--muted)}
+
+  /* Estado vacío (datos que se cargan en vivo) */
+  .empty{border:1.5px dashed #cfdae3;border-radius:14px;padding:26px;text-align:center;color:var(--muted);background:#fbfdfe}
+  .empty .e{font-size:30px;display:block;margin-bottom:8px;opacity:.7}
+  .empty h4{font-size:15px;color:#475569;font-weight:700;margin-bottom:5px}
+  .empty p{font-size:13px;max-width:440px;margin:0 auto}
+  .fields{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:14px}
+  .fields .f{font-size:11.5px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:#475569;font-weight:600}
+
+  /* Tabla */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;padding:9px 10px;border-bottom:2px solid #e2e8f0}
+  .tbl td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+  .tbl tbody tr:hover{background:#f8fafc}
+  .tbl a{color:var(--brand);text-decoration:none;font-weight:600}
+
+  /* Documentos / lista simple */
+  .row{display:flex;align-items:center;gap:13px;padding:13px 4px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row .ic{width:34px;height:34px;border-radius:9px;background:var(--brand-tint);display:grid;place-items:center;font-size:16px;flex:none}
+  .row .tx{flex:1;min-width:0} .row .tx strong{font-size:14px;font-weight:700;display:block} .row .tx small{font-size:12px;color:var(--muted)}
+
+  /* Sub-tabs (Equipos Médicos) */
+  .subtabs{display:flex;gap:6px;background:#eef3f6;border:1px solid var(--line);border-radius:13px;padding:5px;margin-bottom:18px;width:fit-content;flex-wrap:wrap}
+  .subtabs button{border:0;background:none;padding:9px 15px;border-radius:9px;font-weight:700;font-size:13.5px;color:#475569;cursor:pointer}
+  .subtabs button.active{background:var(--surface);color:var(--brand-900);box-shadow:var(--shadow)}
+
+  /* Catálogo */
+  .catalog{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
+  .catgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .catcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s}
+  .catcard:hover{transform:translateY(-2px)} .catcard.sel{outline:2px solid var(--brand-600)}
+  .catcard .ph{height:184px;background:#fff;display:flex;align-items:center;justify-content:center;padding:14px;border-bottom:1px solid var(--line)}
+  .catcard .ph img{max-width:100%;max-height:100%;object-fit:contain}
+  .catcard .bd{padding:11px 13px} .catcard .bd strong{font-size:13.5px;display:block} .catcard .bd .pr{font-size:12.5px;color:var(--brand-700);font-weight:700;margin-top:2px}
+  .catdetail{position:sticky;top:60px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .catdetail .img{height:210px;background:#fff;display:flex;align-items:center;justify-content:center;padding:18px;border-bottom:1px solid var(--line)}
+  .catdetail .img img{max-width:100%;max-height:100%;object-fit:contain}
+  .catdetail .bd{padding:16px} .catdetail h3{font-size:16px;font-weight:800} .catdetail .pr{color:var(--brand-700);font-weight:800;margin:4px 0 10px}
+  .catdetail .desc{font-size:13px;color:#475569;margin-bottom:14px} .catdetail .sl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;margin-bottom:8px}
+  .catdetail .sup{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:13px;border-top:1px solid var(--line)} .catdetail .sup:first-of-type{border-top:0}
+
+  /* Análisis */
+  .bars2{display:flex;gap:30px;align-items:flex-end;height:170px;padding:6px 10px 0}
+  .bars2 .clu{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+  .bars2 .pair{display:flex;gap:10px;align-items:flex-end;height:100%;width:100%;justify-content:center}
+  .bars2 .b{width:38px;border-radius:7px 7px 0 0;position:relative} .bars2 .b span{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;white-space:nowrap}
+  .bars2 .nm{font-weight:700;font-size:13.5px}
+  .leg{display:flex;gap:16px;margin-top:14px;font-size:12.5px;color:var(--muted)} .leg .d{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+  .cmp .cr{display:grid;grid-template-columns:130px 1fr 1fr;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+  .cmp .cr:first-child{border-top:0} .cmp .mb{height:9px;border-radius:999px;background:#eef2f6;overflow:hidden} .cmp .mb>i{display:block;height:100%;border-radius:999px}
+  .opt2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .opt{border:1px solid var(--line);border-radius:14px;padding:16px} .opt.fs{background:#f0f9ff;border-color:#bae6fd} .opt.il{background:#fff7ed;border-color:#fed7aa}
+  .opt h4{font-size:15px;font-weight:800} .opt .pr{font-weight:800;margin:3px 0 8px} .opt p{font-size:12.5px;color:#475569}
+  .opt button{margin-top:12px;width:100%;border:0;border-radius:10px;padding:10px;font-weight:700;color:#fff;cursor:pointer}
+  .opt.fs button{background:#0369a1} .opt.il button{background:#c2410c}
+
+  /* ROI */
+  .roi{background:linear-gradient(135deg,#0f3b38,#0f766e);color:#eafffb;border-radius:var(--radius);padding:22px}
+  .roi h3{color:#fff;font-size:16px} .roi .sub{color:#bdeee5;font-size:12.5px;margin:3px 0 16px}
+  .roi .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+  .roi label{font-size:12px;color:#bdeee5;font-weight:700;display:block;margin-bottom:5px}
+  .roi select,.roi input[type=range]{width:100%}
+  .roi select{padding:9px;border-radius:9px;border:1px solid #2b6d66;background:#0c322e;color:#eafffb;font-size:12.5px}
+  .roi .out{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .roi .o{background:rgba(255,255,255,.1);border-radius:12px;padding:14px} .roi .o .l{font-size:11.5px;color:#bdeee5;font-weight:700} .roi .o .v{font-size:24px;font-weight:800;color:#fff;margin-top:5px}
+
+  .tabbar{display:none}
+  @media(max-width:1023px){
+    .sidebar{display:none}
+    .content{padding:16px 15px calc(86px + env(safe-area-inset-bottom));max-width:none}
+    .grid-kpi{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.even,.catalog,.opt2,.roi .ctrls,.roi .out{grid-template-columns:1fr}
+    .cards{grid-template-columns:1fr} .catgrid{grid-template-columns:1fr 1fr} .catdetail{position:static}
+    .tabbar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,1fr);
+      background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+    .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none} .tabbar a .gl{font-size:20px} .tabbar a.active{color:var(--brand-700)}
+    .topbar h1{font-size:20px} .bars2{gap:16px}
+  }
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Datos reales · Opción A · Desktop (Estilo Claro)</b> · así se organiza tu información actual</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+      <nav class="nav" id="nav"></nav>
+      <div class="who"><span class="av">PS</span><div><strong>Pedro Sánchez</strong><small>Administrador</small></div></div>
+    </aside>
+    <main class="content" id="content"></main>
+  </div>
+  <nav class="tabbar" id="tabbar"></nav>
+
+<script>
+/* ============ DATOS REALES extraídos del app ============ */
+const AREAS=[
+  {key:'resumen',label:'Resumen',icon:'📊'},
+  {key:'financiamiento',label:'Financiamiento',icon:'💵'},
+  {key:'local',label:'Local / Oficina',icon:'🏢'},
+  {key:'equipos',label:'Equipos Médicos',icon:'🩺'},
+  {key:'equipos_oficina',label:'Equipos de Oficina',icon:'🖥️'},
+  {key:'personal',label:'Personal',icon:'👥'},
+  {key:'permisos',label:'Permisos y Credenciales',icon:'📋'},
+  {key:'admin',label:'Admin',icon:'⚙️'},
+];
+const SUPP={0:'Casa Médica Sales & Dist.',1:'Pro-Medical Equipment PR',2:'Puerto Rico Hospital Supply',4:'Echosens (FibroScan)',5:'Hisky Medical (iLivTouch)',6:'InBody USA',7:'Freedom Medical Wholesales'};
+const SUPPLIERS=[
+  {n:'Casa Médica Sales & Dist.',loc:'Cayey, PR',spec:'Mobiliario, Camillas, Vitales',c:'(787) 263-3738',w:'casamedicapr.com'},
+  {n:'Pro-Medical Equipment PR',loc:'Mayagüez, PR',spec:'Equipo Médico General, Pesas',c:'(787) 833-3131',w:'promedicalequipmentpr.com'},
+  {n:'Puerto Rico Hospital Supply',loc:'Guaynabo, PR',spec:'Mobiliario Médico, Vitales, Suministros',c:'(787) 782-2222',w:'prhospital.com'},
+  {n:'Echosens (FibroScan)',loc:'EE.UU.',spec:'Elastografía Hepática',c:'(844) 324-6736',w:'echosens.com'},
+  {n:'Hisky Medical (iLivTouch)',loc:'Global',spec:'Elastografía Hepática, Ultrasonido',c:'info@hisky-med.com',w:'hisky-med.com'},
+  {n:'InBody USA',loc:'EE.UU. (Envío PR)',spec:'Composición Corporal',c:'(323) 932-6503',w:'inbodyusa.com'},
+  {n:'Freedom Medical Wholesales',loc:'Gurabo, PR',spec:'Monitores CGM, Insumos',c:'(787) 733-9990',w:'facebook.com/fmwholesales'},
+];
+const CATALOG=[
+  {id:'vitals',name:'Máquina Toma de Vitales',price:'$800 - $2,500',img:'../vitals.png',desc:'Monitor de signos vitales grado clínico. Debe incluir NIBP, SpO2, pulso y temperatura.',supps:[0,1,2]},
+  {id:'scale-reg',name:'Pesa Regular (Clínica)',price:'$150 - $450',img:'../scale-reg.png',desc:'Báscula médica de columna con tallímetro. Capacidad típica hasta 500 lbs.',supps:[0,1,2]},
+  {id:'scale-bar',name:'Pesa Bariátrica',price:'$800 - $1,800',img:'../scale-bar.png',desc:'Báscula de plataforma ancha diseñada para pacientes con obesidad severa.',supps:[0,1,2]},
+  {id:'inbody',name:'Composición Corporal: InBody',price:'$5,500 - $15,000',img:'../inbody.png',desc:'Analizador de composición corporal avanzado mediante impedancia bioeléctrica (BIA).',supps:[6]},
+  {id:'camilla',name:'Camilla de Examinación',price:'$600 - $2,500',img:'../camilla.png',desc:'Mesa de examinación médica. Modelos manuales y motorizados (hi-lo).',supps:[0,1,2]},
+  {id:'cgm',name:'Professional CGM (Glucosa)',price:'$800 - $2,000 (Inicio)',img:'../cgm.png',desc:'Monitoreo Continuo de Glucosa Profesional. Requiere inversión inicial en software.',supps:[7]},
+];
+const FIN_ITEMS=[
+  {l:'Costo del local',src:'Local',c:'#0f766e'},{l:'Remodelación',src:'Local · contratista',c:'#14b8a6'},
+  {l:'Personal (nómina 6 meses)',src:'Personal · ½ anual',c:'#0ea5e9'},{l:'Equipos médicos',src:'Equipos · lista de compra',c:'#f59e0b'},
+  {l:'Equipo de oficina',src:'Equipos de Oficina',c:'#6366f1'},{l:'Mercadeo',src:'manual',c:'#a855f7'},
+];
+const DOCS=[
+  {n:'Costo total del proyecto',d:'Cotizaciones, facturas u otros documentos que sustenten el monto. Se nutre de Equipos y Remodelación.'},
+  {n:'3 años de proyecciones con supuestos',d:'Del Real Estate company y de la operación.'},
+  {n:'Business plan',d:''},
+  {n:'Estado de condición financiera de los Miembros',d:'Estado reciente + últimas dos planillas de contribución sobre ingresos.'},
+  {n:'Copia del Contrato de Opción Compraventa firmado',d:'Una vez esté disponible.'},
+];
+const OFICINA=[['Escritorios','Mobiliario'],['Sillas de oficina','Mobiliario'],['Sillas de sala de espera','Sala de espera'],['Nevera personal','Cocina / break room'],['Lockers (vestidor)','Locker room'],['Supplies de oficina','Suministros']];
+const CRIT=[['Respaldo Clínico',10,6],['UX',8,7],['Mantenimiento',4,7],['Guía Imagen',3,9],['Costo Inicial',3,8]];
+
+let cur='resumen', sub='catalogo', catSel='vitals';
+
+// Sidebar + tabbar
+document.getElementById('nav').innerHTML=
+  `<div class="gl">Proyecto</div>`+`<a data-go="resumen"><span class="g">📊</span>Resumen</a>`+
+  `<div class="gl">Áreas</div>`+AREAS.filter(a=>!['resumen','admin'].includes(a.key)).map(a=>`<a data-go="${a.key}"><span class="g">${a.icon}</span>${a.label}</a>`).join('')+
+  `<div class="gl">Sistema</div><a data-go="admin"><span class="g">⚙️</span>Admin</a>`;
+document.getElementById('tabbar').innerHTML=
+  [['resumen','📊','Resumen'],['financiamiento','💵','Finanzas'],['local','🏢','Local'],['equipos','🩺','Equipos'],['admin','⚙️','Más']]
+  .map(([id,g,n])=>`<a data-go="${id}"><span class="gl">${g}</span>${n}</a>`).join('');
+
+function head(t,s,back){return `<div class="topbar"><div><h1>${t}</h1><div class="sub">${s}</div></div><div class="right">${back?'<span class="pill" data-go="resumen" style="cursor:pointer">‹ Resumen</span>':''}</div></div>`;}
+function empty(icon,title,msg,fields){return `<div class="empty"><span class="e">${icon}</span><h4>${title}</h4><p>${msg}</p>${fields?`<div class="fields">${fields.map(f=>`<span class="f">${f}</span>`).join('')}</div>`:''}</div>`;}
+
+function resumen(){
+  const cards=[
+    {k:'financiamiento',ic:'💵',l:'Financiamiento',pct:0,sub:'0/5 documentos al banco'},
+    {k:'local',ic:'🏢',l:'Local / Oficina',pct:0,sub:'Fase 1: contratistas'},
+    {k:'equipos_oficina',ic:'🖥️',l:'Equipos de Oficina',pct:0,sub:'0/6 comprados'},
+    {k:'personal',ic:'👥',l:'Personal',pct:0,sub:'Sin puestos aún'},
+    {k:'permisos',ic:'📋',l:'Permisos',pct:0,sub:'Sin permisos aún'},
+  ];
+  return head('Centro de Control del Proyecto','Clínica de Endocrinología · Santurce, Puerto Rico')+`
+  <div class="banner"><span class="em">ℹ️</span><div>Esta vista usa los <b>datos reales de tu app hoy</b>. Casi todo arranca <b>vacío</b> porque la información se carga en cada área. Lo que <b>ya viene cargado</b>: catálogo de equipos (6), análisis FibroScan/iLivTouch, suplidores (7), 5 documentos del banco y 6 artículos de oficina.</div></div>
+  <div class="grid-kpi">
+    <div class="kpi"><div class="lab"><span class="i">📈</span>Avance general</div><div class="num">0%</div><div class="delta">aún sin datos cargados</div></div>
+    <div class="kpi"><div class="lab"><span class="i">🗂️</span>Áreas configuradas</div><div class="num">7</div><div class="delta">listas para llenar</div></div>
+    <div class="kpi"><div class="lab"><span class="i">🩺</span>Equipos en catálogo</div><div class="num">6</div><div class="delta">+ 7 suplidores en PR</div></div>
+    <div class="kpi"><div class="lab"><span class="i">📄</span>Documentos al banco</div><div class="num">0<small>/5</small></div><div class="delta">pendientes de entregar</div></div>
+  </div>
+  <div class="sec-title"><h2>Áreas del proyecto</h2><span>Avance calculado de los datos reales · clic para abrir</span></div>
+  <div class="cards">${cards.map(c=>`
+    <div class="card" data-go="${c.k}"><div class="top"><span class="ico">${c.ic}</span><h3>${c.l}</h3><span class="pct">${c.pct}%</span></div>
+      <div class="tr"><i style="width:${c.pct}%"></i></div><div class="meta">${c.sub}</div></div>`).join('')}</div>`;
+}
+
+function financiamiento(){
+  return head('Financiamiento','Total estimado a solicitar al banco',true)+`
+  <div class="panel" style="background:linear-gradient(135deg,#0f3b38,#0f766e);color:#eafffb;border:0">
+    <div style="font-size:13px;color:#bdeee5;font-weight:700">Total estimado a solicitar al banco</div>
+    <div style="font-size:38px;font-weight:800;color:#fff;margin-top:4px">$0</div>
+    <div style="font-size:12.5px;color:#bdeee5">Se calcula automáticamente de las áreas (local, remodelación, nómina, equipos, oficina) + mercadeo manual.</div>
+  </div>
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>Desglose del financiamiento</h3><span>se nutre de cada área</span></div>
+      <table class="tbl"><thead><tr><th>Concepto</th><th>Fuente</th><th style="text-align:right">Monto</th></tr></thead><tbody>
+        ${FIN_ITEMS.map(f=>`<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${f.c};margin-right:8px"></span>${f.l}</td><td style="color:var(--muted)">${f.src}</td><td style="text-align:right;font-weight:800;color:var(--muted)">$0</td></tr>`).join('')}
+      </tbody></table></div>
+    <div class="panel"><div class="ph"><h3>Producto financiero</h3></div>
+      ${empty('🏦','Sin producto definido','Aquí se guarda el banco, producto, tasa, plazo y notas.',['Banco','Producto (Préstamo / SBA)','Tasa','Plazo','Notas'])}
+    </div>
+  </div>
+  <div class="panel"><div class="ph"><h3>Documentos solicitados</h3><span>0/5 entregados</span></div>
+    ${DOCS.map(d=>`<div class="row"><span class="ic">📄</span><div class="tx"><strong>${d.n}</strong>${d.d?`<small>${d.d}</small>`:''}</div><span class="chip pend"><span class="d"></span>Pendiente</span></div>`).join('')}
+  </div>
+  <div class="panel"><div class="ph"><h3>Contactos del banco</h3></div>${empty('📇','Sin contactos aún','Se añaden nombre, teléfono y email de los contactos del banco.',['Nombre','Teléfono','Email'])}</div>`;
+}
+
+function local(){
+  return head('Local / Oficina','La oficina ya está asegurada (opción de compra realizada)',true)+`
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>🏢 Información de la oficina</h3></div>
+      <div class="row"><div class="tx"><strong>Estatus</strong></div><span class="chip ok"><span class="d"></span>Opción de compra realizada</span></div>
+      <div class="row"><div class="tx"><strong>Dirección</strong><small>sin definir</small></div></div>
+      <div class="row"><div class="tx"><strong>Tamaño</strong><small>Ej. 1,200 pies²</small></div></div>
+      <div class="row"><div class="tx"><strong>Precio del local</strong><small>alimenta el financiamiento</small></div><span style="font-weight:800;color:var(--muted)">$0</span></div>
+    </div>
+    <div class="panel"><div class="ph"><h3>📷 Fotos y videos</h3></div>${empty('🖼️','Sin archivos','Galería de fotos/videos de la oficina (almacenamiento seguro, máx. 50 MB).')}</div>
+  </div>
+  <div class="grid-2 even">
+    <div class="panel"><div class="ph"><h3>Fase 1 · Contratistas</h3></div>${empty('👷','Aún no hay contratistas','Cotizaciones de remodelación. Cada uno con su estado.',['Nombre','Cotización ($)','Contacto','Tiempo estimado','Pendiente/Cotizado/Seleccionado'])}</div>
+    <div class="panel"><div class="ph"><h3>Fase 2 · Plan de obra</h3><span>0%</span></div>${empty('🧱','Sin etapas','Etapas de obra con progreso y fechas (Demolición, Plomería, Eléctrico…).',['Nombre','Inicio','Fin','Progreso %'])}</div>
+  </div>`;
+}
+
+/* ---- Equipos Médicos con sub-tabs ---- */
+function equipos(){
+  const tabs=[['catalogo','Catálogo'],['analisis','Análisis'],['suplidores','Suplidores'],['compra','Lista de compra']];
+  let body='';
+  if(sub==='catalogo') body=catalogo();
+  else if(sub==='analisis') body=analisis();
+  else if(sub==='suplidores') body=suplidores();
+  else body=compra();
+  return head('Equipos Médicos','Catálogo, análisis, suplidores y lista de compra',true)+
+    `<div class="subtabs">${tabs.map(([k,l])=>`<button data-sub="${k}" class="${sub===k?'active':''}">${l}</button>`).join('')}</div>`+body;
+}
+function catalogo(){
+  const it=CATALOG.find(c=>c.id===catSel)||CATALOG[0];
+  return `<div class="catalog">
+    <div><div class="sec-title" style="margin-top:0"><h2>Catálogo de Equipos Requeridos</h2><span>6 equipos</span></div>
+      <div class="catgrid">${CATALOG.map(c=>`<div class="catcard ${c.id===catSel?'sel':''}" data-cat="${c.id}">
+        <div class="ph"><img src="${c.img}" alt="${c.name}" loading="lazy"></div><div class="bd"><strong>${c.name}</strong><div class="pr">${c.price}</div></div></div>`).join('')}</div>
+    </div>
+    <div class="catdetail"><div class="img"><img src="${it.img}" alt="${it.name}"></div><div class="bd">
+      <h3>${it.name}</h3><div class="pr">Precio Est. ${it.price}</div><div class="desc">${it.desc}</div>
+      <div class="sl">Suplidores recomendados (PR)</div>${it.supps.map(s=>`<div class="sup">🏬 ${SUPP[s]}</div>`).join('')}
+    </div></div></div>`;
+}
+function analisis(){
+  const mx=120000;
+  const bar=(v,c,lab)=>`<div class="b" style="height:${v/mx*100}%;background:${c}"><span>$${(v/1000)}k</span></div>`;
+  return `
+  <div class="sec-title" style="margin-top:0"><h2>Análisis Comparativo: Elastografía Hepática</h2><span>FibroScan vs iLivTouch · ROI Medicare 2026</span></div>
+  <div class="grid-2 even">
+    <div class="panel"><div class="ph"><h3>Comparativa de Costo Estimado (USD)</h3></div>
+      <div class="bars2">
+        <div class="clu"><div class="pair">${bar(85000,'#0f766e')}${bar(120000,'#d97706')}</div><div class="nm">FibroScan</div></div>
+        <div class="clu"><div class="pair">${bar(50000,'#0f766e')}${bar(80000,'#d97706')}</div><div class="nm">iLivTouch</div></div>
+      </div>
+      <div class="leg"><span><span class="d" style="background:#0f766e"></span>Costo Mínimo</span><span><span class="d" style="background:#d97706"></span>Costo Máximo</span></div>
+      <p style="font-size:11.5px;color:var(--muted);margin-top:10px">Costos base estimados. No incluye mantenimientos anuales ni consumibles.</p>
+    </div>
+    <div class="panel"><div class="ph"><h3>Evaluación de Características (1-10)</h3></div>
+      <div class="cmp">${CRIT.map(([l,f,i])=>`<div class="cr"><span style="font-weight:600">${l}</span>
+        <span class="mb" title="FibroScan ${f}"><i style="width:${f*10}%;background:#0f766e"></i></span>
+        <span class="mb" title="iLivTouch ${i}"><i style="width:${i*10}%;background:#d97706"></i></span></div>`).join('')}</div>
+      <div class="leg"><span><span class="d" style="background:#0f766e"></span>FibroScan</span><span><span class="d" style="background:#d97706"></span>iLivTouch</span></div>
+    </div>
+  </div>
+  <div class="panel"><div class="ph"><h3>Resumen de alternativas — ¿cuál eliges?</h3></div>
+    <div class="opt2">
+      <div class="opt fs"><h4>🔵 FibroScan (Echosens)</h4><div class="pr">$85,000 - $120,000+</div>
+        <p>Estándar de oro no invasivo para medir la rigidez hepática. Suele facturar el CPT 91200. Su desventaja: alto costo inicial y contratos de mantenimiento.</p>
+        <button>Elegir para comprar</button></div>
+      <div class="opt il"><h4>🟠 iLivTouch (Hisky Medical)</h4><div class="pr">$50,000 - $80,000</div>
+        <p>Alternativa costo-efectiva con guía ultrasónica integrada (modo B-Ultrasound). Puede justificar el CPT 76981. Reduce el CAPEX significativamente.</p>
+        <button>Elegir para comprar</button></div>
+    </div>
+  </div>
+  <div class="roi"><h3>Proyección de Ingresos y Retorno de Inversión (ROI)</h3><div class="sub">Simulador basado en promedios de Medicare 2026 (Oficina/Global)</div>
+    <div class="ctrls">
+      <div><label>Código CPT</label><select id="cpt"><option value="112.56">CPT 76981 - Ultrasonido ($112.56 / paciente)</option><option value="33.73">CPT 91200 - Transitoria ($33.73 / paciente)</option></select></div>
+      <div><label>Equipo (CAPEX)</label><select id="capex"><option value="65000">Estimado iLivTouch ($65,000)</option><option value="105000">Estimado FibroScan ($105,000)</option></select></div>
+      <div style="grid-column:1/-1"><label>Volumen de pacientes (semanal): <b id="vollab">15</b></label><input type="range" id="vol" min="1" max="60" value="15"></div>
+    </div>
+    <div class="out">
+      <div class="o"><div class="l">Ingreso Mensual</div><div class="v" id="roi-m">$0</div></div>
+      <div class="o"><div class="l">Ingreso Anual</div><div class="v" id="roi-y">$0</div></div>
+      <div class="o"><div class="l">Recuperación</div><div class="v" id="roi-p">0 meses</div></div>
+    </div>
+    <p style="font-size:11px;color:#a9ddd3;margin-top:12px">Ejemplo en vivo (mueve el deslizador). Asume 4.33 semanas/mes. No se facturan 91200 y 76981 en conjunto.</p>
+  </div>`;
+}
+function suplidores(){
+  return `<div class="panel"><div class="ph"><h3>Directorio de Suplidores en Puerto Rico</h3><span>7 suplidores</span></div>
+    <table class="tbl"><thead><tr><th>Compañía / Suplidor</th><th>Ubicación</th><th>Especialidad</th><th>Contacto</th><th>Sitio Web</th></tr></thead><tbody>
+    ${SUPPLIERS.map(s=>`<tr><td style="font-weight:700">${s.n}</td><td>${s.loc}</td><td style="color:var(--muted)">${s.spec}</td><td>${s.c}</td><td><a>${s.w}</a></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function compra(){
+  return `<div class="panel" style="background:linear-gradient(135deg,#0f3b38,#0f766e);color:#eafffb;border:0">
+      <div style="font-size:13px;color:#bdeee5;font-weight:700">Total a comprar</div><div style="font-size:34px;font-weight:800;color:#fff">$0</div></div>
+    <div class="panel">${empty('🧾','Lista de compra vacía','Se llena al elegir equipos desde el Análisis o añadiéndolos a mano. Cada equipo admite varias cotizaciones de suplidores.',['Equipo','Precio','Cantidad','Cotizaciones'])}</div>`;
+}
+
+function equipos_oficina(){
+  return head('Equipos de Oficina','Mobiliario y suministros',true)+`
+  <div class="panel" style="background:linear-gradient(135deg,#0f3b38,#0f766e);color:#eafffb;border:0">
+    <div style="font-size:13px;color:#bdeee5;font-weight:700">Total equipo de oficina</div><div style="font-size:34px;font-weight:800;color:#fff">$0</div></div>
+  <div class="panel"><div class="ph"><h3>Artículos</h3><span>6 artículos · 0 comprados</span></div>
+    <table class="tbl"><thead><tr><th>Artículo</th><th>Categoría</th><th style="text-align:center">Cant.</th><th style="text-align:right">Precio unit.</th><th>Estado</th></tr></thead><tbody>
+    ${OFICINA.map(([n,cat])=>`<tr><td style="font-weight:700">${n}</td><td style="color:var(--muted)">${cat}</td><td style="text-align:center">1</td><td style="text-align:right;color:var(--muted)">$0</td><td><span class="chip pend"><span class="d"></span>Pendiente</span></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function personal(){
+  return head('Personal','Puestos del proyecto',true)+`<div class="panel">${empty('👥','Sin puestos todavía','Cada puesto guarda título, estado, candidato, salario anual y fecha de inicio.',['Puesto','Por abrir','Abierto','Entrevistando','Contratado','Salario anual'])}</div>`;
+}
+function permisos(){
+  return head('Permisos y Credenciales','Licencias, registros y seguros, con fechas de emisión y vencimiento',true)+`<div class="panel">${empty('📋','Sin permisos aún','Cada permiso guarda nombre, tipo/entidad, estado, costo y fechas; avisa cuando uno está por vencer.',['Permiso','Tipo/entidad','Pendiente','En trámite','Obtenido','Vencido','Costo','Vencimiento'])}</div>`;
+}
+function admin(){
+  return head('Administración de Usuarios','Solo administradores',true)+`
+  <div class="panel"><div class="ph"><h3>Usuarios</h3></div>
+    <table class="tbl"><thead><tr><th>Usuario</th><th>Acceso por área</th><th>Acciones</th></tr></thead><tbody>
+      <tr><td><strong>Pedro Sánchez</strong><br><small style="color:var(--muted)">sanchez.pr@gmail.com</small></td><td><span class="chip ok"><span class="d"></span>Administrador (todas)</span></td><td><a>Editar</a></td></tr>
+    </tbody></table>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:14px">Crea usuarios con correo, contraseña temporal y acceso por área. Cuentas gestionadas por Supabase Auth.</p></div>`;
+}
+
+const R={resumen,financiamiento,local,equipos,equipos_oficina,personal,permisos,admin};
+function render(){
+  document.getElementById('content').innerHTML=(R[cur]||resumen)();
+  document.querySelectorAll('[data-go]').forEach(el=>el.classList.toggle('active',el.dataset.go===cur));
+  if(cur==='equipos'&&sub==='analisis') wireROI();
+  window.scrollTo({top:0});
+}
+function wireROI(){
+  const f=()=>{const r=+cpt.value,v=+vol.value,cx=+capex.value,m=r*v*4.33,y=m*12,p=m>0?cx/m:0;
+    document.getElementById('vollab').textContent=v;
+    document.getElementById('roi-m').textContent='$'+Math.round(m).toLocaleString();
+    document.getElementById('roi-y').textContent='$'+Math.round(y).toLocaleString();
+    document.getElementById('roi-p').textContent=p.toFixed(1)+' meses';};
+  const cpt=document.getElementById('cpt'),vol=document.getElementById('vol'),capex=document.getElementById('capex');
+  [cpt,vol,capex].forEach(e=>e.addEventListener('input',f)); f();
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'), s=e.target.closest('[data-sub]'), c=e.target.closest('[data-cat]');
+  if(g){cur=g.dataset.go; if(cur==='equipos')sub='catalogo'; render();}
+  else if(s){sub=s.dataset.sub; render();}
+  else if(c){catSel=c.dataset.cat; render();}
+});
+render();
+</script>
+</body>
+</html>

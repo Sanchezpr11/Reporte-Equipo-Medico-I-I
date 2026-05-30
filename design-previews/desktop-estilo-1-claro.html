@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desktop · Estilo 1 (Claro) — I&amp;I Realty</title>
+<style>
+  /* =========================================================
+     OPCIÓN A · DESKTOP · ESTILO 1 — CLARO / PROFESIONAL
+     Sidebar en desktop ↔ barra inferior en móvil. Self-contained.
+     ========================================================= */
+  :root{
+    --bg:#f4f7f9; --surface:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e7edf2;
+    --brand:#0f766e; --brand-600:#0d9488; --brand-700:#0f766e; --brand-900:#0f3b38; --brand-tint:#effbf8;
+    --ok:#059669; --ok-tint:#ecfdf5; --warn:#b45309; --warn-tint:#fff7ed; --pend:#be123c; --pend-tint:#fff1f3;
+    --radius:18px; --shadow:0 1px 2px rgba(15,23,42,.05),0 14px 34px -20px rgba(15,23,42,.28);
+    --sidebar:250px;
+  }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p{margin:0} button{font-family:inherit}
+  .ribbon{position:fixed;top:0;left:0;right:0;z-index:80;background:linear-gradient(90deg,#0f3b38,#0f766e);
+    color:#d1faf3;font-size:12px;font-weight:600;padding:6px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff} .ribbon .dot{width:7px;height:7px;border-radius:50%;background:#5eead4}
+
+  .app{display:flex;min-height:100vh;padding-top:29px}
+
+  /* Sidebar (desktop) */
+  .sidebar{width:var(--sidebar);flex:none;background:var(--surface);border-right:1px solid var(--line);
+    position:sticky;top:29px;height:calc(100vh - 29px);display:flex;flex-direction:column;padding:18px 14px}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:var(--brand-900);padding:6px 8px 16px}
+  .sidebar .brand .mark{width:34px;height:34px;border-radius:10px;background:var(--brand-700);color:#fff;display:grid;place-items:center;font-size:18px}
+  .nav{display:flex;flex-direction:column;gap:2px;overflow:auto}
+  .nav .gl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 10px 5px}
+  .nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;color:#334155;font-weight:600;font-size:14.5px;cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
+  .nav a .g{width:30px;height:30px;border-radius:8px;background:var(--brand-tint);display:grid;place-items:center;font-size:16px;flex:none}
+  .nav a:hover{background:#f1f5f9}
+  .nav a.active{background:var(--brand-tint);color:var(--brand-900)}
+  .nav a.active .g{background:var(--brand-700)}
+  .nav a .pct{margin-left:auto;font-size:12px;font-weight:800;color:var(--muted)}
+  .sidebar .who{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid var(--line)}
+  .sidebar .who .av{width:36px;height:36px;border-radius:50%;background:var(--brand-tint);color:var(--brand-700);display:grid;place-items:center;font-weight:700}
+  .sidebar .who small{display:block;color:var(--muted);font-size:11.5px}
+
+  /* Contenido */
+  .content{flex:1;min-width:0;padding:26px 30px 40px}
+  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .topbar h1{font-size:23px;font-weight:800}
+  .topbar .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .topbar .right{margin-left:auto;display:flex;gap:10px}
+  .pill{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:8px 13px;font-size:13px;font-weight:600;color:#334155;box-shadow:var(--shadow)}
+  .pill b{color:var(--brand-700)}
+
+  .grid-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px 18px;box-shadow:var(--shadow)}
+  .kpi .lab{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+  .kpi .lab .i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px}
+  .kpi .num{font-size:30px;font-weight:800;margin-top:10px;letter-spacing:-.02em}
+  .kpi .delta{font-size:12px;font-weight:700;margin-top:2px}
+
+  .grid-2{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;margin-bottom:20px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .panel .ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+  .panel .ph h3{font-size:16px;font-weight:800} .panel .ph span{font-size:12.5px;color:var(--muted)}
+
+  /* Barras horizontales (avance por área) */
+  .hbars{display:flex;flex-direction:column;gap:15px}
+  .hbar{display:grid;grid-template-columns:130px 1fr 44px;align-items:center;gap:12px}
+  .hbar .nm{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hbar .tr{height:11px;background:#eef2f6;border-radius:999px;overflow:hidden}
+  .hbar .tr > i{display:block;height:100%;border-radius:999px}
+  .hbar .vv{font-size:13px;font-weight:800;text-align:right}
+
+  /* Anillo general */
+  .ringwrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+  .ring{--p:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--brand-600) calc(var(--p)*1%), #e8eef3 0)}
+  .ring > div{width:116px;height:116px;border-radius:50%;background:var(--surface);display:grid;place-items:center;flex-direction:column}
+  .ring .big{font-size:34px;font-weight:800;line-height:1} .ring .cap{font-size:11.5px;color:var(--muted)}
+  .legend{display:flex;flex-direction:column;gap:9px;margin-top:18px;width:100%}
+  .legend .row{display:flex;align-items:center;gap:9px;font-size:13px}
+  .legend .row .d{width:9px;height:9px;border-radius:3px} .legend .row .n{margin-left:auto;font-weight:800}
+
+  .sec-title{display:flex;align-items:baseline;justify-content:space-between;margin:6px 2px 14px}
+  .sec-title h2{font-size:18px;font-weight:800} .sec-title span{font-size:12.5px;color:var(--muted)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow);cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .card:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(15,23,42,.05),0 22px 40px -22px rgba(15,23,42,.4)}
+  .card .top{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+  .card .ico{width:44px;height:44px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;font-size:22px}
+  .card h3{font-size:15.5px;font-weight:700} .card .top .pct{margin-left:auto;font-size:20px;font-weight:800}
+  .card .tr{height:8px;background:#eef2f6;border-radius:999px;overflow:hidden} .card .tr>i{display:block;height:100%;border-radius:999px}
+  .card .meta{display:flex;align-items:center;gap:9px;margin-top:11px;font-size:12.5px;color:var(--muted)}
+
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .chip .d{width:6px;height:6px;border-radius:50%}
+  .chip.progreso{background:var(--warn-tint);color:var(--warn)} .chip.progreso .d{background:var(--warn)}
+  .chip.pendiente{background:var(--pend-tint);color:var(--pend)} .chip.pendiente .d{background:var(--pend)}
+
+  /* Detalle */
+  .task{display:flex;align-items:center;gap:13px;padding:13px 2px;border-top:1px solid var(--line)}
+  .task:first-child{border-top:0}
+  .task .box{width:22px;height:22px;border-radius:7px;border:2px solid #cbd5e1;flex:none;display:grid;place-items:center;font-size:13px;color:#fff}
+  .task.done .box{background:var(--ok);border-color:var(--ok)} .task.prog .box{border-color:var(--warn);color:var(--warn);background:var(--warn-tint)}
+  .task .t{flex:1;font-size:14.5px} .task.done .t{color:var(--muted);text-decoration:line-through}
+  .task .who{font-size:11.5px;color:var(--muted);background:#f1f5f9;padding:3px 9px;border-radius:999px}
+
+  /* Barra inferior (móvil) */
+  .tabbar{display:none}
+  @media(max-width:1023px){
+    .sidebar{display:none}
+    .content{padding:18px 16px calc(86px + env(safe-area-inset-bottom))}
+    .grid-kpi{grid-template-columns:repeat(2,1fr)} .grid-2{grid-template-columns:1fr} .cards{grid-template-columns:1fr}
+    .hbar{grid-template-columns:104px 1fr 40px}
+    .tabbar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,1fr);
+      background:rgba(255,255,255,.93);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+      box-shadow:0 -6px 24px -12px rgba(15,23,42,.35);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+    .tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none}
+    .tabbar a .gl{font-size:20px} .tabbar a.active{color:var(--brand-700)}
+    .topbar h1{font-size:20px}
+  }
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Opción A · Desktop · Estilo 1 — Claro</b> · vista previa (achica la ventana para ver el móvil)</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+      <nav class="nav" id="nav"></nav>
+      <div class="who"><span class="av">PS</span><div><strong>Pedro Sánchez</strong><small>Administrador</small></div></div>
+    </aside>
+    <main class="content" id="content"></main>
+  </div>
+  <nav class="tabbar" id="tabbar"></nav>
+
+<script>
+const AREAS=[
+  {id:'financiamiento',name:'Financiamiento',icon:'💵',pct:72,done:8,total:11,status:'progreso'},
+  {id:'local',name:'Local / Oficina',icon:'🏢',pct:45,done:5,total:11,status:'progreso'},
+  {id:'equipos',name:'Equipos Médicos',icon:'🩺',pct:30,done:3,total:10,status:'progreso'},
+  {id:'equipos_oficina',name:'Equipos de Oficina',icon:'🖥️',pct:60,done:6,total:10,status:'progreso'},
+  {id:'personal',name:'Personal',icon:'👥',pct:20,done:2,total:10,status:'pendiente'},
+  {id:'permisos',name:'Permisos',icon:'📋',pct:15,done:1,total:7,status:'pendiente'},
+];
+const SL={progreso:'En progreso',pendiente:'Pendiente',completo:'Completo'};
+const BC={progreso:'var(--warn)',pendiente:'var(--pend)',completo:'var(--ok)'};
+const META={resumen:{name:'Resumen',icon:'📊'},admin:{name:'Admin',icon:'⚙️'}};
+AREAS.forEach(a=>META[a.id]={name:a.name,icon:a.icon});
+const TASKS=[{t:'Cotizar y comparar suplidores',who:'Pedro',st:'done'},{t:'Negociar términos de pago',who:'Ana',st:'prog'},{t:'Reservar fecha de entrega',who:'—',st:'todo'},{t:'Validar garantía y servicio',who:'—',st:'todo'},{t:'Coordinar instalación',who:'Luis',st:'todo'}];
+const totalT=AREAS.reduce((a,b)=>a+b.total,0), doneT=AREAS.reduce((a,b)=>a+b.done,0);
+const overall=Math.round(AREAS.reduce((a,b)=>a+b.pct,0)/AREAS.length);
+const inProg=AREAS.filter(a=>a.status==='progreso').length, pend=AREAS.filter(a=>a.status==='pendiente').length;
+
+// Sidebar + tabbar
+document.getElementById('nav').innerHTML=
+  `<div class="gl">Proyecto</div><a data-go="resumen"><span class="g">📊</span>Resumen</a>`+
+  `<div class="gl">Áreas</div>`+AREAS.map(a=>`<a data-go="${a.id}"><span class="g">${a.icon}</span>${a.name}<span class="pct">${a.pct}%</span></a>`).join('')+
+  `<div class="gl">Sistema</div><a data-go="admin"><span class="g">⚙️</span>Admin</a>`;
+document.getElementById('tabbar').innerHTML=
+  [['resumen','📊','Resumen'],['financiamiento','💵','Finanzas'],['local','🏢','Local'],['equipos','🩺','Equipos'],['admin','⚙️','Más']]
+  .map(([id,g,n])=>`<a data-go="${id}"><span class="gl">${g}</span>${n}</a>`).join('');
+
+function resumen(){
+  return `
+  <div class="topbar"><div><h1>Centro de control del proyecto</h1><div class="sub">Clínica de Endocrinología · Santurce, P.R.</div></div>
+    <div class="right"><span class="pill">Apertura objetivo · <b>Q3 2026</b></span><span class="pill">Actualizado hoy</span></div></div>
+
+  <div class="grid-kpi">
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--brand-tint)">📈</span>Avance general</div><div class="num">${overall}%</div><div class="delta" style="color:var(--ok)">▲ 6% esta semana</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--ok-tint)">✅</span>Tareas completadas</div><div class="num">${doneT}<span style="font-size:16px;color:var(--muted)">/${totalT}</span></div><div class="delta" style="color:var(--muted)">${Math.round(doneT/totalT*100)}% del total</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--warn-tint)">⏳</span>Áreas en progreso</div><div class="num">${inProg}</div><div class="delta" style="color:var(--muted)">de ${AREAS.length} áreas</div></div>
+    <div class="kpi"><div class="lab"><span class="i" style="background:var(--pend-tint)">⚠️</span>Áreas pendientes</div><div class="num">${pend}</div><div class="delta" style="color:var(--pend)">requieren atención</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>Avance por área</h3><span>% de tareas completadas</span></div>
+      <div class="hbars">${AREAS.map(a=>`<div class="hbar"><span class="nm">${a.icon} ${a.name}</span><span class="tr"><i style="width:${a.pct}%;background:${BC[a.status]}"></i></span><span class="vv" style="color:${BC[a.status]}">${a.pct}%</span></div>`).join('')}</div>
+    </div>
+    <div class="panel"><div class="ph"><h3>Resumen general</h3></div>
+      <div class="ringwrap"><div class="ring" style="--p:${overall}"><div><span class="big">${overall}%</span><span class="cap">completado</span></div></div>
+        <div class="legend">
+          <div class="row"><span class="d" style="background:var(--warn)"></span>En progreso<span class="n">${inProg}</span></div>
+          <div class="row"><span class="d" style="background:var(--pend)"></span>Pendiente<span class="n">${pend}</span></div>
+          <div class="row"><span class="d" style="background:var(--ok)"></span>Tareas hechas<span class="n">${doneT}/${totalT}</span></div>
+        </div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><h2>Áreas del proyecto</h2><span>Haz clic para abrir</span></div>
+  <div class="cards">${AREAS.map(a=>`
+    <div class="card" data-go="${a.id}">
+      <div class="top"><span class="ico">${a.icon}</span><h3>${a.name}</h3><span class="pct" style="color:${BC[a.status]}">${a.pct}%</span></div>
+      <div class="tr"><i style="width:${a.pct}%;background:${BC[a.status]}"></i></div>
+      <div class="meta"><span class="chip ${a.status}"><span class="d"></span>${SL[a.status]}</span><span>${a.done}/${a.total} tareas</span></div>
+    </div>`).join('')}</div>`;
+}
+function detalle(id){
+  const a=AREAS.find(x=>x.id===id)||{name:'Admin',icon:'⚙️',pct:40,done:3,total:8,status:'progreso'};
+  const d=TASKS.filter(t=>t.st==='done').length,p=TASKS.filter(t=>t.st==='prog').length,td=TASKS.filter(t=>t.st==='todo').length;
+  return `
+  <div class="topbar"><div><h1>${a.icon} ${a.name}</h1><div class="sub">${a.done} de ${a.total} tareas · ${SL[a.status]}</div></div>
+    <div class="right"><span class="pill" data-go="resumen" style="cursor:pointer">‹ Volver</span></div></div>
+  <div class="grid-2">
+    <div class="panel"><div class="ph"><h3>Lista de tareas</h3><span>${a.done}/${a.total}</span></div>
+      ${TASKS.map(t=>`<div class="task ${t.st==='done'?'done':t.st==='prog'?'prog':''}"><div class="box">${t.st==='done'?'✓':t.st==='prog'?'•':''}</div><div class="t">${t.t}</div><div class="who">${t.who}</div></div>`).join('')}
+    </div>
+    <div class="panel"><div class="ph"><h3>Progreso</h3></div>
+      <div class="ringwrap"><div class="ring" style="--p:${a.pct}"><div><span class="big">${a.pct}%</span><span class="cap">del área</span></div></div>
+        <div class="legend"><div class="row"><span class="d" style="background:var(--ok)"></span>Hechas<span class="n">${d}</span></div>
+          <div class="row"><span class="d" style="background:var(--warn)"></span>En curso<span class="n">${p}</span></div>
+          <div class="row"><span class="d" style="background:var(--pend)"></span>Pendientes<span class="n">${td}</span></div></div></div>
+    </div>
+  </div>`;
+}
+function go(id){
+  document.getElementById('content').innerHTML=(id==='resumen')?resumen():detalle(id);
+  document.querySelectorAll('[data-go]').forEach(el=>el.classList.toggle('active',el.dataset.go===id));
+  window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-go]');if(el)go(el.dataset.go)});
+go('resumen');
+</script>
+</body>
+</html>

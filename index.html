@@ -8,7 +8,7 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     
     <style>
@@ -51,14 +51,97 @@
         /* --- Pantalla de acceso (bloqueo del sitio) --- */
         /* Mientras el body tenga la clase .locked, el contenido del reporte
            permanece oculto y solo se muestra la pantalla de login. */
-        body.locked nav,
-        body.locked main,
-        body.locked footer {
+        body.locked .appshell,
+        body.locked .botbar,
+        body.locked .mtopbar {
             display: none !important;
         }
         body:not(.locked) #login-screen {
             display: none !important;
         }
+    </style>
+    <style>
+    /* =====================================================================
+       REDISEÑO UI/UX — Opción A: barra lateral (desktop) + barra inferior (móvil)
+       Capa sobre el diseño existente. No cambia la lógica; reutiliza los
+       mismos IDs (tab-*, nav-user, logout-btn) y handlers (switchTab, etc.).
+       Breakpoint: 1024px.
+       ===================================================================== */
+    :root{ --rd-brand:#0f766e; --rd-brand-900:#0f3b38; --rd-tint:#effbf8; --rd-line:#e7edf2; }
+    body{ background:#f3f6f9 !important; }
+
+    .appshell{ display:flex; align-items:flex-start; min-height:100vh; }
+    .maincol{ flex:1; min-width:0; display:flex; flex-direction:column; }
+    .maincol > main{ flex:1; }
+
+    /* ---- Barra lateral (desktop) ---- */
+    .sidebar{ width:252px; flex:none; position:sticky; top:0; height:100vh; overflow:auto;
+      background:#fff; border-right:1px solid var(--rd-line); display:flex; flex-direction:column; padding:16px 14px; z-index:40; }
+    .sb-brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; color:var(--rd-brand-900); padding:6px 8px 14px; }
+    .sb-brand .mark{ width:34px;height:34px;border-radius:10px;background:var(--rd-brand);color:#fff;display:grid;place-items:center;font-size:18px; }
+    .sb-nav{ display:flex; flex-direction:column; gap:2px; }
+    .sb-group{ font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#94a3b8; padding:14px 10px 5px; }
+    .navitem{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:11px; font-size:14.5px; font-weight:600; color:#475569; cursor:pointer; text-decoration:none; -webkit-tap-highlight-color:transparent; }
+    .navitem .ni-ic{ width:30px;height:30px;border-radius:8px;background:var(--rd-tint);display:grid;place-items:center;font-size:16px;flex:none; }
+    .navitem:hover{ background:#f1f5f9; }
+    .navitem.nav-active{ background:var(--rd-tint); color:var(--rd-brand-900); }
+    .navitem.nav-active .ni-ic{ background:var(--rd-brand); }
+    .navitem.tab-active{ border-bottom:0 !important; }
+    .navitem.hidden, .mnav.hidden{ display:none !important; }
+    .sb-foot{ margin-top:auto; padding-top:12px; border-top:1px solid var(--rd-line); display:flex; flex-direction:column; gap:6px; }
+    .sb-user{ font-size:11.5px; color:#94a3b8; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sb-logout{ display:flex; align-items:center; gap:9px; padding:9px 12px; border:0; background:none; border-radius:10px; font-size:14px; font-weight:600; color:#be123c; cursor:pointer; text-align:left; }
+    .sb-logout:hover{ background:#fff1f3; }
+
+    /* ---- Barra superior (móvil) ---- */
+    .mtopbar{ display:none; align-items:center; gap:11px; padding:10px 14px; background:#fff; border-bottom:1px solid var(--rd-line); position:sticky; top:0; z-index:35; }
+    .mtopbar .mark{ width:30px;height:30px;border-radius:9px;background:var(--rd-brand);color:#fff;display:grid;place-items:center;font-size:15px;flex:none; }
+    .mtopbar .mt-title{ font-weight:800; font-size:16px; color:#0f172a; }
+    .mtopbar .mt-sp{ flex:1; }
+    .mtopbar .mt-logout{ border:0;background:none;color:#94a3b8;font-size:20px;cursor:pointer;line-height:1; }
+
+    .botbar{ display:none; } .mas-sheet{ display:none; }
+
+    @media (max-width:1023px){
+      .sidebar{ display:none; }
+      .mtopbar{ display:flex; }
+      .maincol > main{ padding-bottom:96px !important; }
+      .botbar{ display:grid; grid-template-columns:repeat(5,1fr); position:fixed; left:0; right:0; bottom:0; z-index:50;
+        background:rgba(255,255,255,.95); backdrop-filter:saturate(180%) blur(12px); border-top:1px solid var(--rd-line);
+        box-shadow:0 -6px 24px -14px rgba(15,23,42,.4); padding:7px 5px calc(7px + env(safe-area-inset-bottom)); }
+      .botbar a{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 2px; border-radius:11px; color:#64748b; font-size:10.5px; font-weight:600; text-decoration:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+      .botbar a i{ font-style:normal; font-size:20px; line-height:1; }
+      .botbar a.nav-active{ color:var(--rd-brand); }
+      .mas-sheet.open{ display:block; position:fixed; inset:0; z-index:60; }
+      .mas-sheet .mas-ov{ position:absolute; inset:0; background:rgba(15,23,42,.45); }
+      .mas-sheet .mas-card{ position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; padding:10px 14px calc(16px + env(safe-area-inset-bottom)); box-shadow:0 -12px 40px -10px rgba(15,23,42,.4); }
+      .mas-sheet .grab{ width:42px;height:5px;border-radius:999px;background:#e2e8f0;margin:6px auto 12px; }
+      .masrow{ display:flex; align-items:center; gap:13px; padding:13px 8px; border-radius:12px; font-size:15px; font-weight:600; color:#334155; text-decoration:none; cursor:pointer; }
+      .masrow i{ font-style:normal; width:40px;height:40px;border-radius:11px;background:var(--rd-tint);display:grid;place-items:center;font-size:19px;flex:none; }
+      .masrow:active{ background:#f3f6f9; }
+      .masrow.danger{ color:#be123c; } .masrow.danger i{ background:#fff1f3; }
+    }
+    @media (min-width:1024px){
+      .mtopbar, .botbar, .mas-sheet{ display:none !important; }
+    }
+
+    /* ---- Animaciones fluidas + visualizaciones ---- */
+    .fade-in{ animation: rdIn .5s cubic-bezier(.22,.61,.36,1) both; }
+    @keyframes rdIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+    .rd-stagger > *{ animation: rdIn .45s cubic-bezier(.22,.61,.36,1) both; }
+    .rd-stagger > *:nth-child(1){ animation-delay:.03s } .rd-stagger > *:nth-child(2){ animation-delay:.07s }
+    .rd-stagger > *:nth-child(3){ animation-delay:.11s } .rd-stagger > *:nth-child(4){ animation-delay:.15s }
+    .rd-stagger > *:nth-child(5){ animation-delay:.19s } .rd-stagger > *:nth-child(6){ animation-delay:.23s }
+    .rd-stagger > *:nth-child(7){ animation-delay:.27s } .rd-stagger > *:nth-child(8){ animation-delay:.31s }
+    .rd-stagger > *:nth-child(n+9){ animation-delay:.35s }
+    #resumen-cards button{ transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    #resumen-cards button:hover{ transform: translateY(-3px); }
+    .rd-viz{ background:#fff; border:1px solid var(--rd-line); border-radius:16px; box-shadow:0 1px 2px rgba(15,23,42,.04); padding:16px; margin-bottom:16px; }
+    .rd-viz .rd-vtitle{ font-size:13px; font-weight:700; color:#475569; margin-bottom:10px; }
+    @media (prefers-reduced-motion: reduce){
+      .fade-in, .rd-stagger > *{ animation:none !important; }
+      #resumen-cards button:hover{ transform:none; }
+    }
     </style>
 </head>
 <body class="antialiased locked">
@@ -102,45 +185,44 @@
         </div>
     </div>
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-2xl mr-2">⚕️</span>
-                    <span class="font-bold text-xl text-stone-800 tracking-tight">I&amp;I Realty</span>
-                </div>
-                <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
-                    <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
-                    <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
-                    <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
-                    <button onclick="window.switchTab('equipos')" id="tab-equipos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos Médicos</button>
-                    <button onclick="window.switchTab('equipos_oficina')" id="tab-equipos_oficina" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos de Oficina</button>
-                    <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
-                    <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
-                    <button onclick="window.switchTab('pendientes')" id="tab-pendientes" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">✅ Pendientes</button>
-                    <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
-                    <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
-                    <button onclick="window.handleLogout()" id="logout-btn" title="Cerrar sesión" class="px-3 py-2 text-sm font-medium text-stone-400 hover:text-red-600 whitespace-nowrap transition-colors duration-200 flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Salir
-                    </button>
-                </div>
-            </div>
+    <!-- ====== NAVEGACIÓN: barra lateral (desktop) + barra inferior (móvil) ====== -->
+    <div class="appshell">
+      <aside class="sidebar">
+        <div class="sb-brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+        <nav class="sb-nav">
+          <div class="sb-group">Proyecto</div>
+          <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
+          <a id="tab-pendientes" data-area="pendientes" onclick="window.switchTab('pendientes')" class="navitem hidden"><span class="ni-ic">✅</span><span>Pendientes</span></a>
+          <div class="sb-group">Áreas</div>
+          <a id="tab-financiamiento" data-area="financiamiento" onclick="window.switchTab('financiamiento')" class="navitem hidden"><span class="ni-ic">💵</span><span>Financiamiento</span></a>
+          <a id="tab-local" data-area="local" onclick="window.switchTab('local')" class="navitem hidden"><span class="ni-ic">🏢</span><span>Local / Oficina</span></a>
+          <a id="tab-equipos" data-area="equipos" onclick="window.switchTab('equipos')" class="navitem hidden"><span class="ni-ic">🩺</span><span>Equipos Médicos</span></a>
+          <a id="tab-equipos_oficina" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')" class="navitem hidden"><span class="ni-ic">🖥️</span><span>Equipos de Oficina</span></a>
+          <a id="tab-personal" data-area="personal" onclick="window.switchTab('personal')" class="navitem hidden"><span class="ni-ic">👥</span><span>Personal</span></a>
+          <a id="tab-permisos" data-area="permisos" onclick="window.switchTab('permisos')" class="navitem hidden"><span class="ni-ic">📋</span><span>Permisos</span></a>
+          <div class="sb-group">Sistema</div>
+          <a id="tab-admin" data-area="admin" onclick="window.switchTab('admin')" class="navitem hidden"><span class="ni-ic">⚙️</span><span>Admin</span></a>
+        </nav>
+        <div class="sb-foot">
+          <span id="nav-user" class="sb-user" title="Sesión actual"></span>
+          <button onclick="window.handleLogout()" id="logout-btn" class="sb-logout" title="Cerrar sesión"><span>🚪</span> Salir</button>
         </div>
-    </nav>
+      </aside>
+      <div class="maincol">
+        <header class="mtopbar">
+          <span class="mark">⚕️</span>
+          <span class="mt-title" id="mtitle">Resumen</span>
+          <span class="mt-sp"></span>
+          <button onclick="window.handleLogout()" class="mt-logout" title="Cerrar sesión">⎋</button>
+        </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <div class="mb-8 bg-teal-800 text-stone-50 rounded-xl p-6 sm:p-10 shadow-lg">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-4">Centro de Control del Proyecto</h1>
-            <p class="text-lg text-teal-100 max-w-3xl">Seguimiento de la apertura de la clínica de endocrinología en Santurce, Puerto Rico: financiamiento, local, equipos médicos, equipos de oficina, personal y permisos. Usa las pestañas para ver cada área; el avance general está en <strong>Resumen</strong>.</p>
-        </div>
 
         <!-- RESUMEN: avance por área -->
         <section id="sec-resumen" class="fade-in hidden">
-            <div class="mb-6 border-b border-stone-200 pb-4">
-                <h2 class="text-2xl font-semibold text-stone-800">Resumen del Proyecto</h2>
-                <p class="mt-2 text-stone-600">Avance general de cada área. Haz clic en una tarjeta para ir a esa sección.</p>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-stone-800">Centro de Control del Proyecto</h2>
+                <p class="mt-1 text-stone-500">Clínica de Endocrinología · Santurce, Puerto Rico</p>
             </div>
             <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-stone-50 rounded-xl p-6 mb-6">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -159,7 +241,44 @@
                     <button onclick="window.saveOpeningDate()" class="bg-white text-teal-700 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-teal-50 transition-colors">Guardar</button>
                 </div>
             </div>
-            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            <div id="resumen-kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 rd-stagger">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-500"><span class="w-7 h-7 rounded-lg bg-teal-50 grid place-items-center text-sm">📈</span> Avance general</div>
+                    <div id="kpi-overall" class="text-3xl font-extrabold text-stone-800 mt-2">0%</div>
+                    <div id="kpi-overall-sub" class="text-xs text-stone-400 mt-0.5">promedio de áreas</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-500"><span class="w-7 h-7 rounded-lg bg-teal-50 grid place-items-center text-sm">✅</span> Tareas hechas</div>
+                    <div id="kpi-tasks" class="text-3xl font-extrabold text-stone-800 mt-2">0</div>
+                    <div id="kpi-tasks-sub" class="text-xs text-stone-400 mt-0.5">—</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-500"><span class="w-7 h-7 rounded-lg bg-teal-50 grid place-items-center text-sm">👥</span> Contratados</div>
+                    <div id="kpi-hired" class="text-3xl font-extrabold text-stone-800 mt-2">0</div>
+                    <div id="kpi-hired-sub" class="text-xs text-stone-400 mt-0.5">—</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-stone-500"><span class="w-7 h-7 rounded-lg bg-teal-50 grid place-items-center text-sm">📋</span> Permisos OK</div>
+                    <div id="kpi-permits" class="text-3xl font-extrabold text-stone-800 mt-2">0</div>
+                    <div id="kpi-permits-sub" class="text-xs text-stone-400 mt-0.5">—</div>
+                </div>
+            </div>
+            <div class="rd-viz">
+                <div class="grid grid-cols-1 sm:grid-cols-[170px_1fr] gap-6 items-center">
+                    <div class="relative mx-auto" style="width:160px;height:160px">
+                        <canvas id="resumen-ring"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span id="resumen-overall" class="text-3xl font-extrabold text-teal-800">0%</span>
+                            <span class="text-xs text-stone-500">avance general</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="rd-vtitle">Avance por área</p>
+                        <div class="relative" style="height:200px"><canvas id="resumen-bars"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 rd-stagger"></div>
         </section>
 
         <!-- MÓDULO DE TAREAS REUTILIZABLE (compartido por las áreas de proyecto) -->
@@ -281,6 +400,10 @@
                         <div id="local-f2-progress-bar" class="bg-teal-600 h-3 rounded-full transition-all" style="width:0%"></div>
                     </div>
                 </div>
+                <div id="local-chart-wrap" class="rd-viz" style="display:none">
+                    <p class="rd-vtitle">Avance por etapa</p>
+                    <div class="relative" style="height:200px"><canvas id="local-chart"></canvas></div>
+                </div>
                 <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
                     <div id="stages-list"></div>
                 </div>
@@ -378,8 +501,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
                 <p id="personal-summary" class="text-sm text-stone-600">—</p>
             </div>
+            <div id="personal-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Puestos por estado</p>
+                <div class="relative" style="height:200px"><canvas id="personal-chart"></canvas></div>
+            </div>
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <div id="positions-list"></div>
+                <div id="positions-list" class="rd-stagger"></div>
             </div>
             <form onsubmit="window.handleAddPosition(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -399,8 +526,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4 mb-6">
                 <p id="permisos-summary" class="text-sm text-stone-600">—</p>
             </div>
+            <div id="permisos-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Permisos por estado</p>
+                <div class="relative" style="height:200px"><canvas id="permisos-chart"></canvas></div>
+            </div>
             <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
-                <div id="permits-list"></div>
+                <div id="permits-list" class="rd-stagger"></div>
             </div>
             <form onsubmit="window.handleAddPermit(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -727,8 +858,13 @@
                 <span id="oficina-total" class="text-xl font-bold text-teal-800">$0</span>
             </div>
 
+            <div id="oficina-chart-wrap" class="rd-viz" style="display:none">
+                <p class="rd-vtitle">Gasto por cuarto</p>
+                <div class="relative" style="height:220px"><canvas id="oficina-chart"></canvas></div>
+            </div>
+
             <!-- Cuartos con su equipo -->
-            <div id="oficina-rooms"></div>
+            <div id="oficina-rooms" class="rd-stagger"></div>
 
             <!-- Añadir cuarto -->
             <form onsubmit="window.addRoom(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-col sm:flex-row gap-3">
@@ -840,6 +976,30 @@
         </div>
     </footer>
 
+      </div><!-- /.maincol -->
+    </div><!-- /.appshell -->
+
+    <!-- Barra inferior (móvil) -->
+    <nav class="botbar">
+      <a class="mnav" data-area="resumen" onclick="window.switchTab('resumen')"><i>📊</i><span>Resumen</span></a>
+      <a class="mnav" data-area="financiamiento" onclick="window.switchTab('financiamiento')"><i>💵</i><span>Finanzas</span></a>
+      <a class="mnav" data-area="local" onclick="window.switchTab('local')"><i>🏢</i><span>Local</span></a>
+      <a class="mnav" data-area="equipos" onclick="window.switchTab('equipos')"><i>🩺</i><span>Equipos</span></a>
+      <a class="more" onclick="window.toggleMas()"><i>☰</i><span>Más</span></a>
+    </nav>
+    <div class="mas-sheet" id="mas-sheet">
+      <div class="mas-ov" onclick="window.toggleMas()"></div>
+      <div class="mas-card">
+        <div class="grab"></div>
+        <a class="masrow mnav" data-area="pendientes" onclick="window.switchTab('pendientes')"><i>✅</i> Pendientes</a>
+        <a class="masrow mnav" data-area="equipos_oficina" onclick="window.switchTab('equipos_oficina')"><i>🖥️</i> Equipos de Oficina</a>
+        <a class="masrow mnav" data-area="personal" onclick="window.switchTab('personal')"><i>👥</i> Personal</a>
+        <a class="masrow mnav" data-area="permisos" onclick="window.switchTab('permisos')"><i>📋</i> Permisos</a>
+        <a class="masrow mnav" data-area="admin" onclick="window.switchTab('admin')"><i>⚙️</i> Admin</a>
+        <a class="masrow danger" onclick="window.handleLogout()"><i>🚪</i> Cerrar sesión</a>
+      </div>
+    </div>
+
     <!-- LÓGICA DE JAVASCRIPT Y CONEXIÓN A SUPABASE -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
@@ -947,6 +1107,12 @@
 
             const adminTab = document.getElementById('tab-admin');
             if (adminTab) adminTab.classList.toggle('hidden', !isAdmin);
+
+            // Rediseño: replicar el acceso en la barra inferior móvil y la hoja "Más"
+            allTabKeys.forEach(k => {
+                document.querySelectorAll('.mnav[data-area="' + k + '"]').forEach(el => el.classList.toggle('hidden', !allowedAreas.has(k)));
+            });
+            document.querySelectorAll('.mnav[data-area="admin"]').forEach(el => el.classList.toggle('hidden', !isAdmin));
 
             // Todos aterrizan en el Resumen.
             const noAccess = document.getElementById('no-access');
@@ -1391,6 +1557,110 @@
             document.getElementById('roi-months').innerText = monthlyRevenue > 0 ? monthsToBreakEven.toFixed(1) : "∞";
         }
 
+        // ===== Rediseño: animaciones + gráficas (Chart.js) =====
+        const RD_REDUCE = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (window.Chart) {
+            Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+            Chart.defaults.color = '#475569';
+            Chart.defaults.animation = RD_REDUCE ? false : { duration: 900, easing: 'easeOutQuart' };
+            try {
+                Chart.defaults.plugins.legend.labels.usePointStyle = true;
+                Chart.defaults.plugins.legend.labels.boxWidth = 8;
+                Chart.defaults.plugins.legend.labels.padding = 14;
+            } catch (_) {}
+        }
+        window._rdCharts = window._rdCharts || {};
+        window.rdChart = function(id, cfg) {
+            const c = document.getElementById(id);
+            if (!c || !window.Chart) return null;
+            try { if (window._rdCharts[id]) window._rdCharts[id].destroy(); } catch (_) {}
+            try { window._rdCharts[id] = new Chart(c.getContext('2d'), cfg); } catch (e) { console.warn('rdChart', id, e); return null; }
+            return window._rdCharts[id];
+        };
+        window.rdCountUp = function(el, to, opts) {
+            el = (typeof el === 'string') ? document.getElementById(el) : el;
+            if (!el) return;
+            opts = opts || {};
+            const pre = opts.prefix || '', suf = opts.suffix || '';
+            if (RD_REDUCE) { el.textContent = pre + Math.round(to).toLocaleString('en-US') + suf; return; }
+            const dur = opts.dur || 900, t0 = performance.now(), from = opts.from || 0;
+            function step(t) {
+                const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+                el.textContent = pre + Math.round(from + (to - from) * e).toLocaleString('en-US') + suf;
+                if (k < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        };
+        // Dona por estado (Personal, Permisos…)
+        window.rdStatusChart = function(id, items, statusMap, colorMap) {
+            try {
+                const labels = [], data = [], colors = [];
+                Object.keys(statusMap).forEach(k => {
+                    const n = items.filter(p => p.status === k).length;
+                    if (n > 0) { labels.push(statusMap[k]); data.push(n); colors.push(colorMap[k]); }
+                });
+                const wrap = document.getElementById(id + '-wrap');
+                if (!data.length) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart(id, {
+                    type: 'doughnut',
+                    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Gasto por cuarto (Equipos de Oficina)
+        window.rdOficinaChart = function(rooms, eq) {
+            try {
+                const byRoom = {};
+                (eq || []).forEach(x => { const k = x.room_id || '__none__'; byRoom[k] = (byRoom[k] || 0) + (Number(x.unit_price) || 0) * (Number(x.quantity) || 1); });
+                const labels = [], data = [];
+                (rooms || []).forEach(r => { labels.push(r.name); data.push(byRoom[r.id] || 0); });
+                if (byRoom['__none__']) { labels.push('Sin asignar'); data.push(byRoom['__none__']); }
+                const wrap = document.getElementById('oficina-chart-wrap');
+                if (!data.length || data.every(v => !v)) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart('oficina-chart', {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Gasto', data, backgroundColor: '#0f766e', borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => '$' + Number(v).toLocaleString('en-US') } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Avance por etapa de obra (Local)
+        window.rdLocalChart = async function() {
+            try {
+                const { data } = await supabase.from('stages').select('name, progress, sort_order').eq('area_key', 'local').order('sort_order');
+                const st = data || [];
+                const wrap = document.getElementById('local-chart-wrap');
+                if (!st.length) { if (wrap) wrap.style.display = 'none'; return; }
+                if (wrap) wrap.style.display = '';
+                window.rdChart('local-chart', {
+                    type: 'bar',
+                    data: { labels: st.map(s => s.name), datasets: [{ label: 'Avance', data: st.map(s => s.progress || 0), backgroundColor: st.map(s => (s.progress >= 100 ? '#059669' : '#0f766e')), borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { min: 0, max: 100, ticks: { callback: v => v + '%' } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+        // Panel visual del Resumen (anillo global + barras por área)
+        window.rdResumenViz = function(arr) {
+            try {
+                if (!arr || !arr.length) return;
+                const overall = Math.round(arr.reduce((a, b) => a + b.pct, 0) / arr.length);
+                window.rdCountUp('resumen-overall', overall, { suffix: '%' });
+                window.rdChart('resumen-ring', {
+                    type: 'doughnut',
+                    data: { datasets: [{ data: [overall, 100 - overall], backgroundColor: ['#0f766e', '#e7edf2'], borderWidth: 0 }] },
+                    options: { cutout: '74%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+                window.rdChart('resumen-bars', {
+                    type: 'bar',
+                    data: { labels: arr.map(a => a.label), datasets: [{ data: arr.map(a => a.pct), backgroundColor: arr.map(a => a.pct >= 100 ? '#059669' : (a.pct > 0 ? '#0f766e' : '#cbd5e1')), borderRadius: 6 }] },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } }, scales: { x: { min: 0, max: 100, ticks: { callback: v => v + '%' } } } }
+                });
+            } catch (e) { console.warn(e); }
+        };
+
         window.switchTab = function(tabKey) {
             // Ocultar todas las secciones
             ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'pendientes', 'admin', 'tracker'].forEach(sec => {
@@ -1434,7 +1704,23 @@
                 window.setupCreateUserAreas();
                 window.loadUsers();
             }
+
+            // --- Rediseño: estado activo en barra lateral + barra inferior, título móvil y cierre de hoja ---
+            document.querySelectorAll('[data-area]').forEach(el => el.classList.toggle('nav-active', el.dataset.area === tabKey));
+            const _moreBtn = document.querySelector('.botbar .more');
+            if (_moreBtn) _moreBtn.classList.toggle('nav-active', ['pendientes', 'equipos_oficina', 'personal', 'permisos', 'admin'].includes(tabKey));
+            const _labels = { resumen: 'Resumen', pendientes: 'Pendientes', financiamiento: 'Financiamiento', local: 'Local / Oficina', equipos: 'Equipos Médicos', equipos_oficina: 'Equipos de Oficina', personal: 'Personal', permisos: 'Permisos', admin: 'Admin' };
+            const _mt = document.getElementById('mtitle');
+            if (_mt && _labels[tabKey]) _mt.textContent = _labels[tabKey];
+            const _sheet = document.getElementById('mas-sheet');
+            if (_sheet) _sheet.classList.remove('open');
         }
+
+        // Abrir/cerrar la hoja "Más" de la barra inferior (móvil)
+        window.toggleMas = function() {
+            const s = document.getElementById('mas-sheet');
+            if (s) s.classList.toggle('open');
+        };
 
         // Sub-navegación dentro de "Equipos Médicos"
         window.switchEquipo = function(sub) {
@@ -1700,6 +1986,7 @@
             });
             document.getElementById('oficina-total').textContent = fmtMoney(grand);
             eq.forEach(x => renderAttachments(`equipos_oficina/items/${x.id}`, `att-o-${x.id}`));
+            window.rdOficinaChart(rooms, eq);
         };
 
         window.addRoom = async function(e) {
@@ -1958,8 +2245,10 @@
                 container.innerHTML = '<p class="text-stone-500 text-sm col-span-full">Aún no tienes áreas de proyecto asignadas. Pídele acceso a un administrador.</p>';
                 return;
             }
+            const rdData = [];
             areasToShow.forEach(key => {
                 const { pct, sub } = progressFor(key);
+                rdData.push({ label: areaLabel(key), pct });
                 const card = document.createElement('button');
                 card.onclick = () => window.switchTab(key);
                 card.className = 'text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md hover:border-teal-400 transition-all';
@@ -1969,12 +2258,23 @@
                         <span class="text-sm font-bold text-teal-700">${pct}%</span>
                     </div>
                     <div class="w-full bg-stone-100 rounded-full h-2.5 mb-2">
-                        <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:${pct}%"></div>
+                        <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:0%" data-pct="${pct}"></div>
                     </div>
                     <p class="text-xs text-stone-500">${sub}</p>
                 `;
                 container.appendChild(card);
             });
+            requestAnimationFrame(() => container.querySelectorAll('[data-pct]').forEach(b => { b.style.width = b.dataset.pct + '%'; }));
+            const overall = rdData.length ? Math.round(rdData.reduce((a, b) => a + b.pct, 0) / rdData.length) : 0;
+            window.rdCountUp('kpi-overall', overall, { suffix: '%' });
+            window.rdCountUp('kpi-tasks', tasks.filter(t => t.status === 'hecho').length);
+            window.rdCountUp('kpi-hired', positions.filter(p => p.status === 'contratado').length);
+            window.rdCountUp('kpi-permits', permits.filter(p => p.status === 'obtenido').length);
+            const rdSub = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+            rdSub('kpi-tasks-sub', 'de ' + tasks.length + ' tareas');
+            rdSub('kpi-hired-sub', 'de ' + positions.length + ' puestos');
+            rdSub('kpi-permits-sub', 'de ' + permits.length + ' permisos');
+            window.rdResumenViz(rdData);
         };
 
         // ======================================================
@@ -1998,6 +2298,7 @@
         window.renderLocal = async function() {
             window.switchFase('f1');
             await Promise.all([loadOfficeInfo(), renderContractors(), renderStages(), renderMedia('local')]);
+            window.rdLocalChart();
         };
 
         // --- Información de la oficina ---
@@ -2842,6 +3143,7 @@
             });
             const hired = ps.filter(p => p.status === 'contratado').length;
             document.getElementById('personal-summary').textContent = ps.length ? `${ps.length} puesto(s) · ${hired} contratado(s)` : 'Sin puestos todavía';
+            window.rdStatusChart('personal-chart', ps, POSITION_STATUS, { por_abrir: '#94a3b8', abierto: '#0ea5e9', entrevistando: '#d97706', contratado: '#059669' });
         };
 
         window.handleAddPosition = async function(e) {
@@ -2926,6 +3228,7 @@
             const ok = ps.filter(p => p.status === 'obtenido').length;
             const exp = ps.filter(p => p.expiry_date && p.expiry_date < today).length;
             document.getElementById('permisos-summary').textContent = ps.length ? `${ps.length} permiso(s) · ${ok} obtenido(s)${exp ? ` · ${exp} vencido(s)` : ''}` : 'Sin permisos todavía';
+            window.rdStatusChart('permisos-chart', ps, PERMIT_STATUS, { pendiente: '#94a3b8', en_tramite: '#d97706', obtenido: '#059669', vencido: '#e11d48' });
         };
 
         window.handleAddPermit = async function(e) {

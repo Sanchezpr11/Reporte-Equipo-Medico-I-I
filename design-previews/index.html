@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opciones de diseño — I&amp;I Realty</title>
+<style>
+  :root{--brand:#0f766e;--brand-900:#0f3b38;--brand-tint:#effbf8;--ink:#0f172a;--muted:#64748b;--line:#e6ebf1;
+    --shadow:0 1px 2px rgba(15,23,42,.05),0 12px 30px -16px rgba(15,23,42,.25)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#eef2f6;color:var(--ink);line-height:1.55;max-width:560px;margin:0 auto;padding:0 16px 48px;-webkit-font-smoothing:antialiased}
+  .top{background:linear-gradient(135deg,#0f766e,#0f3b38);color:#eafffb;margin:0 -16px 22px;padding:30px 22px 26px;border-radius:0 0 24px 24px}
+  .top .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px}
+  .top .brand .mark{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+  .top h1{font-size:25px;margin:14px 0 8px;font-weight:800}
+  .top p{margin:0;color:#c6f0e8;font-size:14px}
+  .note{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;font-size:13px;color:var(--muted);box-shadow:var(--shadow);margin-bottom:20px}
+  .note b{color:var(--ink)}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 4px 12px}
+  a.opt{display:flex;align-items:center;gap:15px;text-decoration:none;color:inherit;background:#fff;border:1px solid var(--line);
+    border-radius:18px;padding:17px;box-shadow:var(--shadow);margin-bottom:14px;transition:transform .12s ease}
+  a.opt:active{transform:scale(.99)}
+  a.opt .badge{width:54px;height:54px;border-radius:15px;background:var(--brand-tint);display:grid;place-items:center;font-size:27px;flex:none}
+  a.opt .txt{flex:1;min-width:0}
+  a.opt .txt strong{display:block;font-size:17px;font-weight:800}
+  a.opt .txt small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+  a.opt .go{width:34px;height:34px;border-radius:50%;background:#f1f5f9;display:grid;place-items:center;color:var(--brand);font-weight:800;flex:none}
+  .tag{display:inline-block;font-size:11px;font-weight:700;color:var(--brand-900);background:var(--brand-tint);border-radius:999px;padding:2px 8px;margin-top:7px}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand"><span class="mark">⚕️</span> I&amp;I Realty</div>
+    <h1>Opciones de diseño</h1>
+    <p>3 propuestas de rediseño visual, pensadas mobile-first. Ábrelas en tu teléfono y compáralas.</p>
+  </div>
+
+  <div class="note"><b>Esto es una vista previa.</b> No es la app real ni toca tus datos: usa contenido de ejemplo para que veas el estilo y la navegación. Cuando elijas una, la implemento en la app de verdad.</div>
+
+  <h2>Elige una opción</h2>
+
+  <a class="opt" href="option-a-barra-inferior.html">
+    <span class="badge">📱</span>
+    <span class="txt"><strong>A · Barra inferior</strong><small>Accesos fijos abajo, al alcance del pulgar, con botón “Más”. Se siente como una app nativa.</small><span class="tag">Más cómoda con una mano</span></span>
+    <span class="go">›</span>
+  </a>
+
+  <a class="opt" href="option-b-menu-lateral.html">
+    <span class="badge">☰</span>
+    <span class="txt"><strong>B · Menú lateral</strong><small>Botón ☰ que abre un panel con todas las secciones, agrupadas y con su % de avance.</small><span class="tag">Escala a muchas secciones</span></span>
+    <span class="go">›</span>
+  </a>
+
+  <a class="opt" href="option-c-selector.html">
+    <span class="badge">⌄</span>
+    <span class="txt"><strong>C · Selector de sección</strong><small>Un desplegable grande muestra dónde estás y te deja saltar a cualquier sección.</small><span class="tag">Más simple y compacto</span></span>
+    <span class="go">›</span>
+  </a>
+
+  <h2 style="margin-top:32px">Con tus datos reales (recomendado para ver la organización)</h2>
+  <div class="note">La <b>Opción A en desktop</b> poblada con la <b>información real</b> de tu app: catálogo de equipos, análisis FibroScan/iLivTouch con su calculadora de ROI, suplidores, documentos del banco y artículos de oficina. Lo que se carga en vivo aparece con su <b>estado vacío real</b>.</div>
+  <a class="opt" href="desktop-datos-reales.html">
+    <span class="badge">🗂️</span>
+    <span class="txt"><strong>Ver con datos reales</strong><small>Así se organiza tu información actual en el nuevo diseño (Opción A, estilo claro).</small><span class="tag">Empieza por aquí</span></span>
+    <span class="go">›</span>
+  </a>
+
+  <h2 style="margin-top:32px">Versión desktop · Opción A — estilos</h2>
+  <div class="note">Elegiste la <b>Opción A</b>. En pantalla grande su barra inferior se convierte en una <b>barra lateral</b>. Estas 3 muestran <b>distintos estilos visuales</b> para presentar la misma información. Mejor ábrelas en computadora (son responsive: achica la ventana y verás el móvil con la barra inferior).</div>
+
+  <a class="opt" href="desktop-estilo-1-claro.html">
+    <span class="badge">🪟</span>
+    <span class="txt"><strong>1 · Claro / Profesional</strong><small>Tarjetas, mucho aire, KPIs y gráfico de barras. Sobrio y limpio.</small><span class="tag">El más neutro</span></span>
+    <span class="go">›</span>
+  </a>
+  <a class="opt" href="desktop-estilo-2-oscuro.html">
+    <span class="badge">🌙</span>
+    <span class="txt"><strong>2 · Panel Oscuro</strong><small>Tema oscuro tipo dashboard: tabla densa, anillo de avance y números grandes.</small><span class="tag">Más “datos”</span></span>
+    <span class="go">›</span>
+  </a>
+  <a class="opt" href="desktop-estilo-3-reporte.html">
+    <span class="badge">📄</span>
+    <span class="txt"><strong>3 · Reporte Ejecutivo</strong><small>Editorial, tipografía serif y tabla. Pensado para presentar a socios/inversionistas.</small><span class="tag">Para presentar</span></span>
+    <span class="go">›</span>
+  </a>
+</body>
+</html>

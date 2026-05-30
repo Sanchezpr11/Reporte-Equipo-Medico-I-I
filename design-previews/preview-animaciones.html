@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Preview · Animaciones + Gráficas — I&amp;I Realty</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<style>
+  :root{ --bg:#f3f6f9; --surface:#fff; --ink:#0f172a; --muted:#64748b; --line:#e7edf2;
+    --brand:#0f766e; --brand900:#0f3b38; --tint:#effbf8; --ok:#059669; --warn:#b45309; --pend:#be123c; --sky:#0ea5e9; --slate:#94a3b8;
+    --radius:16px; --shadow:0 1px 2px rgba(15,23,42,.05),0 14px 34px -22px rgba(15,23,42,.3); --sb:250px; }
+  *{box-sizing:border-box} html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4,p{margin:0} button,a{font-family:inherit}
+  .ribbon{position:fixed;top:0;left:0;right:0;z-index:80;background:linear-gradient(90deg,#0f3b38,#0f766e);color:#d1faf3;font-size:12px;font-weight:600;padding:6px 16px;display:flex;align-items:center;gap:8px}
+  .ribbon b{color:#fff}.ribbon .dot{width:7px;height:7px;border-radius:50%;background:#5eead4}
+
+  .app{display:flex;align-items:flex-start;min-height:100vh;padding-top:29px}
+  .sidebar{width:var(--sb);flex:none;position:sticky;top:29px;height:calc(100vh - 29px);overflow:auto;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 14px;z-index:40}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:var(--brand900);padding:6px 8px 14px}
+  .brand .mk{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:18px}
+  .grp{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);padding:14px 10px 5px}
+  .ni{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;font-size:14.5px;font-weight:600;color:#475569;cursor:pointer;text-decoration:none}
+  .ni .ic{width:30px;height:30px;border-radius:8px;background:var(--tint);display:grid;place-items:center;font-size:16px}
+  .ni:hover{background:#f1f5f9}.ni.on{background:var(--tint);color:var(--brand900)}.ni.on .ic{background:var(--brand)}
+  .foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--slate)}
+
+  .col{flex:1;min-width:0;display:flex;flex-direction:column}
+  .mtop{display:none;align-items:center;gap:11px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:29px;z-index:35}
+  .mtop .mk{width:30px;height:30px;border-radius:9px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:15px}
+  .mtop .tt{font-weight:800;font-size:16px}
+  main{padding:24px 28px 48px;max-width:1200px}
+
+  .screen{animation:rdIn .5s cubic-bezier(.22,.61,.36,1) both}
+  @keyframes rdIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .stagger>*{animation:rdIn .5s cubic-bezier(.22,.61,.36,1) both}
+  .stagger>*:nth-child(1){animation-delay:.04s}.stagger>*:nth-child(2){animation-delay:.09s}.stagger>*:nth-child(3){animation-delay:.14s}
+  .stagger>*:nth-child(4){animation-delay:.19s}.stagger>*:nth-child(5){animation-delay:.24s}.stagger>*:nth-child(6){animation-delay:.29s}.stagger>*:nth-child(n+7){animation-delay:.33s}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:12px}
+  .top h1{font-size:24px;font-weight:800}.top .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .l{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+  .kpi .l .i{width:30px;height:30px;border-radius:9px;background:var(--tint);display:grid;place-items:center;font-size:15px}
+  .kpi .n{font-size:28px;font-weight:800;margin-top:9px;letter-spacing:-.02em}
+  .kpi .d{font-size:12px;font-weight:600;margin-top:2px;color:var(--muted)}
+
+  .viz{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+  .viz .vt{font-size:14px;font-weight:800;margin-bottom:4px}.viz .vs{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  .g2{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center}
+  .ringbox{position:relative;width:180px;height:180px;margin:0 auto}
+  .ringbox .lab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .ringbox .lab .big{font-size:34px;font-weight:800;color:var(--brand900);line-height:1}.ringbox .lab .cap{font-size:11.5px;color:var(--muted)}
+  .cwrap{position:relative;width:100%}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow);cursor:pointer;transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-3px)}
+  .card .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .card .h h3{font-size:15px;font-weight:700}.card .h .p{font-size:18px;font-weight:800;color:var(--brand)}
+  .bar{height:9px;background:#eef2f6;border-radius:999px;overflow:hidden}.bar>i{display:block;height:100%;border-radius:999px;width:0;transition:width 1s cubic-bezier(.22,.61,.36,1)}
+  .card .sub{font-size:12px;color:var(--muted);margin-top:8px}
+
+  .row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-top:1px solid var(--line)}.row:first-child{border-top:0}
+  .row .nm{flex:1;font-weight:600;font-size:14px}.chip{font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px}
+  .c-ok{background:#ecfdf5;color:var(--ok)}.c-warn{background:#fff7ed;color:var(--warn)}.c-pend{background:#fff1f3;color:var(--pend)}.c-sky{background:#eff6ff;color:var(--sky)}.c-idle{background:#f1f5f9;color:var(--slate)}
+
+  .botbar{display:none}
+  @media(max-width:1023px){
+    .sidebar{display:none}.mtop{display:flex}main{padding:18px 16px calc(90px + env(safe-area-inset-bottom));max-width:none}
+    .kpis{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}.cards{grid-template-columns:1fr}
+    .botbar{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(62px,1fr);overflow-x:auto;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);box-shadow:0 -6px 24px -14px rgba(15,23,42,.4);padding:7px 5px calc(7px + env(safe-area-inset-bottom))}
+    .botbar a{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:10.5px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}.botbar a i{font-style:normal;font-size:20px}.botbar a.on{color:var(--brand)}
+  }
+  @media(prefers-reduced-motion:reduce){ .screen,.stagger>*{animation:none!important} .bar>i{transition:none!important} }
+</style>
+</head>
+<body>
+  <div class="ribbon"><span class="dot"></span><b>Vista previa</b> · rediseño con animaciones + gráficas (datos de ejemplo)</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="mk">⚕️</span> I&amp;I Realty</div>
+      <div class="grp">Proyecto</div>
+      <a class="ni" data-go="resumen"><span class="ic">📊</span>Resumen</a>
+      <div class="grp">Áreas</div>
+      <a class="ni" data-go="financiamiento"><span class="ic">💵</span>Financiamiento</a>
+      <a class="ni" data-go="local"><span class="ic">🏢</span>Local / Oficina</a>
+      <a class="ni" data-go="equipos"><span class="ic">🩺</span>Equipos Médicos</a>
+      <a class="ni" data-go="oficina"><span class="ic">🖥️</span>Equipos de Oficina</a>
+      <a class="ni" data-go="personal"><span class="ic">👥</span>Personal</a>
+      <a class="ni" data-go="permisos"><span class="ic">📋</span>Permisos</a>
+      <div class="foot">Demo · datos de ejemplo</div>
+    </aside>
+    <div class="col">
+      <header class="mtop"><span class="mk">⚕️</span><span class="tt" id="mt">Resumen</span></header>
+      <main id="main"></main>
+    </div>
+  </div>
+  <nav class="botbar">
+    <a data-go="resumen"><i>📊</i>Resumen</a><a data-go="financiamiento"><i>💵</i>Finanzas</a>
+    <a data-go="local"><i>🏢</i>Local</a><a data-go="equipos"><i>🩺</i>Equipos</a>
+    <a data-go="oficina"><i>🖥️</i>Oficina</a><a data-go="personal"><i>👥</i>Personal</a><a data-go="permisos"><i>📋</i>Permisos</a>
+  </nav>
+
+<script>
+const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (window.Chart){ Chart.defaults.font.family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"; Chart.defaults.color="#475569";
+  Chart.defaults.animation = RM?false:{duration:1000,easing:'easeOutQuart'};
+  try{Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.boxWidth=8;Chart.defaults.plugins.legend.labels.padding=14;}catch(e){} }
+const C={}; function chart(id,cfg){const c=document.getElementById(id);if(!c)return;
+  if(!window.Chart){const p=c.parentElement;if(p)p.innerHTML='<div style="display:flex;height:100%;min-height:120px;align-items:center;justify-content:center;text-align:center;color:#be123c;font-size:13px;font-weight:600;padding:12px">⚠️ No se pudo cargar Chart.js desde el CDN (¿bloqueado por tu red/VPN?). Las gráficas necesitan internet a jsdelivr.net</div>';return;}
+  if(C[id])C[id].destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options||{});C[id]=new Chart(c.getContext('2d'),cfg);}
+function countUp(el,to,suf){el=document.getElementById(el);if(!el)return;suf=suf||'';if(RM){el.textContent=Math.round(to)+suf;return;}
+  const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/1000),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e).toLocaleString('en-US')+suf;if(k<1)requestAnimationFrame(s);})(performance.now());}
+function fillBars(){requestAnimationFrame(()=>document.querySelectorAll('#main [data-fill]').forEach(b=>b.style.width=b.dataset.fill+'%'));}
+
+// ---- Datos de ejemplo ----
+const AREAS=[
+  {k:'financiamiento',ic:'💵',label:'Financiamiento',pct:60,sub:'3/5 documentos al banco'},
+  {k:'local',ic:'🏢',label:'Local / Oficina',pct:40,sub:'2/5 etapas de obra'},
+  {k:'equipos',ic:'🩺',label:'Equipos Médicos',pct:30,sub:'lista de compra en curso'},
+  {k:'oficina',ic:'🖥️',label:'Equipos de Oficina',pct:55,sub:'11/20 comprados'},
+  {k:'personal',ic:'👥',label:'Personal',pct:25,sub:'2/6 contratados'},
+  {k:'permisos',ic:'📋',label:'Permisos',pct:18,sub:'2/7 obtenidos'},
+];
+const LABELS={resumen:'Resumen',financiamiento:'Financiamiento',local:'Local / Oficina',equipos:'Equipos Médicos',oficina:'Equipos de Oficina',personal:'Personal',permisos:'Permisos'};
+const overall=Math.round(AREAS.reduce((a,b)=>a+b.pct,0)/AREAS.length);
+
+function resumen(){
+  return `<section class="screen">
+    <div class="top"><div><h1>Centro de Control del Proyecto</h1><div class="sub">Clínica de Endocrinología · Santurce, Puerto Rico</div></div></div>
+    <div class="kpis stagger">
+      <div class="kpi"><div class="l"><span class="i">📈</span>Avance general</div><div class="n" id="k1">0%</div><div class="d" style="color:var(--ok)">▲ 6% esta semana</div></div>
+      <div class="kpi"><div class="l"><span class="i">✅</span>Tareas hechas</div><div class="n" id="k2">0</div><div class="d">de 48</div></div>
+      <div class="kpi"><div class="l"><span class="i">👥</span>Contratados</div><div class="n" id="k3">0</div><div class="d">de 6 puestos</div></div>
+      <div class="kpi"><div class="l"><span class="i">📋</span>Permisos OK</div><div class="n" id="k4">0</div><div class="d">de 7</div></div>
+    </div>
+    <div class="viz"><div class="g2">
+      <div><div class="ringbox"><canvas id="ring"></canvas><div class="lab"><span class="big" id="ringn">0%</span><span class="cap">avance general</span></div></div></div>
+      <div><div class="vt">Avance por área</div><div class="cwrap" style="height:210px"><canvas id="bars"></canvas></div></div>
+    </div></div>
+    <div class="cards stagger">${AREAS.map(a=>`<div class="card" data-go="${a.k}">
+      <div class="h"><h3>${a.ic} ${a.label}</h3><span class="p">${a.pct}%</span></div>
+      <div class="bar"><i data-fill="${a.pct}"></i></div><div class="sub">${a.sub}</div></div>`).join('')}</div>
+  </section>`;
+}
+function vizArea(title,sub,canvasId,h,rowsHtml){
+  return `<section class="screen">
+    <div class="top"><div><h1>${title}</h1><div class="sub">${sub}</div></div></div>
+    <div class="viz"><div class="vt">${sub}</div><div class="cwrap" style="height:${h}px"><canvas id="${canvasId}"></canvas></div></div>
+    ${rowsHtml?`<div class="viz stagger">${rowsHtml}</div>`:''}
+  </section>`;
+}
+function chips(items){return items.map(([n,cls,tag])=>`<div class="row"><span class="nm">${n}</span><span class="chip ${cls}">${tag}</span></div>`).join('');}
+
+function go(area){
+  document.querySelectorAll('[data-go]').forEach(e=>e.classList.toggle('on',e.dataset.go===area));
+  document.getElementById('mt').textContent=LABELS[area]||'';
+  const m=document.getElementById('main');
+  if(area==='resumen'){
+    m.innerHTML=resumen(); fillBars();
+    countUp('k1',overall,'%'); countUp('ringn',overall,'%'); countUp('k2',31); countUp('k3',2); countUp('k4',2);
+    chart('ring',{type:'doughnut',data:{datasets:[{data:[overall,100-overall],backgroundColor:['#0f766e','#e7edf2'],borderWidth:0}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+    chart('bars',{type:'bar',data:{labels:AREAS.map(a=>a.label),datasets:[{data:AREAS.map(a=>a.pct),backgroundColor:AREAS.map(a=>a.pct>=100?'#059669':'#0f766e'),borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+'%'}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  } else if(area==='personal'){
+    m.innerHTML=vizArea('Personal','Puestos por estado','pchart',220,chips([['Endocrinólogo/a','c-ok','Contratado'],['Recepcionista','c-ok','Contratado'],['Enfermero/a','c-sky','Entrevistando'],['Asistente médico','c-warn','Abierto'],['Facturación','c-warn','Abierto'],['Nutricionista','c-idle','Por abrir']]));
+    chart('pchart',{type:'doughnut',data:{labels:['Contratado','Entrevistando','Abierto','Por abrir'],datasets:[{data:[2,1,2,1],backgroundColor:['#059669','#d97706','#0ea5e9','#94a3b8'],borderColor:'#fff',borderWidth:2}]},options:{cutout:'60%',plugins:{legend:{position:'right'}}}});
+  } else if(area==='permisos'){
+    m.innerHTML=vizArea('Permisos y Credenciales','Permisos por estado','pmchart',220,chips([['Licencia sanitaria','c-ok','Obtenido'],['Registro DACO','c-ok','Obtenido'],['Permiso de uso','c-warn','En trámite'],['Bomberos','c-warn','En trámite'],['Patente municipal','c-pend','Pendiente'],['Seguro de malpractice','c-pend','Vencido']]));
+    chart('pmchart',{type:'doughnut',data:{labels:['Obtenido','En trámite','Pendiente','Vencido'],datasets:[{data:[2,2,2,1],backgroundColor:['#059669','#d97706','#94a3b8','#be123c'],borderColor:'#fff',borderWidth:2}]},options:{cutout:'60%',plugins:{legend:{position:'right'}}}});
+  } else if(area==='oficina'){
+    m.innerHTML=vizArea('Equipos de Oficina','Gasto por cuarto','ochart',240,'');
+    chart('ochart',{type:'bar',data:{labels:['Recepción','Consultorio 1','Consultorio 2','Laboratorio','Sala de espera'],datasets:[{data:[4200,6800,5100,3400,2900],backgroundColor:'#0f766e',borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
+  } else if(area==='local'){
+    m.innerHTML=vizArea('Local / Oficina','Avance por etapa de obra','lchart',240,'');
+    chart('lchart',{type:'bar',data:{labels:['Demolición','Plomería','Eléctrico','Pintura','Pisos'],datasets:[{data:[100,80,45,10,0],backgroundColor:['#059669','#0f766e','#0f766e','#0f766e','#cbd5e1'],borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'}}}}});
+  } else if(area==='financiamiento'){
+    m.innerHTML=vizArea('Financiamiento','Desglose del financiamiento estimado','fchart',260,'');
+    chart('fchart',{type:'doughnut',data:{labels:['Local','Remodelación','Personal (6m)','Equipos médicos','Equipo de oficina','Mercadeo'],datasets:[{data:[250000,90000,180000,140000,22000,30000],backgroundColor:['#0f766e','#14b8a6','#0ea5e9','#f59e0b','#6366f1','#a855f7'],borderColor:'#fff',borderWidth:2}]},options:{cutout:'58%',plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>c.label+': $'+c.parsed.toLocaleString()}}}}});
+  } else if(area==='equipos'){
+    m.innerHTML=`<section class="screen"><div class="top"><div><h1>Equipos Médicos</h1><div class="sub">Análisis comparativo: FibroScan vs iLivTouch</div></div></div>
+      <div class="viz"><div class="vt">Comparativa de costo estimado (USD)</div><div class="cwrap" style="height:240px"><canvas id="echart"></canvas></div></div>
+      <div class="viz"><div class="vt">Evaluación de características (1-10)</div><div class="cwrap" style="height:260px"><canvas id="echart2"></canvas></div></div></section>`;
+    chart('echart',{type:'bar',data:{labels:['FibroScan','iLivTouch'],datasets:[{label:'Costo mínimo',data:[85000,50000],backgroundColor:'#0f766e',borderRadius:6},{label:'Costo máximo',data:[120000,80000],backgroundColor:'#d97706',borderRadius:6}]},options:{plugins:{legend:{position:'top'}},scales:{y:{ticks:{callback:v=>'$'+(v/1000)+'k'}}}}});
+    chart('echart2',{type:'radar',data:{labels:['Respaldo Clínico','UX','Mantenimiento','Guía Imagen','Costo Inicial'],datasets:[{label:'FibroScan',data:[10,8,4,3,3],backgroundColor:'rgba(15,118,110,.2)',borderColor:'#0f766e'},{label:'iLivTouch',data:[6,7,7,9,8],backgroundColor:'rgba(217,119,6,.2)',borderColor:'#d97706'}]},options:{plugins:{legend:{position:'top'}},scales:{r:{min:0,max:10}}}});
+  }
+  window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go);});
+go('resumen');
+</script>
+</body>
+</html>
