@@ -2996,6 +2996,7 @@
                     <p class="text-sm ${done ? 'line-through text-stone-400' : 'text-stone-800'}">${escapeHtml(t.title)}</p>
                     <p class="text-xs text-stone-400 mt-0.5">👤 ${meta}</p>
                 </div>
+                <button onclick="window.editPending('${t.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
                 <button onclick="window.deletePending('${t.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
             return row;
         }
@@ -3015,6 +3016,16 @@
             const patch = checked ? { status: 'hecho', done_at: new Date().toISOString() } : { status: 'pendiente', done_at: null };
             const { error } = await supabase.from('pending_tasks').update(patch).eq('id', id);
             if (error) alert('Error: ' + error.message);
+            window.renderPendientes();
+        };
+        window.editPending = async function(id) {
+            const { data: t } = await supabase.from('pending_tasks').select('title').eq('id', id).single();
+            if (!t) return;
+            const title = prompt('Editar pendiente:', t.title);
+            if (title === null) return;
+            if (!title.trim()) { alert('El pendiente no puede quedar vacío.'); return; }
+            const { error } = await supabase.from('pending_tasks').update({ title: title.trim() }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
             window.renderPendientes();
         };
         window.deletePending = async function(id) {
