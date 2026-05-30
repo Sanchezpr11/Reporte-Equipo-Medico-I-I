@@ -1129,27 +1129,69 @@
             window.setupAddSupplierForm();
         };
 
-        window.renderEquipmentGrid = function() {
+        window.renderEquipmentGrid = async function() {
             const grid = document.getElementById('equipment-grid');
+            if (!grid) return;
+
+            // Qué equipos del catálogo ya están en la lista de compra
+            let inList = new Set();
+            try {
+                const { data } = await supabase.from('equipment_items')
+                    .select('item_key').eq('area_key', 'equipos').like('item_key', 'cat_%');
+                inList = new Set((data || []).map(r => r.item_key));
+            } catch (_) {}
+
             grid.innerHTML = '';
-            
             equipmentData.forEach(item => {
+                const added = inList.has('cat_' + item.id);
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-xl shadow-sm border border-stone-200 cursor-pointer hover:shadow-md hover:border-teal-400 transition-all duration-200 flex flex-col overflow-hidden text-center';
                 card.onclick = () => window.showEquipmentDetail(item.id);
-                
+
                 card.innerHTML = `
                     <div class="h-48 w-full bg-white flex items-center justify-center p-4 border-b border-stone-100">
                         <img src="${item.image}" alt="${item.name}" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/400x300/e2e8f0/475569?text=Imagen+No+Disponible';">
                     </div>
                     <div class="px-5 py-4 flex-1 flex flex-col justify-between">
-                        <h3 class="font-bold text-stone-800 text-lg leading-tight mb-2">${item.name}</h3>
-                        <p class="text-teal-700 font-semibold text-sm">${item.price}</p>
+                        <div>
+                            <h3 class="font-bold text-stone-800 text-lg leading-tight mb-2">${item.name}</h3>
+                            <p class="text-teal-700 font-semibold text-sm">${item.price}</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); window.addCatalogToCompra('${item.id}')" class="mt-3 w-full text-sm font-medium px-3 py-2 rounded-lg transition-colors ${added ? 'bg-teal-100 text-teal-700' : 'bg-stone-100 text-stone-700 hover:bg-teal-700 hover:text-white'}">${added ? '✓ En lista de compra' : '+ Lista de compra'}</button>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
+
+        // Añadir un equipo del catálogo a la lista de compra (alimenta los equipos escogidos)
+        window.addCatalogToCompra = async function(id) {
+            const item = equipmentData.find(e => e.id === id);
+            if (!item) return;
+            const key = 'cat_' + id;
+            const { data: existing } = await supabase.from('equipment_items')
+                .select('id').eq('area_key', 'equipos').eq('item_key', key);
+            if (existing && existing.length) { alert(`"${item.name}" ya está en la Lista de compra.`); return; }
+
+            const { data: created, error } = await supabase.from('equipment_items')
+                .insert({ area_key: 'equipos', name: item.name, item_key: key, quantity: 1 }).select().single();
+            if (error) { alert('Error: ' + error.message); return; }
+
+            // Estimados del rango de precio del catálogo como alternativas iniciales
+            const nums = (String(item.price).match(/[\d.,]+/g) || []).map(s => Number(s.replace(/,/g, ''))).filter(n => n > 0);
+            if (nums.length >= 2) {
+                const min = Math.min(...nums), max = Math.max(...nums);
+                await supabase.from('equipment_quotes').insert([
+                    { area_key: 'equipos', item_id: created.id, supplier: 'Estimado mínimo (catálogo)', price: min, selected: true },
+                    { area_key: 'equipos', item_id: created.id, supplier: 'Estimado máximo (catálogo)', price: max, selected: false }
+                ]);
+            } else if (nums.length === 1) {
+                await supabase.from('equipment_quotes').insert({ area_key: 'equipos', item_id: created.id, supplier: 'Estimado (catálogo)', price: nums[0], selected: true });
+            }
+
+            window.renderEquipmentGrid();
+            alert(`"${item.name}" añadido a la Lista de compra con los estimados del catálogo. Ve a «Lista de compra» para añadir cotizaciones reales de suplidores.`);
+        };
 
         window.showEquipmentDetail = function(id) {
             const item = equipmentData.find(e => e.id === id);
@@ -1356,6 +1398,7 @@
                 if (radarChartInstance) radarChartInstance.update();
                 window.refreshAnalysisChoice();
             }
+            if (sub === 'catalogo') window.renderEquipmentGrid();
             if (sub === 'compra') window.renderCompra();
         };
 
