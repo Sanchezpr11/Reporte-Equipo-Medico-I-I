@@ -117,6 +117,7 @@
                     <button onclick="window.switchTab('equipos_oficina')" id="tab-equipos_oficina" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos de Oficina</button>
                     <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
                     <button onclick="window.switchTab('permisos')" id="tab-permisos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Permisos</button>
+                    <button onclick="window.switchTab('pendientes')" id="tab-pendientes" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">✅ Pendientes</button>
                     <button onclick="window.switchTab('admin')" id="tab-admin" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">⚙️ Admin</button>
                     <span id="nav-user" class="hidden sm:inline text-xs text-stone-400 whitespace-nowrap" title="Sesión actual"></span>
                     <button onclick="window.handleLogout()" id="logout-btn" title="Cerrar sesión" class="px-3 py-2 text-sm font-medium text-stone-400 hover:text-red-600 whitespace-nowrap transition-colors duration-200 flex items-center gap-1">
@@ -736,6 +737,29 @@
             </form>
         </section>
 
+        <!-- ÁREA: PENDIENTES (to-do general del equipo) -->
+        <section id="sec-pendientes" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Pendientes</h2>
+                <p class="mt-2 text-stone-600">Lista de cosas por resolver del equipo, no atadas a un área específica. Muestra quién lo añadió y cuándo, y se puede marcar como realizado.</p>
+            </div>
+            <form onsubmit="window.handleAddPending(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4 mb-6 flex flex-col sm:flex-row gap-3">
+                <input id="np-pending" required placeholder="Nuevo pendiente… (ej. Llamar al banco por el documento X)" class="flex-1 rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir pendiente</button>
+            </form>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-stone-800">Por hacer</h3>
+                    <span id="pending-count" class="text-sm font-bold text-teal-700">0</span>
+                </div>
+                <div id="pending-list"></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5">
+                <h3 class="font-semibold text-stone-500 mb-3">Realizados <span id="pending-done-count" class="text-sm text-stone-400 font-normal"></span></h3>
+                <div id="pending-done-list"></div>
+            </div>
+        </section>
+
         <!-- SECCIÓN 4: ADMINISTRACIÓN (solo admins) -->
         <section id="sec-admin" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
@@ -912,9 +936,10 @@
 
             // El Resumen está disponible para cualquier usuario con sesión.
             allowedAreas.add('resumen');
+            allowedAreas.add('pendientes');
 
             // Mostrar/ocultar cada pestaña según el acceso.
-            const allTabKeys = ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos'];
+            const allTabKeys = ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos', 'pendientes'];
             allTabKeys.forEach(k => {
                 const tab = document.getElementById('tab-' + k);
                 if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
@@ -1368,13 +1393,13 @@
 
         window.switchTab = function(tabKey) {
             // Ocultar todas las secciones
-            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'admin', 'tracker'].forEach(sec => {
+            ['resumen', 'local', 'financiamiento', 'personal', 'permisos', 'equipos', 'equipos_oficina', 'pendientes', 'admin', 'tracker'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
 
             // Desactivar el estilo de todas las pestañas
-            ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos', 'admin'].forEach(k => {
+            ['resumen', 'financiamiento', 'local', 'equipos', 'equipos_oficina', 'personal', 'permisos', 'pendientes', 'admin'].forEach(k => {
                 const t = document.getElementById('tab-' + k);
                 if (t) { t.classList.remove('tab-active', 'text-teal-600'); t.classList.add('text-stone-500'); }
             });
@@ -1390,7 +1415,8 @@
                 financiamiento: window.renderFinanciamiento,
                 personal: window.renderPersonal,
                 permisos: window.renderPermisos,
-                equipos_oficina: window.renderOficina
+                equipos_oficina: window.renderOficina,
+                pendientes: window.renderPendientes
             };
             if (tabKey === 'equipos') {
                 document.getElementById('sec-equipos').classList.remove('hidden');
@@ -2932,6 +2958,70 @@
             if (!confirm('¿Eliminar este permiso?')) return;
             await supabase.from('permits').delete().eq('id', id);
             window.renderPermisos();
+        };
+
+        // ======================================================
+        // PENDIENTES (to-do general del equipo)
+        // ======================================================
+        function fmtPendingDate(ts) {
+            if (!ts) return '';
+            try { return new Date(ts).toLocaleDateString('es-PR', { year: 'numeric', month: 'short', day: 'numeric' }); }
+            catch (_) { return ''; }
+        }
+        window.renderPendientes = async function() {
+            const list = document.getElementById('pending-list');
+            const doneList = document.getElementById('pending-done-list');
+            list.innerHTML = '<p class="text-stone-400 text-sm">Cargando…</p>';
+            doneList.innerHTML = '';
+            const { data, error } = await supabase.from('pending_tasks').select('*').order('created_at', { ascending: false });
+            if (error) { list.innerHTML = sqlErr(error, 'pending-tasks.sql'); return; }
+            const all = data || [];
+            const pend = all.filter(t => t.status !== 'hecho');
+            const done = all.filter(t => t.status === 'hecho');
+            document.getElementById('pending-count').textContent = pend.length;
+            document.getElementById('pending-done-count').textContent = done.length ? '(' + done.length + ')' : '';
+            list.innerHTML = pend.length ? '' : '<p class="text-stone-400 text-sm py-3">No hay pendientes. ¡Todo al día! 🎉</p>';
+            pend.forEach(t => list.appendChild(renderPendingRow(t, false)));
+            doneList.innerHTML = done.length ? '' : '<p class="text-stone-400 text-sm py-3">Aún no hay realizados.</p>';
+            done.forEach(t => doneList.appendChild(renderPendingRow(t, true)));
+        };
+        function renderPendingRow(t, done) {
+            const row = document.createElement('div');
+            row.className = 'flex items-start gap-3 py-3 border-b border-stone-100 last:border-0';
+            const who = t.created_by_name || 'Usuario';
+            const meta = escapeHtml(who) + ' · ' + fmtPendingDate(t.created_at) + (done && t.done_at ? ' → hecho ' + fmtPendingDate(t.done_at) : '');
+            row.innerHTML = `
+                <input type="checkbox" ${done ? 'checked' : ''} onchange="window.togglePending('${t.id}', this.checked)" class="mt-1 rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm ${done ? 'line-through text-stone-400' : 'text-stone-800'}">${escapeHtml(t.title)}</p>
+                    <p class="text-xs text-stone-400 mt-0.5">👤 ${meta}</p>
+                </div>
+                <button onclick="window.deletePending('${t.id}')" class="text-xs text-stone-400 hover:text-red-600">✕</button>`;
+            return row;
+        }
+        window.handleAddPending = async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('np-pending');
+            const title = input.value.trim();
+            if (!title) return;
+            const who = (currentProfile && (currentProfile.full_name || currentProfile.email)) || (currentUser && currentUser.email) || 'Usuario';
+            const { error } = await supabase.from('pending_tasks').insert({
+                title, created_by: currentUser ? currentUser.id : null, created_by_name: who
+            });
+            if (error) { alert('Error: ' + error.message); return; }
+            input.value = ''; window.renderPendientes();
+        };
+        window.togglePending = async function(id, checked) {
+            const patch = checked ? { status: 'hecho', done_at: new Date().toISOString() } : { status: 'pendiente', done_at: null };
+            const { error } = await supabase.from('pending_tasks').update(patch).eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            window.renderPendientes();
+        };
+        window.deletePending = async function(id) {
+            if (!confirm('¿Eliminar este pendiente?')) return;
+            const { error } = await supabase.from('pending_tasks').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            window.renderPendientes();
         };
 
         window.setupAddSupplierForm = function() {
