@@ -1185,6 +1185,9 @@
 
             applyAccess();
 
+            // Re-aplicar el branding del cliente activo (ahora que ya conocemos currentClientId)
+            await applyProjectBranding();
+
             const who = document.getElementById('nav-user');
             if (who) {
                 who.textContent = currentProfile.email || user.email;
@@ -3780,7 +3783,12 @@
         }
         async function applyProjectBranding() {
             try {
+                // Cliente cuyo branding mostramos: el activo si ya hay sesión; si no
+                // (pantalla de login), el cliente base I&I como bienvenida por defecto.
+                const II = '00000000-0000-0000-0000-000000000001';
+                const cid = currentClientId || II;
                 const { data } = await supabase.from('project_settings').select('key, value')
+                    .eq('client_id', cid)
                     .in('key', ['project_name', 'project_desc', 'project_logo']);
                 const map = {}; (data || []).forEach(r => { map[r.key] = r.value; });
                 projectBranding = {
@@ -3839,7 +3847,8 @@
                 { key: 'project_desc', value: desc, updated_at: now }
             ];
             if (pendingLogoData !== null) rows.push({ key: 'project_logo', value: pendingLogoData, updated_at: now });
-            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'key' });
+            rows.forEach(r => { r.client_id = currentClientId; });
+            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'client_id,key' });
             const msg = document.getElementById('proj-branding-msg');
             if (error) { if (msg) { msg.textContent = 'Error: ' + error.message; msg.className = 'text-sm text-red-600'; } return; }
             if (msg) { msg.textContent = 'Guardado ✓'; msg.className = 'text-sm text-teal-700'; setTimeout(() => { msg.textContent = ''; }, 2000); }
