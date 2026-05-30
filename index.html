@@ -111,7 +111,6 @@
                 <div class="flex items-center space-x-4 lg:space-x-6 mt-4 overflow-x-auto" id="nav-tabs">
                     <button onclick="window.switchTab('resumen')" id="tab-resumen" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">📊 Resumen</button>
                     <button onclick="window.switchTab('local')" id="tab-local" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Local</button>
-                    <button onclick="window.switchTab('remodelacion')" id="tab-remodelacion" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Remodelación</button>
                     <button onclick="window.switchTab('financiamiento')" id="tab-financiamiento" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Financiamiento</button>
                     <button onclick="window.switchTab('equipos')" id="tab-equipos" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Equipos Médicos</button>
                     <button onclick="window.switchTab('personal')" id="tab-personal" class="hidden px-3 py-2 text-sm font-medium text-stone-500 hover:text-teal-600 whitespace-nowrap transition-colors duration-200">Personal</button>
@@ -171,6 +170,101 @@
                 <input type="text" id="new-task-assignee" placeholder="Responsable (opcional)" class="sm:w-48 rounded-md border border-stone-300 bg-white p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <button type="submit" class="bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors whitespace-nowrap">Añadir</button>
             </form>
+        </section>
+
+        <!-- ÁREA: LOCAL / OFICINA (por fases) -->
+        <section id="sec-local" class="fade-in hidden">
+            <div class="mb-6 border-b border-stone-200 pb-4">
+                <h2 class="text-2xl font-semibold text-stone-800">Local / Oficina</h2>
+                <p class="mt-2 text-stone-600">La oficina ya está asegurada (opción de compra). Aquí seguimos la remodelación por fases: primero el análisis de contratistas y, una vez elegido, el plan de obra por etapas.</p>
+            </div>
+
+            <!-- Información de la oficina -->
+            <form onsubmit="window.saveOfficeInfo(event)" class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-stone-800">🏢 Información de la oficina</h3>
+                    <button type="submit" class="bg-teal-700 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Guardar</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="text-sm"><span class="text-stone-600">Dirección</span>
+                        <input id="office-address" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Dirección de la oficina"></label>
+                    <label class="text-sm"><span class="text-stone-600">Tamaño</span>
+                        <input id="office-size" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. 1,200 pies²"></label>
+                    <label class="text-sm"><span class="text-stone-600">Precio / opción</span>
+                        <input id="office-price" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. $250,000"></label>
+                    <label class="text-sm"><span class="text-stone-600">Estatus</span>
+                        <input id="office-status" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Opción de compra realizada"></label>
+                    <label class="text-sm sm:col-span-2"><span class="text-stone-600">Notas</span>
+                        <textarea id="office-notes" rows="2" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Detalles, fechas clave, etc."></textarea></label>
+                </div>
+            </form>
+
+            <!-- Fotos y videos: próximo paso -->
+            <div class="bg-stone-50 border border-dashed border-stone-300 rounded-xl p-4 mb-6 text-sm text-stone-500">
+                📷 <strong>Fotos y videos de la oficina</strong> — lo añadimos en el próximo paso (requiere activar el almacenamiento de Supabase).
+            </div>
+
+            <!-- Cómo va todo: resumen de fases -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <button onclick="window.switchFase('f1')" class="text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:border-teal-400 transition-all">
+                    <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">Fase 1</p>
+                    <h3 class="font-bold text-stone-800 mb-1">Análisis de contratistas</h3>
+                    <p id="local-f1-summary" class="text-sm text-stone-500">—</p>
+                </button>
+                <button onclick="window.switchFase('f2')" class="text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:border-teal-400 transition-all">
+                    <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">Fase 2</p>
+                    <h3 class="font-bold text-stone-800 mb-1">Plan de obra por etapas</h3>
+                    <p id="local-f2-summary" class="text-sm text-stone-500">—</p>
+                </button>
+            </div>
+
+            <!-- Sub-navegación por fase -->
+            <div class="mb-6 flex flex-wrap gap-2">
+                <button onclick="window.switchFase('f1')" id="fasetab-f1" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Fase 1 · Contratistas</button>
+                <button onclick="window.switchFase('f2')" id="fasetab-f2" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors text-stone-600 bg-stone-100 hover:bg-stone-200">Fase 2 · Plan de obra</button>
+            </div>
+
+            <!-- Panel Fase 1: contratistas -->
+            <div id="fase-f1">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                    <div id="contractors-list"></div>
+                </div>
+                <form onsubmit="window.handleAddContractor(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                    <p class="text-sm font-medium text-stone-700 mb-3">Añadir contratista</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input id="nc-name" required placeholder="Nombre del contratista *" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <input id="nc-quote" type="number" step="any" placeholder="Cotización ($)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <input id="nc-contact" placeholder="Contacto (tel/email)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                        <input id="nc-lead" placeholder="Tiempo estimado (ej. 6 semanas)" class="rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir contratista</button>
+                </form>
+            </div>
+
+            <!-- Panel Fase 2: etapas de obra -->
+            <div id="fase-f2" class="hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-stone-700">Avance de la obra</span>
+                        <span id="local-f2-progress-text" class="text-sm text-stone-500">0%</span>
+                    </div>
+                    <div class="w-full bg-stone-100 rounded-full h-3">
+                        <div id="local-f2-progress-bar" class="bg-teal-600 h-3 rounded-full transition-all" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-5 mb-6">
+                    <div id="stages-list"></div>
+                </div>
+                <form onsubmit="window.handleAddStage(event)" class="bg-stone-50 rounded-xl border border-stone-200 p-4">
+                    <p class="text-sm font-medium text-stone-700 mb-3">Añadir etapa</p>
+                    <input id="ns-name" required placeholder="Nombre de la etapa * (ej. Demolición, Plomería, Eléctrico…)" class="w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <label class="text-xs text-stone-500">Inicio<input id="ns-start" type="date" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></label>
+                        <label class="text-xs text-stone-500">Fin<input id="ns-end" type="date" class="mt-1 w-full rounded-md border border-stone-300 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></label>
+                    </div>
+                    <button type="submit" class="mt-3 bg-teal-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-teal-800 transition-colors">Añadir etapa</button>
+                </form>
+            </div>
         </section>
 
         <!-- ÁREA: EQUIPOS MÉDICOS (agrupa catálogo, análisis y suplidores) -->
@@ -598,7 +692,7 @@
             allowedAreas.add('resumen');
 
             // Mostrar/ocultar cada pestaña según el acceso.
-            const allTabKeys = ['resumen', 'local', 'remodelacion', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos'];
+            const allTabKeys = ['resumen', 'local', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos'];
             allTabKeys.forEach(k => {
                 const tab = document.getElementById('tab-' + k);
                 if (tab) tab.classList.toggle('hidden', !allowedAreas.has(k));
@@ -1009,16 +1103,16 @@
         }
 
         window.switchTab = function(tabKey) {
-            const trackerAreas = ['local', 'remodelacion', 'financiamiento', 'personal', 'marca', 'permisos'];
+            const trackerAreas = ['financiamiento', 'personal', 'marca', 'permisos'];
 
             // Ocultar todas las secciones
-            ['equipos', 'admin', 'resumen', 'tracker'].forEach(sec => {
+            ['equipos', 'admin', 'resumen', 'tracker', 'local'].forEach(sec => {
                 const el = document.getElementById('sec-' + sec);
                 if (el) el.classList.add('hidden');
             });
 
             // Desactivar el estilo de todas las pestañas
-            ['resumen', 'local', 'remodelacion', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
+            ['resumen', 'local', 'financiamiento', 'equipos', 'personal', 'marca', 'permisos', 'admin'].forEach(k => {
                 const t = document.getElementById('tab-' + k);
                 if (t) { t.classList.remove('tab-active', 'text-teal-600'); t.classList.add('text-stone-500'); }
             });
@@ -1031,6 +1125,9 @@
             if (tabKey === 'resumen') {
                 document.getElementById('sec-resumen').classList.remove('hidden');
                 window.renderResumen();
+            } else if (tabKey === 'local') {
+                document.getElementById('sec-local').classList.remove('hidden');
+                window.renderLocal();
             } else if (tabKey === 'equipos') {
                 document.getElementById('sec-equipos').classList.remove('hidden');
                 window.switchEquipo('catalogo');
@@ -1071,7 +1168,7 @@
         // ======================================================
         // SEGUIMIENTO DE PROYECTO: MÓDULO DE TAREAS POR ÁREA
         // ======================================================
-        const TRACKER_AREAS = ['local', 'remodelacion', 'financiamiento', 'personal', 'marca', 'permisos'];
+        const TRACKER_AREAS = ['financiamiento', 'personal', 'marca', 'permisos'];
 
         function areaLabel(key) {
             const a = allAreas.find(x => x.key === key);
@@ -1197,13 +1294,21 @@
                 return;
             }
 
+            // Áreas tipo checklist: progreso = tareas hechas / total
             const byArea = {};
             (tasks || []).forEach(t => {
                 const g = byArea[t.area_key] = byArea[t.area_key] || { total: 0, done: 0 };
                 g.total++; if (t.status === 'hecho') g.done++;
             });
 
-            const areasToShow = TRACKER_AREAS.filter(k => allowedAreas.has(k));
+            // El área Local usa etapas de obra (Fase 2). Tolerante si aún no existe la tabla.
+            let localStages = [];
+            const stagesRes = await supabase.from('stages').select('area_key, progress').eq('area_key', 'local');
+            if (!stagesRes.error) localStages = stagesRes.data || [];
+
+            // Orden de las áreas de proyecto en el resumen (local es a medida; el resto, checklist)
+            const PROJECT_AREAS = ['local', ...TRACKER_AREAS];
+            const areasToShow = PROJECT_AREAS.filter(k => allowedAreas.has(k));
             container.innerHTML = '';
             if (areasToShow.length === 0) {
                 container.innerHTML = '<p class="text-stone-500 text-sm col-span-full">Aún no tienes áreas de proyecto asignadas. Pídele acceso a un administrador.</p>';
@@ -1211,8 +1316,16 @@
             }
 
             areasToShow.forEach(key => {
-                const g = byArea[key] || { total: 0, done: 0 };
-                const pct = g.total ? Math.round(g.done / g.total * 100) : 0;
+                let pct, sub;
+                if (key === 'local') {
+                    pct = localStages.length ? Math.round(localStages.reduce((a, s) => a + (s.progress || 0), 0) / localStages.length) : 0;
+                    const done = localStages.filter(s => (s.progress || 0) >= 100).length;
+                    sub = localStages.length ? `${done}/${localStages.length} etapas de obra` : 'Fase 1: análisis de contratistas';
+                } else {
+                    const g = byArea[key] || { total: 0, done: 0 };
+                    pct = g.total ? Math.round(g.done / g.total * 100) : 0;
+                    sub = `${g.done}/${g.total} tareas completadas`;
+                }
                 const card = document.createElement('button');
                 card.onclick = () => window.switchTab(key);
                 card.className = 'text-left bg-white rounded-xl shadow-sm border border-stone-200 p-5 hover:shadow-md hover:border-teal-400 transition-all';
@@ -1224,10 +1337,268 @@
                     <div class="w-full bg-stone-100 rounded-full h-2.5 mb-2">
                         <div class="bg-teal-600 h-2.5 rounded-full transition-all" style="width:${pct}%"></div>
                     </div>
-                    <p class="text-xs text-stone-500">${g.done}/${g.total} tareas completadas</p>
+                    <p class="text-xs text-stone-500">${sub}</p>
                 `;
                 container.appendChild(card);
             });
+        };
+
+        // ======================================================
+        // ÁREA LOCAL / OFICINA (por fases)
+        // ======================================================
+        window.switchFase = function(f) {
+            ['f1', 'f2'].forEach(x => {
+                const panel = document.getElementById('fase-' + x);
+                if (panel) panel.classList.toggle('hidden', x !== f);
+                const tab = document.getElementById('fasetab-' + x);
+                if (tab) {
+                    const active = x === f;
+                    tab.classList.toggle('bg-teal-700', active);
+                    tab.classList.toggle('text-white', active);
+                    tab.classList.toggle('bg-stone-100', !active);
+                    tab.classList.toggle('text-stone-600', !active);
+                }
+            });
+        };
+
+        window.renderLocal = async function() {
+            window.switchFase('f1');
+            await Promise.all([loadOfficeInfo(), renderContractors(), renderStages()]);
+        };
+
+        // --- Información de la oficina ---
+        async function loadOfficeInfo() {
+            const { data } = await supabase.from('office_info').select('*').eq('area_key', 'local').maybeSingle();
+            const o = data || {};
+            document.getElementById('office-address').value = o.address || '';
+            document.getElementById('office-size').value = o.size || '';
+            document.getElementById('office-price').value = o.price || '';
+            document.getElementById('office-status').value = o.status || '';
+            document.getElementById('office-notes').value = o.notes || '';
+        }
+
+        window.saveOfficeInfo = async function(e) {
+            e.preventDefault();
+            const payload = {
+                area_key: 'local',
+                address: document.getElementById('office-address').value.trim(),
+                size: document.getElementById('office-size').value.trim(),
+                price: document.getElementById('office-price').value.trim(),
+                status: document.getElementById('office-status').value.trim(),
+                notes: document.getElementById('office-notes').value.trim(),
+                updated_at: new Date().toISOString()
+            };
+            const { error } = await supabase.from('office_info').upsert(payload, { onConflict: 'area_key' });
+            if (error) { alert('No se pudo guardar: ' + error.message); return; }
+            const btn = e.target.querySelector('button[type=submit]');
+            if (btn) { const t = btn.textContent; btn.textContent = 'Guardado ✓'; setTimeout(() => btn.textContent = t, 1500); }
+        };
+
+        // --- Fase 1: contratistas ---
+        async function renderContractors() {
+            const list = document.getElementById('contractors-list');
+            const { data, error } = await supabase.from('contractors').select('*').eq('area_key', 'local').order('created_at');
+            if (error) {
+                list.innerHTML = `<p class="text-red-600 text-sm">No se pudieron cargar los contratistas: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/area-local.sql</code>?</p>`;
+                document.getElementById('local-f1-summary').textContent = '—';
+                return;
+            }
+            const cs = data || [];
+            if (cs.length === 0) {
+                list.innerHTML = '<p class="text-stone-400 text-sm py-4">Aún no hay contratistas. Añade el primero abajo 👇</p>';
+            } else {
+                list.innerHTML = '';
+                cs.forEach(c => list.appendChild(renderContractorCard(c)));
+            }
+            const selected = cs.find(c => c.status === 'seleccionado');
+            document.getElementById('local-f1-summary').textContent = selected
+                ? `✓ Seleccionado: ${selected.name}`
+                : (cs.length ? `${cs.length} contratista(s) · pendiente de elegir` : 'Sin contratistas todavía');
+        }
+
+        function renderContractorCard(c) {
+            const div = document.createElement('div');
+            const sel = c.status === 'seleccionado';
+            const disc = c.status === 'descartado';
+            div.className = `border rounded-lg p-4 mb-3 ${sel ? 'border-teal-400 bg-teal-50' : 'border-stone-200'}`;
+            const quote = (c.quote_amount !== null && c.quote_amount !== undefined && c.quote_amount !== '')
+                ? '$' + Number(c.quote_amount).toLocaleString('en-US') : '—';
+            div.innerHTML = `
+                <div class="flex justify-between items-start gap-2 mb-2">
+                    <h4 class="font-semibold text-stone-800 ${disc ? 'line-through text-stone-400' : ''}">${escapeHtml(c.name)}</h4>
+                    <select onchange="window.updateContractorStatus('${c.id}', this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 font-medium outline-none focus:ring-1 focus:ring-teal-500">
+                        <option value="pendiente" ${c.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="cotizado" ${c.status === 'cotizado' ? 'selected' : ''}>Cotizado</option>
+                        <option value="seleccionado" ${c.status === 'seleccionado' ? 'selected' : ''}>Seleccionado</option>
+                        <option value="descartado" ${c.status === 'descartado' ? 'selected' : ''}>Descartado</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-sm text-stone-600">
+                    <div><span class="text-stone-400">Cotización:</span> <span class="font-medium text-stone-800">${quote}</span></div>
+                    <div><span class="text-stone-400">Contacto:</span> ${escapeHtml(c.contact || '—')}</div>
+                    <div><span class="text-stone-400">Tiempo:</span> ${escapeHtml(c.lead_time || '—')}</div>
+                </div>
+                ${c.notes ? `<p class="text-xs text-stone-500 mt-2">${escapeHtml(c.notes)}</p>` : ''}
+                <div class="mt-3 flex gap-4">
+                    <button onclick="window.editContractor('${c.id}')" class="text-xs font-medium text-stone-400 hover:text-amber-600">Editar</button>
+                    <button onclick="window.deleteContractor('${c.id}')" class="text-xs font-medium text-stone-400 hover:text-red-600">Eliminar</button>
+                </div>
+            `;
+            return div;
+        }
+
+        window.handleAddContractor = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('nc-name').value.trim();
+            if (!name) return;
+            const quoteRaw = document.getElementById('nc-quote').value;
+            const { error } = await supabase.from('contractors').insert({
+                area_key: 'local', name,
+                quote_amount: quoteRaw === '' ? null : Number(quoteRaw),
+                contact: document.getElementById('nc-contact').value.trim(),
+                lead_time: document.getElementById('nc-lead').value.trim()
+            });
+            if (error) { alert('No se pudo añadir: ' + error.message); return; }
+            e.target.reset();
+            renderContractors();
+        };
+
+        window.updateContractorStatus = async function(id, status) {
+            const { error } = await supabase.from('contractors').update({ status }).eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            renderContractors();
+        };
+
+        window.editContractor = async function(id) {
+            const { data: c } = await supabase.from('contractors').select('*').eq('id', id).single();
+            if (!c) return;
+            const name = prompt('Nombre:', c.name); if (name === null) return;
+            const quote = prompt('Cotización ($, solo número):', c.quote_amount ?? ''); if (quote === null) return;
+            const contact = prompt('Contacto (tel/email):', c.contact || ''); if (contact === null) return;
+            const lead = prompt('Tiempo estimado:', c.lead_time || ''); if (lead === null) return;
+            const notes = prompt('Notas / alcance:', c.notes || ''); if (notes === null) return;
+            const { error } = await supabase.from('contractors').update({
+                name: name.trim(),
+                quote_amount: quote.trim() === '' ? null : Number(quote),
+                contact: contact.trim(), lead_time: lead.trim(), notes: notes.trim()
+            }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            renderContractors();
+        };
+
+        window.deleteContractor = async function(id) {
+            if (!confirm('¿Eliminar este contratista?')) return;
+            const { error } = await supabase.from('contractors').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            renderContractors();
+        };
+
+        // --- Fase 2: etapas de obra ---
+        async function renderStages() {
+            const list = document.getElementById('stages-list');
+            const { data, error } = await supabase.from('stages').select('*').eq('area_key', 'local').order('sort_order').order('created_at');
+            if (error) {
+                list.innerHTML = `<p class="text-red-600 text-sm">No se pudieron cargar las etapas: ${escapeHtml(error.message)}.<br>¿Ya corriste <code>supabase/area-local.sql</code>?</p>`;
+                document.getElementById('local-f2-summary').textContent = '—';
+                return;
+            }
+            const st = data || [];
+            if (st.length === 0) {
+                list.innerHTML = '<p class="text-stone-400 text-sm py-4">Aún no hay etapas. Cuando elijas contratista, añade las etapas del plan abajo 👇</p>';
+            } else {
+                list.innerHTML = '';
+                st.forEach(s => list.appendChild(renderStageRow(s)));
+            }
+            const avg = st.length ? Math.round(st.reduce((a, s) => a + (s.progress || 0), 0) / st.length) : 0;
+            document.getElementById('local-f2-progress-bar').style.width = avg + '%';
+            document.getElementById('local-f2-progress-text').textContent = avg + '%';
+            const done = st.filter(s => (s.progress || 0) >= 100).length;
+            document.getElementById('local-f2-summary').textContent = st.length ? `${avg}% · ${done}/${st.length} etapas completas` : 'Sin etapas todavía';
+        }
+
+        function renderStageRow(s) {
+            const div = document.createElement('div');
+            div.className = 'py-3 border-b border-stone-100 last:border-0';
+            const pct = Math.max(0, Math.min(100, s.progress || 0));
+            div.innerHTML = `
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="font-medium text-stone-800 flex-1 min-w-[8rem]">${escapeHtml(s.name)}</span>
+                    <select onchange="window.updateStageField('${s.id}','status',this.value)" class="text-xs rounded-md border border-stone-300 bg-white py-1 pl-2 pr-6 font-medium outline-none focus:ring-1 focus:ring-teal-500">
+                        <option value="pendiente" ${s.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="en_progreso" ${s.status === 'en_progreso' ? 'selected' : ''}>En progreso</option>
+                        <option value="hecho" ${s.status === 'hecho' ? 'selected' : ''}>Hecho</option>
+                    </select>
+                    <label class="text-xs text-stone-500 flex items-center gap-1">%
+                        <input type="number" min="0" max="100" value="${pct}" onchange="window.updateStageField('${s.id}','progress',this.value)" class="w-16 rounded-md border border-stone-300 p-1 text-sm text-right outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap mt-2 text-xs text-stone-500">
+                    <label class="flex items-center gap-1">Inicio
+                        <input type="date" value="${s.start_date || ''}" onchange="window.updateStageField('${s.id}','start_date',this.value)" class="rounded-md border border-stone-300 p-1 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                    <label class="flex items-center gap-1">Fin
+                        <input type="date" value="${s.end_date || ''}" onchange="window.updateStageField('${s.id}','end_date',this.value)" class="rounded-md border border-stone-300 p-1 text-sm outline-none focus:ring-1 focus:ring-teal-500">
+                    </label>
+                    <button onclick="window.editStage('${s.id}')" class="ml-auto font-medium text-stone-400 hover:text-amber-600">Editar</button>
+                    <button onclick="window.deleteStage('${s.id}')" class="font-medium text-stone-400 hover:text-red-600">Eliminar</button>
+                </div>
+                ${s.notes ? `<p class="text-xs text-stone-500 mt-1">${escapeHtml(s.notes)}</p>` : ''}
+                <div class="w-full bg-stone-100 rounded-full h-1.5 mt-2">
+                    <div class="bg-teal-500 h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
+                </div>
+            `;
+            return div;
+        }
+
+        window.handleAddStage = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('ns-name').value.trim();
+            if (!name) return;
+            const { error } = await supabase.from('stages').insert({
+                area_key: 'local', name,
+                start_date: document.getElementById('ns-start').value || null,
+                end_date: document.getElementById('ns-end').value || null,
+                sort_order: Date.now() % 100000
+            });
+            if (error) { alert('No se pudo añadir: ' + error.message); return; }
+            e.target.reset();
+            renderStages();
+        };
+
+        window.updateStageField = async function(id, field, value) {
+            const patch = {};
+            if (field === 'progress') {
+                let n = parseInt(value, 10); if (isNaN(n)) n = 0;
+                n = Math.max(0, Math.min(100, n));
+                patch.progress = n;
+                patch.status = n >= 100 ? 'hecho' : (n > 0 ? 'en_progreso' : 'pendiente');
+            } else if (field === 'start_date' || field === 'end_date') {
+                patch[field] = value || null;
+            } else {
+                patch[field] = value;
+                if (field === 'status') patch.progress = value === 'hecho' ? 100 : (value === 'pendiente' ? 0 : undefined);
+                if (patch.progress === undefined) delete patch.progress;
+            }
+            const { error } = await supabase.from('stages').update(patch).eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            renderStages();
+        };
+
+        window.editStage = async function(id) {
+            const { data: s } = await supabase.from('stages').select('*').eq('id', id).single();
+            if (!s) return;
+            const name = prompt('Nombre de la etapa:', s.name); if (name === null) return;
+            const notes = prompt('Notas:', s.notes || ''); if (notes === null) return;
+            const { error } = await supabase.from('stages').update({ name: name.trim(), notes: notes.trim() }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            renderStages();
+        };
+
+        window.deleteStage = async function(id) {
+            if (!confirm('¿Eliminar esta etapa?')) return;
+            const { error } = await supabase.from('stages').delete().eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            renderStages();
         };
 
         window.setupAddSupplierForm = function() {
