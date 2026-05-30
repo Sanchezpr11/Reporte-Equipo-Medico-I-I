@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Properties Hub — I&amp;I Realty</title>
-    
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    
+    <link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f766e'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%9A%95%3C/text%3E%3C/svg%3E">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -152,10 +151,11 @@
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-teal-900 px-4">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 fade-in">
             <div class="text-center mb-6">
-                <span class="text-5xl block mb-3">🏢</span>
-                <h1 class="text-2xl font-bold text-stone-800">The Properties Hub</h1>
-                <p class="text-stone-500 text-sm mt-1">Gestión y seguimiento de proyectos inmobiliarios</p>
-                <p class="text-stone-400 text-xs mt-2">Acceso restringido. Inicia sesión para continuar.</p>
+                <img id="login-logo" alt="" class="hidden mx-auto mb-3 w-16 h-16 rounded-xl object-cover">
+                <span id="login-logo-emoji" class="text-5xl block mb-3">🏢</span>
+                <h1 id="login-project-name" class="text-2xl font-bold text-stone-800">The Properties Hub</h1>
+                <p class="text-stone-400 text-xs mt-1">by The Properties Hub</p>
+                <p class="text-stone-400 text-xs mt-3">Acceso restringido. Inicia sesión para continuar.</p>
             </div>
 
             <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-4">
@@ -189,7 +189,7 @@
     <!-- ====== NAVEGACIÓN: barra lateral (desktop) + barra inferior (móvil) ====== -->
     <div class="appshell">
       <aside class="sidebar">
-        <div class="sb-brand"><span class="mark">🏢</span> <span style="line-height:1.15"><span style="display:block">The Properties Hub</span><span style="display:block;font-size:11px;font-weight:500;color:#94a3b8">Cliente: I&amp;I Realty</span></span></div>
+        <div class="sb-brand"><span class="mark" id="sb-logo"><img id="sb-logo-img" alt="" class="hidden w-full h-full object-cover rounded-[inherit]"><span id="sb-logo-emoji">🏢</span></span> <span style="line-height:1.2"><span id="sb-project-name" style="display:block;font-size:18px;font-weight:800">The Properties Hub</span><span style="display:block;font-size:11px;font-weight:500;color:#94a3b8">by The Properties Hub</span></span></div>
         <nav class="sb-nav">
           <div class="sb-group">Proyecto</div>
           <a id="tab-resumen" data-area="resumen" onclick="window.switchTab('resumen')" class="navitem hidden"><span class="ni-ic">📊</span><span>Resumen</span></a>
@@ -223,9 +223,9 @@
         <!-- RESUMEN: avance por área -->
         <section id="sec-resumen" class="fade-in hidden">
             <div class="mb-6">
-                <p class="text-xs font-semibold uppercase tracking-widest text-teal-700 mb-1">I&amp;I Realty</p>
-                <h2 class="text-2xl font-bold text-stone-800">Centro de Control del Proyecto</h2>
-                <p class="mt-1 text-stone-500">Clínica de Endocrinología · Santurce, Puerto Rico</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-teal-700 mb-1">by The Properties Hub</p>
+                <h2 id="resumen-project-name" class="text-2xl font-bold text-stone-800">Centro de Control del Proyecto</h2>
+                <p id="resumen-project-desc" class="mt-1 text-stone-500">Clínica de Endocrinología · Santurce, Puerto Rico</p>
             </div>
             <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-stone-50 rounded-xl p-6 mb-6">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -902,8 +902,40 @@
         <!-- SECCIÓN 4: ADMINISTRACIÓN (solo admins) -->
         <section id="sec-admin" class="fade-in hidden">
             <div class="mb-6 border-b border-stone-200 pb-4">
-                <h2 class="text-2xl font-semibold text-stone-800">Administración de Usuarios</h2>
-                <p class="mt-2 text-stone-600">Crea cuentas, asigna a qué áreas puede acceder cada persona, restablece contraseñas o elimina usuarios.</p>
+                <h2 class="text-2xl font-semibold text-stone-800">Administración</h2>
+                <p class="mt-2 text-stone-600">Configura el proyecto, crea cuentas y asigna accesos.</p>
+            </div>
+
+            <!-- Configuración del proyecto -->
+            <div class="bg-white shadow-md rounded-xl p-6 mb-8 border border-stone-200">
+                <h3 class="text-lg font-bold text-teal-800 mb-4 flex items-center"><span class="mr-2 bg-teal-100 text-teal-800 rounded-full w-8 h-8 flex items-center justify-center">🏷️</span> Identidad del proyecto</h3>
+                <form onsubmit="window.saveProjectBranding(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Nombre del proyecto <span class="text-red-500">*</span></label>
+                            <input type="text" id="proj-name" required class="w-full rounded-md border border-stone-300 bg-stone-50 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. I&amp;I Realty">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Logo / ícono del proyecto</label>
+                            <div class="flex items-center gap-3">
+                                <span id="proj-logo-preview" class="w-12 h-12 rounded-lg bg-teal-700 text-white grid place-items-center text-lg font-bold overflow-hidden shrink-0">I&amp;I</span>
+                                <label class="bg-stone-200 text-stone-700 px-3 py-1.5 rounded-md text-xs font-medium hover:bg-stone-300 cursor-pointer whitespace-nowrap">Subir imagen
+                                    <input type="file" id="proj-logo-file" accept="image/*" class="hidden" onchange="window.uploadProjectLogo(event)">
+                                </label>
+                                <button type="button" onclick="window.clearProjectLogo()" class="text-xs text-stone-400 hover:text-red-600">Quitar</button>
+                            </div>
+                            <p class="text-xs text-stone-400 mt-1">Si no subes un logo, el sistema genera uno con las iniciales del nombre.</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-stone-700 mb-1">Descripción corta del proyecto</label>
+                            <input type="text" id="proj-desc" class="w-full rounded-md border border-stone-300 bg-stone-50 p-2 text-sm outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" placeholder="Ej. Clínica de Endocrinología · Santurce, Puerto Rico">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-4">
+                        <span id="proj-branding-msg" class="text-sm"></span>
+                        <button type="submit" class="bg-teal-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-800 transition-colors shadow-sm">Guardar identidad</button>
+                    </div>
+                </form>
             </div>
 
             <!-- Crear usuario -->
@@ -1859,6 +1891,7 @@
             if (tabKey === 'admin') {
                 window.setupCreateUserAreas();
                 window.loadUsers();
+                window.loadProjectBrandingForm();
             }
             if (tabKey === 'plataforma') {
                 window.renderPlataforma();
@@ -3693,12 +3726,118 @@
             document.getElementById('detail-content').classList.add('hidden');
         }
 
+        // ---------- Identidad del proyecto (nombre, descripción, logo) ----------
+        const PROJECT_DEFAULTS = { name: 'The Properties Hub', desc: '', logo: '' };
+        let projectBranding = { ...PROJECT_DEFAULTS };
+        let pendingLogoData = null; // logo nuevo en el formulario de admin (data URL) o '' para quitar
+
+        function projectInitials(name) {
+            const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+            if (!words.length) return 'PH';
+            return words.map(w => w[0]).join('').slice(0, 3).toUpperCase();
+        }
+        function initialsSvg(name) {
+            const t = projectInitials(name);
+            const size = t.length >= 3 ? 34 : 42;
+            return "data:image/svg+xml," + encodeURIComponent(
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='#0f766e'/><text x='50' y='50' dy='.35em' font-size='${size}' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif'>${t}</text></svg>`
+            );
+        }
+        function setImgOrEmoji(imgId, emojiId, logo, name) {
+            const img = document.getElementById(imgId), em = document.getElementById(emojiId);
+            const src = logo || initialsSvg(name);
+            if (img) { img.src = src; img.classList.remove('hidden'); }
+            if (em) em.classList.add('hidden');
+        }
+        function applyBrandingToDom() {
+            const { name, desc, logo } = projectBranding;
+            document.title = name + ' · The Properties Hub';
+            const fav = document.getElementById('favicon');
+            if (fav) fav.href = logo || initialsSvg(name);
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            set('login-project-name', name);
+            set('sb-project-name', name);
+            set('resumen-project-name', name);
+            set('resumen-project-desc', desc || '');
+            setImgOrEmoji('login-logo', 'login-logo-emoji', logo, name);
+            setImgOrEmoji('sb-logo-img', 'sb-logo-emoji', logo, name);
+        }
+        async function applyProjectBranding() {
+            try {
+                const { data } = await supabase.from('project_settings').select('key, value')
+                    .in('key', ['project_name', 'project_desc', 'project_logo']);
+                const map = {}; (data || []).forEach(r => { map[r.key] = r.value; });
+                projectBranding = {
+                    name: map.project_name || PROJECT_DEFAULTS.name,
+                    desc: map.project_desc || '',
+                    logo: map.project_logo || ''
+                };
+            } catch (_) { projectBranding = { ...PROJECT_DEFAULTS }; }
+            applyBrandingToDom();
+        }
+
+        // --- Admin: formulario de identidad del proyecto ---
+        window.loadProjectBrandingForm = function() {
+            pendingLogoData = null;
+            const n = document.getElementById('proj-name'); if (n) n.value = projectBranding.name === PROJECT_DEFAULTS.name ? '' : projectBranding.name;
+            const d = document.getElementById('proj-desc'); if (d) d.value = projectBranding.desc || '';
+            updateLogoPreview(projectBranding.logo, projectBranding.name || 'Proyecto');
+        };
+        function updateLogoPreview(logo, name) {
+            const box = document.getElementById('proj-logo-preview');
+            if (!box) return;
+            if (logo) box.innerHTML = `<img src="${logo}" alt="" class="w-full h-full object-cover">`;
+            else box.textContent = projectInitials(name);
+        }
+        window.uploadProjectLogo = function(e) {
+            const file = (e.target.files || [])[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+                    const ctx = c.getContext('2d');
+                    const s = Math.min(img.width, img.height); // recorte cuadrado centrado
+                    ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 128, 128);
+                    pendingLogoData = c.toDataURL('image/png');
+                    updateLogoPreview(pendingLogoData, document.getElementById('proj-name').value || 'Proyecto');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        };
+        window.clearProjectLogo = function() {
+            pendingLogoData = '';
+            updateLogoPreview('', document.getElementById('proj-name').value || 'Proyecto');
+        };
+        window.saveProjectBranding = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('proj-name').value.trim();
+            const desc = document.getElementById('proj-desc').value.trim();
+            if (!name) { alert('Ponle un nombre al proyecto.'); return; }
+            const now = new Date().toISOString();
+            const rows = [
+                { key: 'project_name', value: name, updated_at: now },
+                { key: 'project_desc', value: desc, updated_at: now }
+            ];
+            if (pendingLogoData !== null) rows.push({ key: 'project_logo', value: pendingLogoData, updated_at: now });
+            const { error } = await supabase.from('project_settings').upsert(rows, { onConflict: 'key' });
+            const msg = document.getElementById('proj-branding-msg');
+            if (error) { if (msg) { msg.textContent = 'Error: ' + error.message; msg.className = 'text-sm text-red-600'; } return; }
+            if (msg) { msg.textContent = 'Guardado ✓'; msg.className = 'text-sm text-teal-700'; setTimeout(() => { msg.textContent = ''; }, 2000); }
+            pendingLogoData = null;
+            await applyProjectBranding();
+        };
+
         // Arrancar: primero comprueba el acceso; la app solo se inicia tras el login.
         // Usamos DOMContentLoaded (no onload) para no esperar a que carguen las imágenes.
+        function boot() { applyProjectBranding(); checkAuth(); }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkAuth);
+            document.addEventListener('DOMContentLoaded', boot);
         } else {
-            checkAuth();
+            boot();
         }
     </script>
 </body>
