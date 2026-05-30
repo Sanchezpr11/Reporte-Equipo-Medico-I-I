@@ -1,13 +1,13 @@
 -- ============================================================================
 --  IDENTIDAD DEL PROYECTO (nombre, descripción, logo)
 --  Usa project_settings (keys: project_name, project_desc, project_logo).
---  ROBUSTO: crea la tabla si no existe, y si ya existía SIN llave primaria en
---  'key' (causa del error 42P10 "no unique constraint matching ON CONFLICT"),
---  la repara. Configura RLS (lectura pública, escritura admin) y siembra datos.
---  Idempotente. Supabase -> SQL Editor -> New query -> pegar todo -> Run.
+--  A PRUEBA DE 42P10: el seed NO usa ON CONFLICT (no depende de restricciones).
+--  Aun así repara/garantiza la restricción única en 'key' que necesita el
+--  guardado (upsert) desde el panel de Admin.
+--  Idempotente. Supabase -> SQL Editor -> New query -> pegar TODO -> Run.
 -- ============================================================================
 
--- 1) Crear la tabla si no existe (con PK en key).
+-- 1) Crear la tabla si no existe.
 create table if not exists public.project_settings (
     key        text primary key,
     value      text,
@@ -18,8 +18,8 @@ create table if not exists public.project_settings (
 alter table public.project_settings add column if not exists value text;
 alter table public.project_settings add column if not exists updated_at timestamptz not null default now();
 
--- 3) Asegurar una restricción única/PK en 'key' (necesaria para ON CONFLICT y upsert).
---    Si no hay ninguna, elimina posibles duplicados y la añade.
+-- 3) Garantizar restricción única en 'key' (para que el upsert de Admin funcione).
+--    Si no hay PK ni UNIQUE, deduplica y la añade.
 do $$
 begin
   if not exists (
@@ -27,9 +27,8 @@ begin
     from pg_constraint c
     join pg_class t on t.oid = c.conrelid
     join pg_namespace n on n.oid = t.relnamespace
-    where n.nspname = 'public'
-      and t.relname = 'project_settings'
-      and c.contype in ('p', 'u')
+    where n.nspname = 'public' and t.relname = 'project_settings'
+      and c.contype in ('p','u')
   ) then
     delete from public.project_settings a
     using public.project_settings b
@@ -40,24 +39,24 @@ begin
   end if;
 end $$;
 
--- 4) RLS.
+-- 4) RLS: lectura pública, escritura solo-admin.
 alter table public.project_settings enable row level security;
 
--- Lectura PÚBLICA (anon + autenticados) — personaliza login/favicon antes del login.
 drop policy if exists project_settings_read on public.project_settings;
 create policy project_settings_read on public.project_settings
     for select using (true);
 
--- Escritura solo administradores.
 drop policy if exists project_settings_write on public.project_settings;
 create policy project_settings_write on public.project_settings
     for all to authenticated
     using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin))
     with check (exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin));
 
--- 5) Sembrar valores iniciales para I&I Realty si aún no existen.
+-- 5) Sembrar valores de I&I Realty SIN ON CONFLICT (no requiere restricción).
 insert into public.project_settings (key, value)
-values
-    ('project_name', 'I&I Realty'),
-    ('project_desc', 'Clínica de Endocrinología · Santurce, Puerto Rico')
-on conflict (key) do nothing;
+select 'project_name', 'I&I Realty'
+where not exists (select 1 from public.project_settings where key = 'project_name');
+
+insert into public.project_settings (key, value)
+select 'project_desc', 'Clínica de Endocrinología · Santurce, Puerto Rico'
+where not exists (select 1 from public.project_settings where key = 'project_desc');
